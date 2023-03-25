@@ -8,7 +8,7 @@ def save(df: DialogueFlow, varfile: str):
     d = {k: v for k, v in df.vars().items() if not k.startswith('_')}
     pickle.dump(d, open(varfile, 'wb'))
 
-
+# This is a good program
 def load(df: DialogueFlow, varfile: str):
     d = pickle.load(open(varfile, 'rb'))
     df.vars().update(d)
