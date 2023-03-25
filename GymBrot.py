@@ -164,30 +164,6 @@ class MacroNameCheck(Macro):
             output = "It\'s nice to meet you "+ vars['NAME'][-1] +". Were you interested in a movie or music reccommendation?"
         return output
 
-class MacroPrevRec(Macro):
-    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
-        recDict = {
-        "Thats Amore": "by Dean Martin is about love?",
-        "Whispering Pines": "released by The Band was written by Richard Manuel and Robbie Robertson?",
-        "Good Guy": "by Eminem and featuring Jessie Reyez is about confusing relationships?",
-        "Happy": "by Pharrell Williams was for the film Despicable Me 2?",
-        "Levitating": "by Dua Lipa and feauturing DaBaby is a remix of the Madonna and Missy Elliott song with the same title?",
-        "Bitch Better Have My Money":"by Rihanna was recently performed at the 2023 Superbowl?",
-        "Lucid Dreams":  "by Juice WRLD was actually hated by the artist?",
-        "Autumn Almanac": "by The Kinks reached #3 on the singles chart in the UK?",
-        "Shape of You": "by Ed Sheeran is an interpolation of \"No Scrubs\" by TLC?",
-
-        "Team America: World Police": "was directed by, written by,produced by , and starred Trey Parker?",
-        "Feast of Love": "was set at Portland State University but used the Western Seminary and Reed College campuses for filming?",
-        "Terminator 3: Rise of the Machines": "had teasers that first premiered in theaters with Men in Black II?",
-        "2001: A Space Odyssey": "has a deleted scene where Stanley Kubrick's daughters take part in a painting class on the lunar base?",
-        "Rush Hour 3": "has a scene that parodies events that occur in Bruce Lee's Game of Death?",
-        "The Grudge": "was one of the most profitable movies of 2004?",
-        "Horrible Bosses": "almost starred several other notable actors such as Jeff Bridges, Owen Wilson, Vince Vaughn, Matthew McConaughey, Ryan Reynolds, and Tom Cruise?",
-        "Blade: Trinity": "has an alternate ending where Drake never shapeshifts into Blade?",
-        "The Help": "was a regret for star Viola Davis?"}
-
-        return vars['PREVREC'][vars['NAME'][-1]] + " "+ recDict[vars['PREVREC'][vars['NAME'][-1]]]
 
 class MacroRec(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
