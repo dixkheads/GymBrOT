@@ -1,0 +1,44 @@
+{
+    "ontology": {
+        "muscle groups": ["chest", "back", "shoulders", "arms", "legs", "core"],
+        "chest": ["pectoralis"],
+        "back": ["upper", "lower"],
+        "shoulders": ["delts", "trapz"],
+        "arms": ["biceps", "triceps"],
+        "legs": ["quadriceps", "hamstrings", "calves", "glutes"],
+        "core": ["abs", "obliques"],
+        "pectoralis": ["bench press", "push-ups", "dumbbell flyes", "cable flyes", "incline bench press",
+            "decline bench press", "chest dips", "chest press machine", "pec deck machine", "medicine ball push-ups."],
+        "upper": ["pull-ups", "chin-ups", "lat pulldowns", "bent-over rows", "T-bar rows", "cable rows", "face pulls",
+            "reverse flyes", "dumbbell pullovers", "seated cable rows"],
+        "lower": ["deadlifts", "back extensions", "hyperextensions", "reverse hyperextensions", "good mornings",
+            "romanian deadlifts", "seated cable rows with low pulley"],
+        "deltoid": ["shoulder press", "lateral raise", "front raise", "rear delt fly", "upright row", "Arnold press",
+            "seated dumbbell press", "cable face pull", "dumbbell push press", "barbell push press"],
+        "trapezius": ["barbell shrugs", "dumbbell shrugs", "upright rows", "face pulls", "wide-grip rows",
+            "deadlifts", "farmer's walks"],
+        "biceps": ["barbell curls", "dumbbell curls", "hammer curls", "concentration curls", "preacher curls",
+            "cable curls", "chin-ups."],
+        "triceps": ["close grip bench press", "triceps pushdown", "dips", "lying triceps extensions",
+            "overhead triceps extensions", "triceps kickbacks", "diamond push-ups", "cable triceps extensions",
+            "skull crushers", "narrow grip push-ups"],
+        "quadriceps": ["squats", "lunges", "leg press", "leg extension", "step-ups", "Bulgarian split squats",
+            "box jumps", "wall sits", "cycling", "running", "jumping jacks"]
+        "hamstrings": ["deadlifts", "Romanian deadlifts", "hamstring curls", "glute-ham raises",
+            "stiff-legged deadlifts"],
+        "calves": ["calf raises, standing calf raises, seated calf raises, donkey calf raises, toe raises."],
+        "gluteus": ["squats, lunges", "deadlifts", "glute bridges", "hip thrusts", "step-ups", "cable kickbacks",
+            "donkey kicks", "fire hydrants", "lateral band walks"],
+        "abs": ["crunches", "planks", "Russian twists", "bicycle crunches", "mountain climbers", "leg raises",
+            "sit-ups", "flutter kicks", "reverse crunches", "side planks"],
+        "obliques": ["Russian twist", "bicycle crunch", "side bend", "oblique crunch", "standing oblique crunch."]
+    },
+    "expressions": {
+        "deltoid": ["delts"],
+        "trapezius": ["traps"],
+        "quadriceps": ["quads"],
+        "pectoralis": ["pecs"],
+        "hamstrings": ["hammies", "hammys", "hammy", "hammie"],
+        "gluteus": ["glutes"]
+    }
+}
