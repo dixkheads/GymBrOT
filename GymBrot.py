@@ -5,7 +5,8 @@ from enum import Enum
 from emora_stdm import DialogueFlow, Macro, Ngrams
 import pickle, os, time, json, requests, re
 import regexutils
-os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
+#os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
+
 #This is a test to see if it has pushed
 model = 'gpt-3.5-turbo'
 def save(df: DialogueFlow, varfile: str):
@@ -213,22 +214,22 @@ def get_ACTIVITYLEVEL(vars: Dict[str, Any]):
     return
 
 def get_FITNESSLEVEL(vars: Dict[str, Any]):
-    vars['FITNESSLEVEL'] = vars[V.ACTIVITYLEVEL.name][random.randrange(len(vars[V.FITNESSLEVEL.name]))]
+    vars['FITNESSLEVEL'] = vars[V.FITNESSLEVEL.name][random.randrange(len(vars[V.FITNESSLEVEL.name]))]
     print(vars['FITNESSLEVEL'])
     return
 
 def get_ACTIVITYFREQ(vars: Dict[str, Any]):
-    vars['ACTIVITYFREQ'] = vars[V.ACTIVITYLEVEL.name][random.randrange(len(vars[V.ACTIVITYFREQ.name]))]
+    vars['ACTIVITYFREQ'] = vars[V.ACTIVITYFREQ.name][random.randrange(len(vars[V.ACTIVITYFREQ.name]))]
     print(vars['ACTIVITYFREQ'])
     return
 
 def get_PREFACTIVITY(vars: Dict[str, Any]):
-    vars['PREFACTIVITY'] = vars[V.ACTIVITYLEVEL.name][random.randrange(len(vars[V.PREFACTIVITY.name]))]
+    vars['PREFACTIVITY'] = vars[V.PREFACTIVITY.name][random.randrange(len(vars[V.PREFACTIVITY.name]))]
     print(vars['PREFACTIVITY'])
     return
 
 def get_WHYNOT(vars: Dict[str, Any]):
-    vars['WHYNOT'] = vars[V.ACTIVITYLEVEL.name][random.randrange(len(vars[V.WHYNOT.name]))]
+    vars['WHYNOT'] = vars[V.WHYNOT.name][random.randrange(len(vars[V.WHYNOT.name]))]
     print(vars['WHYNOT'])
     return
 
@@ -297,6 +298,7 @@ class MacroGPTJSON(Macro):
             self.set_variables(vars, d)
         else:
             vars.update(d)
+            print(output)
         return True
 
 class MacroNLG(Macro):
@@ -332,7 +334,7 @@ macros = {
     'GETPREFACTIVITY': MacroNLG(get_PREFACTIVITY),
     'GETWHYNOT': MacroNLG(get_WHYNOT),
     'INITMOOD': MacroGPTJSON(
-        'Is this user positive, negative, or neutral? Do not include the square brakcets.',
+        'Is this user positive, negative, or neutral?',
         {V.INITMOOD.name: ["positive", "negative", "neutral"]})
 }
 
