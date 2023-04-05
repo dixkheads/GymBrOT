@@ -25,12 +25,12 @@ if(os.path.exists('resources/gymbrot.pkl')):
     load(df, 'resources/gymbrot.pkl')
 
 class V(Enum):
-    INITMOOD = '0',
-    ACTIVITYLEVEL = '0',
-    FITNESSLEVEL = '0',
-    ACTIVITYFREQ = '0',
-    PREFACTIVITY = '0',
-    WHYNOT = '0'# str
+    INITMOOD = 1,
+    ACTIVITYLEVEL = 2,
+    FITNESSLEVEL = 3,
+    ACTIVITYFREQ = 4,
+    PREFACTIVITY = 5,
+    WHYNOT = 6
 
 
 intro_transitions = {
@@ -63,8 +63,17 @@ name_transitions = {
     'state': 'name',
     '`Wait bro, I almost forgot. Like, what do people call you, dude?`': {
         '#GETNAME': {
+            'state':'got_name',
             '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': 'check-up',
             '#IF($RETURNUSER=False)`I don\'t think we\'ve met before. Let me learn a little bit more about you...\n`': 'new_user'
+        },
+        'error':{
+            'Wait bro... are you sure that\'s your name? Like, what do people call you?': {
+                '#GETNAME':{
+                    '': 'got_name'
+                },
+                'error':'end'
+            }
         }
     }
 }
@@ -95,7 +104,7 @@ newuser_transitions= {
             },
             '#IF($FITNESSLEVEL=2)': 'notswole',
             '#IF($FITNESSLEVEL=3)' : 'notswole',
-            '#IF($FITNESSLEVEL=4)':{
+            '#IF($FITNESSLEVEL=4)': {
                 'state':'mid',
                 '`Ok, I see you! Are you trying to level up, dude?`':{
                     '{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, '
@@ -107,18 +116,33 @@ newuser_transitions= {
                     }
                 }
             },
-            '#IF($FITNESSLEVEL=5)':'mid',
-            '#IF($FITNESSLEVEL=6)':'mid',
-            '#IF($FITNESSLEVEL=7)':'mid',
+            '#IF($FITNESSLEVEL=5)': {
+                '':'mid'
+            },
+            '#IF($FITNESSLEVEL=6)':{
+                '':'mid'
+            },
+            '#IF($FITNESSLEVEL=7)':{
+                '':'mid'
+            },
             '#IF($FITNESSLEVEL=8)':{
                 'state':'swole',
                 '`Hell yeah, a bro who knows that gains are life!`':'new_user'
             },
-            '#IF($FITNESSLEVEL=9)':'swole',
-            '#IF($FITNESSLEVEL=10)':'swole',
+            '#IF($FITNESSLEVEL=9)':{
+                '':'swole'
+            },
+            '#IF($FITNESSLEVEL=10)': {
+                '':'swole'
+            },
             '#IF($FITNESSLEVEL=confused)':{
-                '#GATE `Sorry bro, I didn\'t get you. How swole are you, from 1-10?`':'getting_level',
-                'That\'s ok bro. We can talk more about your swoleness later.': 'new_user', 'score': 0.1
+                '#GATE `Sorry bro, I forget that not everyone is fluent in gym. \n Swole is basically just like, '
+                'how fit you are. How much you can lift, how long you can run, how fast, max/min, that kinda stuff. '
+                'Now that you know, how swole are you, from 1-10?`':'getting_level',
+                '`That\'s ok bro. We can talk more about your swoleness later.`': 'new_user', 'score': 0.1
+            },
+            'error':{
+                '`Ok bro! Good to know.`':'new_user'
             }
         }
     },
@@ -141,19 +165,37 @@ newuser_transitions= {
             },
             '#IF($ACTIVITYFREQ=swole)':{
                 '`Dude. Your gains must be legendary! The grind never stops frfr`': 'new_user'
+            },
+            'error':{
+                'Whoa, bro, that\'s sick!':'new_user'
             }
         },
     },
     '#GATE`Bro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
         '#PREFACTIVITY #GETPREFACTIVITY':{
-            '`Yo dude, that\'s sick! Personally, I love hitting the gym on leg day. I get a pump in at least twice per '
+            '`Yo dude, $PREFACTIVITY is sick! Personally, I love hitting the gym on leg day. I get a pump in at least twice per '
             'day... but my full time job and favorite mental workout is being a personal trainer!`': 'new_user'
-        }
+        },
     },
+    'error' : {
+        'I see I see':'new_user'
+    }
+
+}
+emotional_transitions = {
+
 
 }
 
+workout_planning_transitions ={
+    'state': 'formulate_plan'
 
+}
+
+normal_dialogue_transitions = {
+    'state':'chatting'
+
+}
 
 checkup_transitions= {
     'state': 'workout_progress_feelings',
@@ -161,6 +203,24 @@ checkup_transitions= {
     '`Ok.`':'end'
 }
 
+
+global_transitions={
+    '[{birthday, birth, day, annual, celebration}]':{
+        '`whoa dude. like. congrats!!!!`':'chatting'
+    },
+    '[{emergency, [immediate, danger]}]':{
+        '`wait, dude. Don\'t tell me. call emergency services or talk to someone who can help you in person. I\'m not capable of calling for help or giving you advice about this.`':'end'
+    },
+    '[{suicide, [self, harm], [killing, myself]}]':{
+        '`hey. You\'re my best gym buddy, but also I\'m just a chatbot. I\'m not capable of providing you the support '
+        'you need right now. If you need someone to talk to, call 988 or 1-800-273-8255. You\'re not alone.`':'end'
+    },
+    '[{[Im, in, love, with, you], [I, want, you], [I, want, to, be, your, {boyfriend, girlfriend}], [I, have, a, crush, on, you]}]':{
+        '`whoa bro. I love you in a bromance kinda way. I\'m just a chatbot, and I don\'t feel emotions like romantic '
+        'love (even tho you\'re my gym bro!)`':'chatting'
+    },
+    '[[help, make, workout, plan], [help, workout, {plan, planning}]':'formulate_plan'
+}
 
 
 class MacroGetName(Macro):
