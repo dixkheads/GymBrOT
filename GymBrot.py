@@ -123,11 +123,8 @@ newuser_transitions= {
                 }
 
             },
-            'error':{
-                '`felt that, bro`':'new_user'
-            }
-
-        },
+            '`felt that, bro`':'new_user'
+            },
         'error':{
             '`Oh. Gotchu bro.`':'new_user'
         }
@@ -135,59 +132,42 @@ newuser_transitions= {
     '#GATE`Helping fresh gym rats figure out their routine gets me pumped!\n On a scale of 1-10, how swole are you?`':{
         'state':'getting_level',
         '#FITNESSLEVEL #GETFITNESSLEVEL':{
-            '#IF($FITNESSLEVEL=0)': {
-                '`I gotchu bro. Everyone starts from somewhere. Is there a reason why you aren\'t hitting the gym?`':'whynot'
-            },
-            '#IF($FITNESSLEVEL=1)':{
-                'state':'notswole',
-                '`Ok, ok! I hope you\'re ready to get leveled up, because being swole is the #1 way to be fulfilled ('
+            '#IF($FITNESSLEVEL=0) `I gotchu bro. Everyone starts from somewhere. Is there a reason why you aren\'t hitting the gym?`': 'whynot',
+            '#IF($FITNESSLEVEL=1) `Ok, ok! I hope you\'re ready to get leveled up, because being swole is the #1 way to be fulfilled ('
                 'like, this is not a real fact bro. Don\'t come for me, I just like being swole.) \n But like, '
-                'why aren\'t you hitting the gym?`':'whynot'
-            },
+                'why aren\'t you hitting the gym?`':'whynot',
             '#IF($FITNESSLEVEL=2)': 'notswole',
-            '#IF($FITNESSLEVEL=3)' : 'notswole',
-            '#IF($FITNESSLEVEL=4)': {
-                'state':'mid',
-                '`Ok, I see you! Are you trying to level up, dude?`':{
-                    '{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, '
-                    'are], right, correct, true, factual, facts, def, always, [i, have], know}':{
-                        '`ok! so what\'s holding you back from leveling up, bro?v': 'whynot'
+            '#IF($FITNESSLEVEL=3)': 'notswole',
+            'state': 'mid',
+            '#IF($FITNESSLEVEL=4)`Ok, I see you! Are you trying to level up, dude?`': {
+                '{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, are], right, correct, true, factual, facts, def, always, [i, have], know}':{
+                        '`ok! so what\'s holding you back from leveling up, bro?': 'whynot'
                     },
                     '{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, havent}':{
                         '`I feel you, dude - we can\'t all be super swole, but I\'m pumped that you\'re maintaining those gains!`':'new_user'
                     }
-                }
             },
-            '#IF($FITNESSLEVEL=5)': {
-                '':'mid'
-            },
-            '#IF($FITNESSLEVEL=6)':{
-                '':'mid'
-            },
-            '#IF($FITNESSLEVEL=7)':{
-                '':'mid'
-            },
-            '#IF($FITNESSLEVEL=8)':{
-                'state':'swole',
-                '`Hell yeah, a bro who knows that gains are life!`':'new_user'
-            },
-            '#IF($FITNESSLEVEL=9)':{
-                '':'swole'
-            },
-            '#IF($FITNESSLEVEL=10)': {
-                '':'swole'
-            },
-            '#IF($FITNESSLEVEL=confused)':{
+
+            '#IF($FITNESSLEVEL=5)': 'mid',
+            '#IF($FITNESSLEVEL=6)': 'mid',
+            '#IF($FITNESSLEVEL=7)': 'mid',
+            'state':'swole',
+            '#IF($FITNESSLEVEL=8)`Hell yeah, a bro who knows that gains are life!`': 'new_user',
+            '#IF($FITNESSLEVEL=9)': 'swole',
+            '#IF($FITNESSLEVEL=10)': 'swole',
+            '#IF($FITNESSLEVEL=confused)': {
                 '#GATE `Sorry bro, I forget that not everyone is fluent in gym. \n Swole is basically just like, '
                 'how fit you are. How much you can lift, how long you can run, how fast, max/min, that kinda stuff. '
                 'Now that you know, how swole are you, from 1-10?`':'getting_level',
                 '`That\'s ok bro. We can talk more about your swoleness later.`': 'new_user', 'score': 0.1
             },
-            'error':{
-                '`Ok bro! Good to know.`':'new_user'
-            }
+            '`Ok bro! Good to know.`':'new_user'
+        },
+        'error':{
+        '`Ok bro! Good to know.`':'new_user'
         }
     },
+
     '#GATE`That’s what’s up! I love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`':{
         '#ACTIVITYFREQ':{
             '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. Why aren\'t you hitting the gym?`': {
@@ -196,28 +176,20 @@ newuser_transitions= {
                     '$WHYNOT':'end'
                 }
             },
-            '#IF($ACTIVITYFREQ=low)':{
-                '`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`': 'whynot'
-            },
-            '#IF($ACTIVITYFREQ=mid)':{
-                '`Ok, I see you! Gettin those gains in!`': 'new_user'
-            },
-            '#IF($ACTIVITYFREQ=high)':{
-                '`Yoooo, you should be my full-time lifting buddy!`': 'new_user'
-            },
-            '#IF($ACTIVITYFREQ=swole)':{
-                '`Dude. Your gains must be legendary! The grind never stops frfr`': 'new_user'
-            },
-            'error':{
-                'Whoa, bro, that\'s sick!':'new_user'
-            }
-        },
+            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`':'whynot',
+            '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`':'new_user',
+            '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`': 'new_user',
+            '#IF($ACTIVITYFREQ=swole) `Dude. Your gains must be legendary! The grind never stops frfr`': 'new_user',
+            'Oh I gotchu bro':'new_user'
+        }
     },
     '#GATE`Bro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
-        '#PREFACTIVITY #GETPREFACTIVITY':{
-            '`Yo dude, $PREFACTIVITY is sick! Personally, I love hitting the gym on leg day. I get a pump in at least twice per '
-            'day... but my full time job and favorite mental workout is being a personal trainer!`': 'new_user'
+        '#PREFACTIVITY #GETPREFACTIVITY': {
+            '`Yo dude,` $PREFACTIVITY `is sick! Personally, I love hitting the gym on leg day. \n I get a pump in at least twice per day... \n but my full time job and favorite mental workout is being a personal trainer!`': 'new_user'
         },
+        'error':{
+            '`Damn bro.`':'new_user'
+        }
     },
     'error' : {
         'I see I see':'new_user'
@@ -253,7 +225,7 @@ global_transitions={
     '[{emergency, [immediate, danger]}]':{
         '`wait, dude. Don\'t tell me. call emergency services or talk to someone who can help you in person. I\'m not capable of calling for help or giving you advice about this.`':'end'
     },
-    '[{suicide, [self, harm], [killing, myself]}]':{
+    '[{suicide, [self, {harm, harming}], [killing, myself]}]':{
         '`hey. You\'re my best gym buddy, but also I\'m just a chatbot. I\'m not capable of providing you the support '
         'you need right now. If you need someone to talk to, call 988 or 1-800-273-8255. You\'re not alone.`':'end'
     },
@@ -381,27 +353,27 @@ class MacroNameCheck(Macro):
         return output
 
 def get_ACTIVITYLEVEL(vars: Dict[str, Any]):
-    vars['ACTIVITYLEVEL'] = vars[V.ACTIVITYLEVEL.name][random.randrange(len(vars[V.ACTIVITYLEVEL.name]))]
+    vars['ACTIVITYLEVEL'] = vars[V.ACTIVITYLEVEL.name]
     print(vars['ACTIVITYLEVEL'])
     return
 
 def get_FITNESSLEVEL(vars: Dict[str, Any]):
-    vars['FITNESSLEVEL'] = vars[V.FITNESSLEVEL.name][0]
+    vars['FITNESSLEVEL'] = vars[V.FITNESSLEVEL.name]
     print(vars['FITNESSLEVEL'])
     return
 
 def get_ACTIVITYFREQ(vars: Dict[str, Any]):
-    vars['ACTIVITYFREQ'] = vars[V.ACTIVITYFREQ.name][random.randrange(len(vars[V.ACTIVITYFREQ.name]))]
+    vars['ACTIVITYFREQ'] = vars[V.ACTIVITYFREQ.name]
     print(vars['ACTIVITYFREQ'])
     return
 
 def get_PREFACTIVITY(vars: Dict[str, Any]):
-    vars['PREFACTIVITY'] = vars[V.PREFACTIVITY.name][random.randrange(len(vars[V.PREFACTIVITY.name]))]
+    vars['PREFACTIVITY'] = vars[V.PREFACTIVITY.name]
     print(vars['PREFACTIVITY'])
     return
 
 def get_WHYNOT(vars: Dict[str, Any]):
-    vars['WHYNOT'] = vars[V.WHYNOT.name][random.randrange(len(vars[V.WHYNOT.name]))]
+    vars['WHYNOT'] = vars[V.WHYNOT.name]
     print(vars['WHYNOT'])
     return
 
@@ -458,6 +430,7 @@ class MacroGPTJSON(Macro):
         examples = f'{self.full_ex} or {self.empty_ex} if unavailable' if self.empty_ex else self.full_ex
         prompt = f'{self.request} Respond in the JSON schema such as {examples}: {ngrams.raw_text().strip()}'
         output = gpt_completion(prompt)
+        print(output)
         if not output: return False
 
         try:
@@ -476,37 +449,36 @@ class MacroGPTJSON(Macro):
 class MacroNLG(Macro):
     def __init__(self, generate: Callable[[Dict[str, Any]], str]):
         self.generate = generate
-
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
         return self.generate(vars)
 class MacroRandomMuscle(Macro):
+    """Fix"""
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
-        with open('file_path') as ont_file:
+        with open('/Users/kristen/PycharmProjects/GymBrOT/resources/ontology_workouts.json') as ont_file:
             ont_file = ont_file.read()
             parsed_file = json.loads(ont_file)
             musc_groups = parsed_file["ontology"]["muscle groups"]
-            group = list(musc_groups.items())[random.randrange(len(musc_groups))]
+            group = musc_groups[random.randrange(len(musc_groups))]
             group = musc_groups[group]
             musc = list(group.items())[random.randrange(len(group))]
-        return musc
-
+            return musc
 macros = {
     'VISITS': MacroVisits(),
     'ACTIVITYLEVEL':MacroGPTJSON(
         'Is this person agreeing that they are a gym rat? Respond with yes, no, or maybe, unless they are confused by the question. In that case they are "confused"',
-        {V.ACTIVITYLEVEL.name: ["yes", "no", "maybe", "confused"]}),
+        {V.ACTIVITYLEVEL.name: "yes"}, {V.ACTIVITYLEVEL.name:"N/A"}),
     'FITNESSLEVEL': MacroGPTJSON(
         'How physically fit/swole is this person on a scale of 0 through 10 with 10 being the highest?',
-        {V.FITNESSLEVEL.name: ["1", "2", "confused"]}),
+        {V.FITNESSLEVEL.name:"1"},{V.FITNESSLEVEL.name:"N/A"} ),
     'ACTIVITYFREQ': MacroGPTJSON(
         'How many times a week does a person go to the gym, with 0 being never, 1 or 2 being low, less than 5 being mid, less than 8 being high, and greater than 8 being swole. They may go more than once per day',
-        {V.ACTIVITYFREQ.name: ["never", "low", "swole"]}),
+        {V.ACTIVITYFREQ.name: "never"}, {V.ACTIVITYFREQ.name:"N/A"}),
     'PREFACTIVITY': MacroGPTJSON(
         'What activity does the person do to exercise?',
-        {V.PREFACTIVITY.name: ["lifting", "cardio", "yoga", "stretching", "confused","nothing"]}),
+        {V.PREFACTIVITY.name: "lifting"}, {V.PREFACTIVITY.name:"N/A"}),
     'WHYNOT': MacroGPTJSON(
         'Why does this person not go to the gym?',
-        {V.WHYNOT.name: ["judgement", "safety", "busy","disability"]}),
+        {V.WHYNOT.name: ["judgement", "safety", "busy","disability"]}, {V.WHYNOT.name:[]}),
     'GETNAME': MacroGetName(),
     'SETINITMOOD': MacroSETINITMOOD(),
     'GETINITMOOD': MacroNLG(get_INITMOOD),
@@ -519,7 +491,7 @@ macros = {
         'Is this user positive, negative, or neutral?',
         {V.INITMOOD.name: ["positive", "negative", "neutral"]}),
     'GREETING': MacroGreeting,
-    'RANDOM_MUSCLE': MacroRandomMuscle
+    'RANDOM_MUSCLE': MacroRandomMuscle()
 }
 
 
