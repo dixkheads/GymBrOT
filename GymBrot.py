@@ -82,18 +82,54 @@ newuser_transitions= {
     'state': 'new_user',
     '`So are you a gym rat, or nah?`':{
         '#ACTIVITYLEVEL #GETACTIVITYLEVEL':{
-            '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.\n A gym rat just like spends their free time in the gym. Like me!\n If you ever need me to explain something like that, just ask bro.`': {
+            '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.\n A gym rat '
+            'just like spends their free time in the gym. Like me!\n If you ever need me to explain something like '
+            'that, just ask bro.`': {
                 'error':{
                     '`Any time bro. I’m like your spotter but for knowledge.`':'new_user'
                 }
             },
-            '#IF($ACTIVITYLEVEL=yes) `Nice… I’m not sure why I asked, because just by looking at the size of your #RANDOM_MUSCLE I could tell. I just hit legs earlier today… can you tell?`':'new_user',
-            '#IF($ACTIVITYLEVEL=no)`todo`':'end',
-            '#IF($ACTIVITYLEVEL=maybe)':'`todo`',
+            '#IF($ACTIVITYLEVEL=yes) `Nice… I’m not sure why I asked, because just by looking at the size of your` '
+            '#RANDOM_MUSCLE `I could tell. I just hit legs earlier today… can you tell?`': {
+                '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [you, know], right, '
+                'correct, true, factual, facts, def, always, [i, can], totally}]': {
+                    '`Thanks bro I work hard to look this good… and be healthy!`':'new_user'
+                },
+                '[{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, havent}]': {
+                    '`Aw bro… we should be hyping each other up, not putin each other down. I thought you\'d know '
+                    'that.`':'new_user'
+                },
+                '[{computer, bot, metal, code}]':{
+                    '`What do you mean I\'m a computer… Error 404: Incompatible hardware detected. System shutoff '
+                    'initiated… hahaha just messing with you bro. Just because I\'m a computer doesn\'t mean I don\'t '
+                    'have a healthy lifestyle and sick muscles.`':'new_user'
+                }
+
+                },
+            '#IF($ACTIVITYLEVEL=no)`Hey bro, I don\'t judge. But if you don\'t mind me asking, why don\'t you go to '
+            'the gym?`':'whynot',
+            '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no activity. Do you feel '
+            'like you go to the gym as often as you\'d like?`': {
+                '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [you, know], right, '
+                'correct, true, factual, facts, def, always, [i, can], totally, enough, often, like}]': {
+                    '`That’s what\'s up then bro! It\'s about whatever works best for you.`':'new_user'
+                },
+                '[{no, nope, nah, not, dont, [im, not], never, negative}]': {
+                    '`It happens bro, sometimes life and just stuff gets in the way. But if you don’t mind me asking, '
+                    'why aren’t you hitting the gym as often as you/’d like?`':'whynot'
+                },
+                'error':{
+                    '`I gotchu bro.`':'new_user'
+                }
+
+            },
             'error':{
-                '`todo`':'end'
+                '`felt that, bro`':'new_user'
             }
 
+        },
+        'error':{
+            '`Oh. Gotchu bro.`':'new_user'
         }
     },
     '#GATE`Helping fresh gym rats figure out their routine gets me pumped!\n On a scale of 1-10, how swole are you?`':{
@@ -483,7 +519,7 @@ macros = {
         'Is this user positive, negative, or neutral?',
         {V.INITMOOD.name: ["positive", "negative", "neutral"]}),
     'GREETING': MacroGreeting,
-    'RANDOMMUSCLE': MacroRandomMuscle
+    'RANDOM_MUSCLE': MacroRandomMuscle
 }
 
 
