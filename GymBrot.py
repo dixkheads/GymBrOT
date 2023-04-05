@@ -82,12 +82,18 @@ newuser_transitions= {
     'state': 'new_user',
     '`So are you a gym rat, or nah?`':{
         '#ACTIVITYLEVEL #GETACTIVITYLEVEL':{
-                '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.\n A gym rat just like spends their free time in the gym. Like me!\n If you ever need me to explain something like that, just ask bro.`': {
-                    'error':{
-                        'Any time bro. I’m like your spotter but for knowledge.':'new_user'
-                    }
-                },
-                '#IF($ACTIVITYLEVEL=never)`Test`': 'new_user'
+            '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.\n A gym rat just like spends their free time in the gym. Like me!\n If you ever need me to explain something like that, just ask bro.`': {
+                'error':{
+                    '`Any time bro. I’m like your spotter but for knowledge.`':'new_user'
+                }
+            },
+            '#IF($ACTIVITYLEVEL=yes) `Nice… I’m not sure why I asked, because just by looking at the size of your #RANDOM_MUSCLE I could tell. I just hit legs earlier today… can you tell?`':'new_user',
+            '#IF($ACTIVITYLEVEL=no)`todo`':'end',
+            '#IF($ACTIVITYLEVEL=maybe)':'`todo`',
+            'error':{
+                '`todo`':'end'
+            }
+
         }
     },
     '#GATE`Helping fresh gym rats figure out their routine gets me pumped!\n On a scale of 1-10, how swole are you?`':{
@@ -437,12 +443,22 @@ class MacroNLG(Macro):
 
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
         return self.generate(vars)
+class MacroRandomMuscle(Macro):
+    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+        with open('file_path') as ont_file:
+            ont_file = ont_file.read()
+            parsed_file = json.loads(ont_file)
+            musc_groups = parsed_file["ontology"]["muscle groups"]
+            group = list(musc_groups.items())[random.randrange(len(musc_groups))]
+            group = musc_groups[group]
+            musc = list(group.items())[random.randrange(len(group))]
+        return musc
 
 macros = {
     'VISITS': MacroVisits(),
     'ACTIVITYLEVEL':MacroGPTJSON(
-        'How often does this person go to the gym?',
-        {V.ACTIVITYLEVEL.name: ["yes", "never", "occasionally","exercise other places", "confused"]}),
+        'Is this person agreeing that they are a gym rat? Respond with yes, no, or maybe, unless they are confused by the question. In that case they are "confused"',
+        {V.ACTIVITYLEVEL.name: ["yes", "no", "maybe", "confused"]}),
     'FITNESSLEVEL': MacroGPTJSON(
         'How physically fit/swole is this person on a scale of 0 through 10 with 10 being the highest?',
         {V.FITNESSLEVEL.name: ["1", "2", "confused"]}),
@@ -466,7 +482,8 @@ macros = {
     'INITMOOD': MacroGPTJSON(
         'Is this user positive, negative, or neutral?',
         {V.INITMOOD.name: ["positive", "negative", "neutral"]}),
-    'GREETING': MacroGreeting
+    'GREETING': MacroGreeting,
+    'RANDOMMUSCLE': MacroRandomMuscle
 }
 
 
