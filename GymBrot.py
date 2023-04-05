@@ -151,8 +151,7 @@ newuser_transitions= {
             '#IF($FITNESSLEVEL=5)': 'mid',
             '#IF($FITNESSLEVEL=6)': 'mid',
             '#IF($FITNESSLEVEL=7)': 'mid',
-            'state':'swole',
-            '#IF($FITNESSLEVEL=8)`Hell yeah, a bro who knows that gains are life!`': 'new_user',
+            'state':'swole', '#IF($FITNESSLEVEL=8)`Hell yeah, a bro who knows that gains are life!`': 'new_user',
             '#IF($FITNESSLEVEL=9)': 'swole',
             '#IF($FITNESSLEVEL=10)': 'swole',
             '#IF($FITNESSLEVEL=confused)': {
@@ -459,8 +458,8 @@ class MacroRandomMuscle(Macro):
             parsed_file = json.loads(ont_file)
             musc_groups = parsed_file["ontology"]["muscle groups"]
             group = musc_groups[random.randrange(len(musc_groups))]
-            group = musc_groups[group]
-            musc = list(group.items())[random.randrange(len(group))]
+            group = parsed_file["ontology"][group]
+            musc = group[random.randrange(len(group))]
             return musc
 macros = {
     'VISITS': MacroVisits(),
