@@ -6,7 +6,7 @@ from emora_stdm import DialogueFlow, Macro, Ngrams
 import pickle, os, time, json, requests, re
 import regexutils
 #os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
-os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
+#os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 #This is a test to see if it has pushed
 model = 'gpt-3.5-turbo'
 def save(df: DialogueFlow, varfile: str):
@@ -35,12 +35,12 @@ class V(Enum):
 
 intro_transitions = {
     'state':'start',
-        '#VISITS`Hey bro, I’m GymBrOT, but you can call me Gym for short! You feelin pumped today?!?!`':{
+        '#VISITS`Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? Anyway dude, you ready to grind today?!?!`':{
             '#INITMOOD #SETINITMOOD': {
                 '`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
                     'state': 'offer',
                     '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, {are, know}], right, correct, true, factual, facts, def, always, [i, have], totally}]': {
-                        '`Nice bro! Don’t think I didn’t notice those gains!\n`': 'name'
+                        '`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`': 'name'
                     },
                     '[{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, havent}]': {
                         '`Bro.. you got to get on that, but don’t worry bro I can help with that!\n`': 'name'
@@ -49,9 +49,14 @@ intro_transitions = {
                         '`Hold up bro, I couldn\'t catch your vibe. Can you say that again?`': 'offer'
                     }
                 },
-                '#IF($INITMOOD=negative)`That’s tough bro. You know what I heard?\n Going to the gym is like '
-                'scientifically proven to help improve your mood or whatever. Have you been workin on your gains?`':
-                    'offer',
+                '#IF($INITMOOD=negative)`That’s tough bro. Hopefully it\'s not because of your finals... I\'m sorry if I started off too strong bro.`': {
+                    '[{okay, fine, [no, worries], [don\'t, worry]}]': {  # supposed to be forgiveness
+                        '`Thanks dude! You know what I heard? Going to the gym is like scientifically proven to help improve your mood. Have you been workin on your gains?\n`': 'offer'
+                        }
+                    },
+                    '[{thanks, work, try}]': {  # supposed to be non-forgiveness
+                        '`Yeah dude, I\'ll work on that. But you know, that\'s what I\'m all about! Working to better myself. Enough about me though, you know going to the gy is scientifically proven to help improve your mood. Have you been workin on your gains?\n`': 'offer'
+                },
                 '#IF($INITMOOD=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do '
                 'when I feel off, hit the gym! Have you been workin on your gains?`': 'offer'
      }
@@ -65,7 +70,21 @@ name_transitions = {
         '#GETNAME': {
             'state':'got_name',
             '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': 'check-up',
-            '#IF($RETURNUSER=False)`I don\'t think we\'ve met before. Let me learn a little bit more about you...\n`': 'new_user'
+            '#IF($RETURNUSER=False)`Yeah...`#GETNAME `I like the ring of that! The`#GETNAME`dawg haha! How do like your new nickname?`': {
+                '[{great, good, love}]': {
+                    '`My bros tell me I\'m the best at comin up with nicknames. Like, dude, whenever someone new joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
+                        '[{cool, impressive, interesting}]': {
+                            '`Yeah, it is pretty cool. We haven\t met before, have we bro? I bet you have a bunch of sick talents I don\'t even know about yet! Let me learn a little more about you...\n`': 'new_user'
+                        },
+                        '[{okay, weird}]': {
+                            '`Oh... I thought you\'d be a little more impressed. That\'s cool though bro. But I get it, you\'re ready for me to learn a bit more about you!`': 'new_user'
+                        }
+                    }
+                },
+                '[{no, not, bad, sucky, sucks}]': {
+                    '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. We\'ll stick with`#GETNAME` Enough about names. I want to learn some more about you, bro!`': 'new_user'
+                }
+            }
         },
         'error':{
             'Wait bro... are you sure that\'s your name? Like, what do people call you?': {
@@ -80,23 +99,72 @@ name_transitions = {
 
 newuser_transitions= {
     'state': 'new_user',
-    '`So are you a gym rat, or nah?`':{
-        '#ACTIVITYLEVEL #GETACTIVITYLEVEL':{
-            '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.\n A gym rat just like spends their free time in the gym. Like me!\n If you ever need me to explain something like that, just ask bro.`': {
-                'error':{
-                    '`Any time bro. I’m like your spotter but for knowledge.`':'new_user'
+    '`So are you a gym rat, or nah?`': {
+        '#ACTIVITYLEVEL #GETACTIVITYLEVEL': {
+            '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.\n A gym rat just like spends A LOT their free time in the gym. Like me!\n If you ever need me to explain something like that, just ask bro.`': {
+                'error': {
+                    '`Any time bro. I’m like your spotter but for knowledge.`': 'new_user'
                 }
             },
-            '#IF($ACTIVITYLEVEL=yes) `Nice… I’m not sure why I asked, because just by looking at the size of your #RANDOM_MUSCLE I could tell. I just hit legs earlier today… can you tell?`':'new_user',
-            '#IF($ACTIVITYLEVEL=no)`todo`':'end',
-            '#IF($ACTIVITYLEVEL=maybe)':'`todo`',
-            'error':{
-                '`todo`':'end'
+            '#IF($ACTIVITYLEVEL=yes) `Nice… I’m not sure why I asked, because just by looking at the size of your` #RANDOM_MUSCLE `I could tell. I just hit legs earlier today… can you tell?`': {
+                '[{yes, absolutley, yeah, ya, ye, yea, totally, big, huge}]': {
+                    '`Thanks bro, I work hard to look this good... and be healthy!`': 'getting_level'
+                },
+                '[{no, nope, small, bigger, puny}]': {
+                    '`Aw bro… we should be hyping each other up, not putin each other down. You\'re better than that.`': {
+                        '[{sorry, forgive, {my, bad}}]': {
+                            '`It\'s okay, You\'re my bro, and sometimes bros say things they really don\'t mean. You didn\'t mean it, right bro?`': {
+                                '[{no}]': {
+                                    '`Perfecto brochaco, then we can move on with this bromance!`': {  # not super sure if this counts as mock spanish, honestly it probably does.
+                                        '[{yes}]': {
+                                            '`I still need to get to know you better... oh I know!`': 'getting_level'
+                                        },
+                                        '[{no}]': {
+                                            '`Sorry bro, you\'re right we don\'t really know each other like that yet. I still need to get to know you better... oh I know!`': 'getting_level'
+                                        },
+                                        '[{what is a bromance}]': {
+                                            '`Oh sorry bro! I didn\'t mean to confuse you. A bromance is a close platonic relationship between two bros! If I ever say something that confuses you, feel free to ask what I mean!': 'getting_level' #  probably not the best transition
+                                        }
+                                    }
+                                },
+                                '[{yes}]': {
+                                    '`Okay bro... either you\'re being brutally honest with me, or you\'re messing with me, but bro to bro I don\'t think I want to know which one it is. Let\'s just move on.`': 'getting_level'
+                                }
+                            }
+                        },
+                        '[{not, {better, sorry}}]': {
+                            '`Okay bro... low blow, but we\'ll move past it.`': 'getting level'
+                        }
+                    }
+                },
+                '[{computer}]': {
+                    '`What do you mean I\'m a computer… Error 404: Incompatible hardware detected. System shutoff initiated… hahaha just messing with you bro. Just because I\'m a computer doesn\'t mean I don\'t have a healthy lifestyle and sick muscles.`': {
+                        '{.}': {
+                            'It\'s okay... this isn\'t that important so, let\'s just change the topic, bro.\n`': 'getting_level'
+                        }
+                    }
+                }
+            },
+            '#IF($ACTIVITYLEVEL=no)`Hey bro, I don’/t judge. But if you don/’t mind me asking, why don/’t you go to the gym?\n`': 'whynot',
+            '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no activity. Do you feel like you go to the gym as often as you/’d like?\n`': {
+                'state': 'activityanswer',
+                '[{yes}]': {
+                    '`That\'s what\'s but then bro! It\'s about whatever works best for you.`': 'getting_level'
+                },
+                '[{no}]': {
+                    '`It happens bro, sometimes life and stuff gets in the way. But if you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`': 'whynot'
+                },
+                'error': {
+                    'Hey bro, sometimes these things are difficult to talk about, and I get it... or maybe I just didn\'t understand you dude. Could you repeat that?': 'activityanswer'
+                }
+            },
+            '#IF(ACTIVITYLEVEL=notgym) `Bro exercisin outside of the gym is a totally valid option. Do you feel like you workout as much as you\'d like to?`': 'activityanswer',  # I think this preferring to workout at home as apposed to working out at gym will need to be added
+            'error': {  # not sure if this is correct, sorry everyone
+                '`Hey bro, it\'s kind of an easy yes no question.`': 'new_user'
             }
-
         }
     },
-    '#GATE`Helping fresh gym rats figure out their routine gets me pumped!\n On a scale of 1-10, how swole are you?`':{
+    '#GATE`Helping gym rats figure out their routine gets me pumped!\n On a scale of 1-10, how swole are you?`': {
         'state':'getting_level',
         '#FITNESSLEVEL #GETFITNESSLEVEL':{
             '#IF($FITNESSLEVEL=0)': {
