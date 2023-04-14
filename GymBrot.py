@@ -598,23 +598,28 @@ class MacroSETINITMOOD(Macro):
 class MacroSaveUser(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
         df = pd.read_csv(USERDATA_ADDR)
-        firstname = df['firstname']
-        lastname = df['lastname']
+        firstname = vars['firstname']
+        lastname = vars['lastname']
         user_data = df[(df['firstname'] == firstname) & (df['lastname'] == lastname)]
         if user_data.empty:
-            # If user not found, create a new row with the user data
-            new_user_data = pd.Series(self.vars, name=len(df))
-            new_user_data['firstname'] = firstname
-            new_user_data['lastname'] = lastname
-            df = df.append(new_user_data)
-            df.to_csv(USERDATA_ADDR, index=False)
-            print("User data saved successfully.")
+            # If user not found, create a new row in the dataframe
+            new_user = {'firstname': firstname, 'lastname': lastname}
+            for column_name in vars.keys():
+                if column_name in df.columns:
+                    new_user[column_name] = vars[column_name]
+            df = df.append(new_user, ignore_index=True)
+            print("New user added successfully.")
         else:
-            # If user found, update the row with the user data
+            # If user found, update the existing row with vars values
             user_index = user_data.index[0]
-            df.loc[user_index, self.vars.keys()] = self.vars.values()
-            df.to_csv(USERDATA_ADDR, index=False)
+            for column_name in vars.keys():
+                if column_name in df.columns:
+                    df.at[user_index, column_name] = vars[column_name]
             print("User data updated successfully.")
+
+            # Save the updated dataframe back to the CSV file
+        df.to_csv(USERDATA_ADDR, index=False)
+
         return True
 
 def gpt_completion(input: str, regex: Pattern = None) -> str:
