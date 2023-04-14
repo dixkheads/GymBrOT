@@ -22,6 +22,7 @@ def load(df: DialogueFlow, varfile: str):
     d = pickle.load(open(varfile, 'rb'))
     df.vars().update(d)
 
+
 df = DialogueFlow('start', end_state='end')
 
 if(os.path.exists('resources/gymbrot.pkl')):
@@ -459,6 +460,7 @@ class MacroGetName(Macro):
         # return True
 
         self.load_user(firstname, lastname)
+        return True
 
 class MacroVisits(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
@@ -588,10 +590,33 @@ class MacroRec(Macro):
 class MacroSETINITMOOD(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
         vars['INITMOOD'] = get_INITMOOD(vars)
-        return
+        return True
 
 
-        return rec
+        # return rec
+
+class MacroSaveUser(Macro):
+    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+        df = pd.read_csv(USERDATA_ADDR)
+        firstname = df['firstname']
+        lastname = df['lastname']
+        user_data = df[(df['firstname'] == firstname) & (df['lastname'] == lastname)]
+        if user_data.empty:
+            # If user not found, create a new row with the user data
+            new_user_data = pd.Series(self.vars, name=len(df))
+            new_user_data['firstname'] = firstname
+            new_user_data['lastname'] = lastname
+            df = df.append(new_user_data)
+            df.to_csv(USERDATA_ADDR, index=False)
+            print("User data saved successfully.")
+        else:
+            # If user found, update the row with the user data
+            user_index = user_data.index[0]
+            df.loc[user_index, self.vars.keys()] = self.vars.values()
+            df.to_csv(USERDATA_ADDR, index=False)
+            print("User data updated successfully.")
+        return True
+
 def gpt_completion(input: str, regex: Pattern = None) -> str:
     response = openai.ChatCompletion.create(
         model='gpt-3.5-turbo',
