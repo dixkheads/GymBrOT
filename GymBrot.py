@@ -5,10 +5,13 @@ from enum import Enum
 from emora_stdm import DialogueFlow, Macro, Ngrams
 import pickle, os, time, json, requests, re
 import regexutils
+import pandas as pd
+import numpy as np
 #os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 #os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 #This is a test to see if it has pushed
 model = 'gpt-3.5-turbo'
+USERDATA_ADDR = "resources/userdata.csv"
 def save(df: DialogueFlow, varfile: str):
     df.run()
     d = {k: v for k, v in df.vars().items() if not k.startswith('_')}
@@ -405,6 +408,20 @@ global_transitions={
 
 
 class MacroGetName(Macro):
+    def load_user(self, firstname, lastname):
+        df = pd.read_csv(USERDATA_ADDR)
+        user_data = df[(df['firstname'] == firstname) & (df['lastname'] == lastname)]
+        if user_data.empty:
+            print("User not found.")
+            vars['RETURNUSER'] = 'False'
+        else:
+            user_data = user_data.iloc[0]
+            column_names = df.columns
+            for column_name in column_names:
+                self.vars[column_name] = user_data[column_name]
+            print("User data loaded successfully.")
+            vars['RETURNUSER'] = 'True'
+
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
         r = re.compile(r"(?:(?:(?:you can |my friends )?call me)|(?:it(s| is))|(?:i(m| am))|(?:my name is)|(?:i go by))?(?:^|\s)(mr|mrs|ms|dr)?(?:^|\s)([a-z']+)(?:\s([a-z']+))?")
         m = r.search(ngrams.text())
@@ -433,13 +450,15 @@ class MacroGetName(Macro):
             firstname = m.group(4)
             completeName = firstname
 
-        if completeName in vars['NAME']:
-            vars['RETURNUSER'] = 'True'
-            vars['NAME'].append(completeName)
-        else:
-            vars['RETURNUSER'] = 'False'
-            vars['NAME'].append(completeName)
-        return True
+        # if completeName in vars['NAME']:
+        #     vars['RETURNUSER'] = 'True'
+        #     vars['NAME'].append(completeName)
+        # else:
+        #     vars['RETURNUSER'] = 'False'
+        #     vars['NAME'].append(completeName)
+        # return True
+
+        self.load_user(firstname, lastname)
 
 class MacroVisits(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
