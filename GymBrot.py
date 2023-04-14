@@ -88,7 +88,7 @@ name_transitions = {
         },
         'error':{
             'Wait bro... are you sure that\'s your name? Like, what do people call you?': {
-                '#GETNAME':{
+                '#GETNAME': {
                     '': 'got_name'
                 },
                 'error':'end'
@@ -165,7 +165,7 @@ newuser_transitions= {
         }
     },
     '#GATE`Helping gym rats figure out their routine gets me pumped!\n On a scale of 1-10, how swole are you?`': {
-        'state':'getting_level',
+        'state': 'getting_level',
         '#FITNESSLEVEL #GETFITNESSLEVEL':{
             '#IF($FITNESSLEVEL=0)': {
                 '`I gotchu bro. Everyone starts from somewhere. Is there a reason why you aren\'t hitting the gym?`':'whynot'
@@ -182,7 +182,7 @@ newuser_transitions= {
                 'state':'mid',
                 '`Ok, I see you! Are you trying to level up, dude?`':{
                     '{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, '
-                    'are], right, correct, true, factual, facts, def, always, [i, have], know}':{
+                    'are], right, correct, true, factual, facts, def, always, [i, have], know}': {
                         '`ok! so what\'s holding you back from leveling up, bro?v': 'whynot'
                     },
                     '{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, havent}':{
@@ -254,6 +254,113 @@ newuser_transitions= {
     'error' : {
         'I see I see':'new_user'
     }
+}
+whynot_transitions = {
+    'state': 'whynot',
+    '#IF($WHYNOT=judgement)': {
+        '`Yo, bro I hear you. Can I be real with you for a sec? It is completely normal to have some anxiety about going to the gym. I know we don\'t know each other like that so I won\'t push you to discuss it more, but if you want I can give you some advice.`': {
+            '[{yes, sure, yeah}]': {
+                '`Okay, bro, for sure. It/’s good to start small. Just go and do a short workout. if the vibe is right, you can keep going for longer sets as you get more comfortable. Like bro, think about it this way. When you start lifting you don/’t max out the weight immediately, right? We have to start with five or ten pounds and as we get more comfortable we keep adding on. You following me, dude?`': {
+                    '[{yes}]': {
+                        '`Great! Does that sound like something you could do bro?`': {
+                            '[{yes}]': {
+                                '`I\'m glad I could help bro. I have some more ideas if you\'d like me to drop these knowledge bombs on you.`': {
+                                    '[{yes, drop}]': {
+                                        '`Bringin a couple of your homies to the gym may also be helpful. If they are gym rats they can help you learn how to use the machines or practice your form, and even if they aren\'t they can just help support you if you\'re feeling out of place bro.`': {
+                                            '[{good idea}]': {
+                                                '`Thanks, bro. Man, I\'m on a role, I can feel my temporalis is working up a sweat. But seriously bro, it\'s important to remember that everyone is at the gym to work on themselves. None of the homies in the gym are there to judge. And I know, it\'s easier said than done to just not worry about what our bros think of us, but with a little practice and time spent in the gym, I think you\'ll feel much more comfortable, bro.`': {
+                                                    '[{thank you}]': {
+                                                        '`No problem bro! Oh wait, I almost forgot, sometimes just having a plan for what you\'ll do in the gym can releave some of that stress, because, you\'ll like know what to do! If you want I can help you plan out that workout so you can start getting those gains.`': {
+                                                            '[yes]': 'schedule', # come back to this I don't know the name of the transtion
+                                                            '[{no, maybe}]': {
+                                                                '`You\'re the bos, bro. We can come back to that later, but for now is there any other reason you aren\'t hittin the gym?`': 'whynot'
+                                                        }
+                                                    },
+                                                    '[{not convinced}]': {
+                                                        '`Totally valid, bro. Like I said it\'s easier said than done. You know what\'s something that might help you bro? Having a plan for what you\'ll do in the gym. Some of my bros say it helps relieve their stress because they know exactly what they want to do when they get to the gym! If you want, I can help you plan out that workout do you can start getting those gains.`': {
+                                                            '[yes]': 'schedule', # come back to this I don't know the name of the transtion
+                                                            '[{no, maybe}]': {
+                                                                '`You\'re the bos, bro. We can come back to that later, but for now is there any other reason you aren\'t hittin the gym?`': 'whynot'
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            '[{bad idea}]': {
+                                                '`Okay, okay, lone wolf type of vibe, I get you, hahaha. But, really if you don\'t want to bring anyone to the gym, that\'s fine. But, bro, just in general,  it\'s important to remember that everyone is at the gym to work on themselves. None of the homies in the gym are there to judge. And I know, it\'s easier said than done to just not worry about what our bros think of us, but with a little practice and time spent in the gym, I think you\'ll feel much more comfortable, bro.`'
+                                            }
+                                        }
+                                    },
+                                    '[{no}]': {
+                                        '`That\'s cool bro. I\'ve given you all the advice you need, haha. Before we move on, is there any other reason why you\'re not hittin the gym as much as you\'d like?`': 'whynot'
+                                    }
+                                }
+                            },
+                           '[{no}]':
+                        }
+                    },
+                    '[{no}]':
+                }
+            },
+            '[{no}]': {
+                '`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`': 'global_transition'
+
+                }
+            }
+        },
+    '#IF($WHYNOT=safety)': {
+
+    },
+    '#IF($WHYNOT=busy)': {
+        '`I get it bro, sometimes life gets in the way. Espically right now bro, I\'m sure you\'re swamped with work because the semester is ending.': {
+            '{yes}': {
+                '`Tell me about it bro... but seriously when I first started going the gym, it was pretty low on my priority list, so when things got busy, and life got in the way, it was always the first thing in my schedule to go. But bro, being totally real with you, workin out just makes me feel so much better, so I have to make time for it! If you want I can help you manage your time better so you can make it to the gym, but before that I gotta know, is there any other reason you\'re not going to the gym?`': 'whynot'
+            },
+            '{no}': {
+                '`Really? Lucky you, bro. But seriously, when I first started going the gym, it was pretty low on my priority list, so when things got busy, and life got in the way, it was always the first thing in my schedule to go. But bro, being totally real with you, workin out just makes me feel so much better, so I have to make time for it! If you want I can help you manage your time better so you can make it to the gym, but before that I gotta know, is there any other reason you\'re not going to the gym?`': 'whynot'
+            }
+        }
+    },
+    '#IF($WHYNOT=disability)': {
+
+    },
+    '#IF($WHYNOT=cost)': {
+        '`That\'s real bro. I understand times can be tough. Depending on where you live, some colleges, universities, apartment complexes, and even some offices have gyms that you can use for free!`'
+            '[not know]': {
+                '`Hey bro, no shame in that. Do you think you might have access to something like that?`': {
+                    '{yes}': {
+                        '`Perfect! Before we move on bro, is there any other reason that\'s been keeping you out of the gym?': 'whynot'
+                    },
+                    '{no}': 'costno'
+                }
+            },
+            '[knew but no access]': {
+                'state:costno `Oof, bro, I thought I was gamin the system. Oh! I just remembered bro, some public parks also have access to some gym-like equipment. If you\'re really set on using equipment, this could be a good alternative bro!`': {
+                    '{good idea}': {
+                        '`Thanks bro. As one of your homies, I want to find solutions that work for you! But bro, there are plenty of workouts you can do without equipment, by using your body weight instead. If you didn\'t know bro, these exercises are called calisthenics. Would that be something you\'re interested in?`': {
+                            '{yes}': {
+                                '`Nice bro! You know, I can help you make a workout using calisthenics. I\'m a beast at making workout plans!`': 'schedule' # probably will need to fix this transition
+                            },
+                            'state:costno2{no}': {
+                                '`Okay bro... well there are other exercies you can do that don\'t require equipment and aren\t consider calisthenics like cardio, would you be interested in something like that?': {
+                                    '{yes}': {
+                                        '`Nice bro! You know, I can help you make a workout without using calisthenics or equipment. I\'m a beast at making workout plans!`': 'schedule' # probably will need to fix this transition
+                                    },
+                                    '`Hm... bro, it\'s sounding like there may be another reason why you\'re not going to the gym.`': 'whynot'
+                                }
+                            }
+                        }
+                    },
+                    '{bad idea}': {
+                        '`Not your style, I get it, bro. But to be real with you, there are plenty of workouts you can do without equipment, by using your body weight instead. If you didn\'t know bro, these exercises are called calisthenics. Would that be something you\'re interested in?`': 'costno2'
+                    }
+                }
+            }
+    },
+    '#IF($WHYNOT=no)': {
+        '`Hey bro, that\'s totally cool, let\'s talk about something else. What would you like to talk about bro?`': 'chatting'
+    }
+        }
 
 }
 emotional_transitions = {
@@ -538,7 +645,7 @@ macros = {
         {V.PREFACTIVITY.name: ["lifting", "cardio", "yoga", "stretching", "confused","nothing"]}),
     'WHYNOT': MacroGPTJSON(
         'Why does this person not go to the gym?',
-        {V.WHYNOT.name: ["judgement", "safety", "busy","disability"]}),
+        {V.WHYNOT.name: ["judgement", "safety", "busy", "disability", "cost"]}),
     'GETNAME': MacroGetName(),
     'SETINITMOOD': MacroSETINITMOOD(),
     'GETINITMOOD': MacroNLG(get_INITMOOD),
