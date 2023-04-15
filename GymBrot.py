@@ -7,7 +7,6 @@ import pickle, os, time, json, requests, re
 import regexutils
 import pandas as pd
 import numpy as np
-#os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 #os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 #This is a test to see if it has pushed
 model = 'gpt-3.5-turbo'
@@ -41,7 +40,7 @@ intro_transitions = {
     'state':'start',
         '#VISITS`Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? Anyway dude, you ready to grind today?!?!`':{
             '#INITMOOD #SETINITMOOD': {
-                '`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
+                '#IF($INITMOOD=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
                     'state': 'offer',
                     '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, {are, know}], right, correct, true, factual, facts, def, always, [i, have], totally}]': {
                         '`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`': 'name'
@@ -54,12 +53,12 @@ intro_transitions = {
                     }
                 },
                 '#IF($INITMOOD=negative)`That’s tough bro. Hopefully it\'s not because of your finals... I\'m sorry if I started off too strong bro.`': {
-                    '[{okay, fine, [no, worries], [don\'t, worry]}]': {  # supposed to be forgiveness
+                    '[{okay, fine, [no, worries], [dont, worry]}]': {  # supposed to be forgiveness change to don't
                         '`Thanks dude! You know what I heard? Going to the gym is like scientifically proven to help improve your mood. Have you been workin on your gains?\n`': 'offer'
-                        }
-                    },
+                        },
                     '[{thanks, work, try}]': {  # supposed to be non-forgiveness
                         '`Yeah dude, I\'ll work on that. But you know, that\'s what I\'m all about! Working to better myself. Enough about me though, you know going to the gy is scientifically proven to help improve your mood. Have you been workin on your gains?\n`': 'offer'
+                    }
                 },
                 '#IF($INITMOOD=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do '
                 'when I feel off, hit the gym! Have you been workin on your gains?`': 'offer'
@@ -301,9 +300,11 @@ whynot_transitions = {
                                 }
                             },
                            '[{no}]':
+                           '[{no}]':'end'
                         }
                     },
                     '[{no}]':
+                    '[{no}]':'end'
                 }
             },
             '[{no}]': {
