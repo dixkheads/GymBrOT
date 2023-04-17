@@ -33,6 +33,22 @@ class V(Enum):
     WHYNOT = 6
 
 
+consent_transitions = {
+    'state': 'consent',
+    '`Hello Gym bros! We\'re excited you\'re here and want us to join your fitness journey. Before we begin,`'
+    '`in case of an emergency, or if you are in immediate danger, please contact the appropriate authorities or emergency`'
+    '`services immediately. Additionally, while our chatbot can provide helpful information and guidance, it is not a`'
+    '`substitute for professional medical advice or guidance from a qualified fitness trainer.`'
+    '`Please listen to your body and use your best judgment while exercising. If you are experiencing pain or discomfort`'
+    '`while exercising, please stop immediately and seek guidance from a certified fitness professional.`'
+    '`With that all out of the way, if you understand and wish to continue, please type \"I understand\" now.`': {
+        '[I understand]': {
+            '`Great! Thank you and best of luck on your fitness journey!': 'start'
+        },
+        'error': 'end'
+    }
+}
+
 intro_transitions = {
     'state':'start',
         '#VISITS`Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? Anyway dude, you ready to grind today?!?!`':{
