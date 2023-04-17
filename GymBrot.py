@@ -34,7 +34,7 @@ class V(Enum):
 
 
 consent_transitions = {
-    'state': 'consent',
+    'state': 'start',
     '`Hello Gym bros! We\'re excited you\'re here and want us to join your fitness journey. Before we begin,`'
     '`in case of an emergency, or if you are in immediate danger, please contact the appropriate authorities or emergency`'
     '`services immediately. Additionally, while our chatbot can provide helpful information and guidance, it is not a`'
@@ -43,14 +43,14 @@ consent_transitions = {
     '`while exercising, please stop immediately and seek guidance from a certified fitness professional.`'
     '`With that all out of the way, if you understand and wish to continue, please type \"I understand\" now.`': {
         '[I understand]': {
-            '`Great! Thank you and best of luck on your fitness journey!': 'start'
+            '`Great! Thank you and best of luck on your fitness journey!': 'intro'
         },
         'error': 'end'
     }
 }
 
 intro_transitions = {
-    'state':'start',
+    'state':'intro',
         '#VISITS`Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? Anyway dude, you ready to grind today?!?!`':{
             '#INITMOOD #SETINITMOOD': {
                 '`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
@@ -312,10 +312,10 @@ whynot_transitions = {
                                     }
                                 }
                             },
-                           '[{no}]':
+                           '[{no}]':'end'
                         }
                     },
-                    '[{no}]':
+                    '[{no}]':'end'
                 }
             },
             '[{no}]': {
@@ -681,6 +681,7 @@ df.load_transitions(intro_transitions)
 df.load_transitions(checkup_transitions)
 df.load_transitions(name_transitions)
 df.load_transitions(newuser_transitions)
+df.load_transitions(consent_transitions)
 df.add_macros(macros)
 
 
