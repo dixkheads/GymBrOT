@@ -11,7 +11,7 @@ import numpy as np
 
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
-#os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
+os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 #os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 #This is a test to see if it has pushed
 
@@ -55,7 +55,7 @@ consent_transitions = {
     '`Please listen to your body and use your best judgment while exercising. If you are experiencing pain or discomfort`'
     '`while exercising, please stop immediately and seek guidance from a certified fitness professional.`'
     '`With that all out of the way, if you understand and wish to continue, please type \"I understand\" now.`': {
-        '[I understand]': {
+        '[i understand]': {
             '`Great! Thank you and best of luck on your fitness journey!': 'intro'
         },
         'error': 'end'
@@ -943,8 +943,7 @@ df.load_transitions(consent_transitions)
 df.add_macros(macros)
 
 if __name__ == '__main__':
-    # PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
-    PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
-
+    PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+     #PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'# PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
     openai.api_key_path = PATH_API_KEY
     save(df, 'resources/gymbrot.pkl')
