@@ -73,7 +73,7 @@ name_transitions = {
         '#GETNAME': {
             'state':'got_name',
             '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': 'check-up',
-            '#IF($RETURNUSER=False)`Yeah...`#GETNAME `I like the ring of that! The`#GETNAME`dawg haha! How do like your new nickname?`': {
+            '#IF($RETURNUSER=False)`Yeah...`#GETNAME `I like the ring of that! The`#GETNAME`dawg haha! How do you like your new nickname?`': {
                 '[{great, good, love}]': {
                     '`My bros tell me I\'m the best at comin up with nicknames. Like, dude, whenever someone new joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
                         '[{cool, impressive, interesting}]': {
@@ -533,7 +533,6 @@ class MacroWeather(Macro):
 
 class MacroNameCheck(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
-
         if vars['RETURNUSER'] :
            output = "Last time I recommended " + vars['PREVREC'][vars['NAME'][-1]] +". How did you enjoy it?"
 
@@ -721,8 +720,6 @@ df.add_macros(macros)
 
 
 if __name__ == '__main__':
-    #PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
-    PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
     openai.api_key_path = PATH_API_KEY
     save(df, 'resources/gymbrot.pkl')
 
