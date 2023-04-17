@@ -5,12 +5,10 @@ from enum import Enum
 from emora_stdm import DialogueFlow, Macro, Ngrams
 import pickle, os, time, json, requests, re
 import regexutils
-import pandas as pd
-import numpy as np
+#os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 #os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 #This is a test to see if it has pushed
 model = 'gpt-3.5-turbo'
-USERDATA_ADDR = "resources/userdata.csv"
 def save(df: DialogueFlow, varfile: str):
     df.run()
     d = {k: v for k, v in df.vars().items() if not k.startswith('_')}
@@ -20,7 +18,6 @@ def save(df: DialogueFlow, varfile: str):
 def load(df: DialogueFlow, varfile: str):
     d = pickle.load(open(varfile, 'rb'))
     df.vars().update(d)
-
 
 df = DialogueFlow('start', end_state='end')
 
@@ -36,11 +33,27 @@ class V(Enum):
     WHYNOT = 6
 
 
+consent_transitions = {
+    'state': 'consent',
+    '`Hello Gym bros! We\'re excited you\'re here and want us to join your fitness journey. Before we begin,`'
+    '`in case of an emergency, or if you are in immediate danger, please contact the appropriate authorities or emergency`'
+    '`services immediately. Additionally, while our chatbot can provide helpful information and guidance, it is not a`'
+    '`substitute for professional medical advice or guidance from a qualified fitness trainer.`'
+    '`Please listen to your body and use your best judgment while exercising. If you are experiencing pain or discomfort`'
+    '`while exercising, please stop immediately and seek guidance from a certified fitness professional.`'
+    '`With that all out of the way, if you understand and wish to continue, please type \"I understand\" now.`': {
+        '[I understand]': {
+            '`Great! Thank you and best of luck on your fitness journey!': 'start'
+        },
+        'error': 'end'
+    }
+}
+
 intro_transitions = {
     'state':'start',
         '#VISITS`Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? Anyway dude, you ready to grind today?!?!`':{
             '#INITMOOD #SETINITMOOD': {
-                '#IF($INITMOOD=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
+                '`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
                     'state': 'offer',
                     '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, {are, know}], right, correct, true, factual, facts, def, always, [i, have], totally}]': {
                         '`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`': 'name'
@@ -53,12 +66,12 @@ intro_transitions = {
                     }
                 },
                 '#IF($INITMOOD=negative)`That’s tough bro. Hopefully it\'s not because of your finals... I\'m sorry if I started off too strong bro.`': {
-                    '[{okay, fine, [no, worries], [dont, worry]}]': {  # supposed to be forgiveness change to don't
+                    '[{okay, fine, [no, worries], [don\'t, worry]}]': {  # supposed to be forgiveness
                         '`Thanks dude! You know what I heard? Going to the gym is like scientifically proven to help improve your mood. Have you been workin on your gains?\n`': 'offer'
-                        },
+                        }
+                    },
                     '[{thanks, work, try}]': {  # supposed to be non-forgiveness
                         '`Yeah dude, I\'ll work on that. But you know, that\'s what I\'m all about! Working to better myself. Enough about me though, you know going to the gy is scientifically proven to help improve your mood. Have you been workin on your gains?\n`': 'offer'
-                    }
                 },
                 '#IF($INITMOOD=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do '
                 'when I feel off, hit the gym! Have you been workin on your gains?`': 'offer'
@@ -300,11 +313,9 @@ whynot_transitions = {
                                 }
                             },
                            '[{no}]':
-                           '[{no}]':'end'
                         }
                     },
                     '[{no}]':
-                    '[{no}]':'end'
                 }
             },
             '[{no}]': {
@@ -410,20 +421,6 @@ global_transitions={
 
 
 class MacroGetName(Macro):
-    def load_user(self, firstname, lastname):
-        df = pd.read_csv(USERDATA_ADDR)
-        user_data = df[(df['firstname'] == firstname) & (df['lastname'] == lastname)]
-        if user_data.empty:
-            print("User not found.")
-            vars['RETURNUSER'] = 'False'
-        else:
-            user_data = user_data.iloc[0]
-            column_names = df.columns
-            for column_name in column_names:
-                self.vars[column_name] = user_data[column_name]
-            print("User data loaded successfully.")
-            vars['RETURNUSER'] = 'True'
-
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
         r = re.compile(r"(?:(?:(?:you can |my friends )?call me)|(?:it(s| is))|(?:i(m| am))|(?:my name is)|(?:i go by))?(?:^|\s)(mr|mrs|ms|dr)?(?:^|\s)([a-z']+)(?:\s([a-z']+))?")
         m = r.search(ngrams.text())
@@ -452,15 +449,12 @@ class MacroGetName(Macro):
             firstname = m.group(4)
             completeName = firstname
 
-        # if completeName in vars['NAME']:
-        #     vars['RETURNUSER'] = 'True'
-        #     vars['NAME'].append(completeName)
-        # else:
-        #     vars['RETURNUSER'] = 'False'
-        #     vars['NAME'].append(completeName)
-        # return True
-
-        self.load_user(firstname, lastname)
+        if completeName in vars['NAME']:
+            vars['RETURNUSER'] = 'True'
+            vars['NAME'].append(completeName)
+        else:
+            vars['RETURNUSER'] = 'False'
+            vars['NAME'].append(completeName)
         return True
 
 class MacroVisits(Macro):
@@ -590,38 +584,10 @@ class MacroRec(Macro):
 class MacroSETINITMOOD(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
         vars['INITMOOD'] = get_INITMOOD(vars)
-        return True
+        return
 
 
-        # return rec
-
-class MacroSaveUser(Macro):
-    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
-        df = pd.read_csv(USERDATA_ADDR)
-        firstname = vars['firstname']
-        lastname = vars['lastname']
-        user_data = df[(df['firstname'] == firstname) & (df['lastname'] == lastname)]
-        if user_data.empty:
-            # If user not found, create a new row in the dataframe
-            new_user = {'firstname': firstname, 'lastname': lastname}
-            for column_name in vars.keys():
-                if column_name in df.columns:
-                    new_user[column_name] = vars[column_name]
-            df = df.append(new_user, ignore_index=True)
-            print("New user added successfully.")
-        else:
-            # If user found, update the existing row with vars values
-            user_index = user_data.index[0]
-            for column_name in vars.keys():
-                if column_name in df.columns:
-                    df.at[user_index, column_name] = vars[column_name]
-            print("User data updated successfully.")
-
-            # Save the updated dataframe back to the CSV file
-        df.to_csv(USERDATA_ADDR, index=False)
-
-        return True
-
+        return rec
 def gpt_completion(input: str, regex: Pattern = None) -> str:
     response = openai.ChatCompletion.create(
         model='gpt-3.5-turbo',
