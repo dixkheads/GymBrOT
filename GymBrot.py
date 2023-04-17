@@ -33,21 +33,6 @@ class V(Enum):
     WHYNOT = 6
 
 
-consent_transitions = {
-    'state': 'consent',
-    '`Hello Gym bros! We\'re excited you\'re here and want us to join your fitness journey. Before we begin,`'
-    '`in case of an emergency, or if you are in immediate danger, please contact the appropriate authorities or emergency`'
-    '`services immediately. Additionally, while our chatbot can provide helpful information and guidance, it is not a`'
-    '`substitute for professional medical advice or guidance from a qualified fitness trainer.`'
-    '`Please listen to your body and use your best judgment while exercising. If you are experiencing pain or discomfort`'
-    '`while exercising, please stop immediately and seek guidance from a certified fitness professional.`'
-    '`With that all out of the way, if you understand and wish to continue, please type \"I understand\" now.`': {
-        '[I understand]': {
-            '`Great! Thank you and best of luck on your fitness journey!': 'start'
-        },
-        'error': 'end'
-    }
-}
 intro_transitions = {
     'state':'start',
         '#VISITS`Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? Anyway dude, you ready to grind today?!?!`':{
@@ -278,7 +263,6 @@ whynot_transitions = {
                 '`Okay, bro, for sure. It/’s good to start small. Just go and do a short workout. if the vibe is right, you can keep going for longer sets as you get more comfortable. Like bro, think about it this way. When you start lifting you don/’t max out the weight immediately, right? We have to start with five or ten pounds and as we get more comfortable we keep adding on. You following me, dude?`': {
                     '[{yes}]': {
                         '`Great! Does that sound like something you could do bro?`': {
-                            'state': 'judgement1',
                             '[{yes}]': {
                                 '`I\'m glad I could help bro. I have some more ideas if you\'d like me to drop these knowledge bombs on you.`': {
                                     '[{yes, drop}]': {
@@ -312,23 +296,14 @@ whynot_transitions = {
                                     }
                                 }
                             },
-                           '[{no}]': { # for some reason this is breaking everything and I'm not sure why
-                               '`Hey bro, that\'s fine. Maybe you\'ll like some of my other advice. Can I try and drop some more knowledge bombs on you?`': {
-                               }
-                           }
+                           '[{no}]':
                         }
                     },
-                    '[{no}]': {
-                        '`Okay, bro maybe the simile was too much, but the point is don\'t feel pressured to jump in and know exactly how to do everything on your first day. Just start with a few basic things that you maybe do know how to do and work your way up from there homie.`': {
-                            '[{makes sense}]': {
-                                '`Glad I could clear that up, bro. Does that sound like somethin you can do?`': 'judgement1'
-                            }
-                        }
-                    }
+                    '[{no}]':
                 }
             },
             '[{no}]': {
-                '`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else keepin you out of the gym?`': 'whynot'
+                '`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`': 'global_transition'
 
                 }
             }
@@ -360,8 +335,7 @@ whynot_transitions = {
                 }
             },
             '[knew but no access]': {
-                'state': 'costno',
-                '`Oof, bro, I thought I was gamin the system. Oh! I just remembered bro, some public parks also have access to some gym-like equipment. If you\'re really set on using equipment, this could be a good alternative bro!`': {
+                'state:costno `Oof, bro, I thought I was gamin the system. Oh! I just remembered bro, some public parks also have access to some gym-like equipment. If you\'re really set on using equipment, this could be a good alternative bro!`': {
                     '{good idea}': {
                         '`Thanks bro. As one of your homies, I want to find solutions that work for you! But bro, there are plenty of workouts you can do without equipment, by using your body weight instead. If you didn\'t know bro, these exercises are called calisthenics. Would that be something you\'re interested in?`': {
                             '{yes}': {
