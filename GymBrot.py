@@ -5,11 +5,16 @@ from enum import Enum
 from emora_stdm import DialogueFlow, Macro, Ngrams
 import pickle, os, time, json, requests, re
 import regexutils
+
 import pandas as pd
 import numpy as np
 
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
+#os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
+#os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
+#This is a test to see if it has pushed
+
 model = 'gpt-3.5-turbo'
 USERDATA_ADDR = "resources/userdata.csv"
 
@@ -41,8 +46,24 @@ class V(Enum):
     WHYNOT = 6
 
 
-intro_transitions = {
+consent_transitions = {
     'state': 'start',
+    '`Hello Gym bros! We\'re excited you\'re here and want us to join your fitness journey. Before we begin,`'
+    '`in case of an emergency, or if you are in immediate danger, please contact the appropriate authorities or emergency`'
+    '`services immediately. Additionally, while our chatbot can provide helpful information and guidance, it is not a`'
+    '`substitute for professional medical advice or guidance from a qualified fitness trainer.`'
+    '`Please listen to your body and use your best judgment while exercising. If you are experiencing pain or discomfort`'
+    '`while exercising, please stop immediately and seek guidance from a certified fitness professional.`'
+    '`With that all out of the way, if you understand and wish to continue, please type \"I understand\" now.`': {
+        '[I understand]': {
+            '`Great! Thank you and best of luck on your fitness journey!': 'intro'
+        },
+        'error': 'end'
+    }
+}
+
+intro_transitions = {
+    'state': 'intro',
     '#VISITS`Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? Anyway dude, you ready to grind today?!?!`': {
         '#INITMOOD #IF($INITMOOD=positive)': {
             '`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
@@ -70,6 +91,7 @@ intro_transitions = {
 
         }
 
+
     }
 }
 
@@ -79,7 +101,8 @@ name_transitions = {
         '#GETNAME': {
             'state': 'got_name',
             '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': 'check-up',
-            '#IF($RETURNUSER=False)`Yeah...`#GETNAME `I like the ring of that! The`#GETNAME`dawg haha! How do like your new nickname?`': {
+
+            '#IF($RETURNUSER=False)`Yeah...`#GETNAME `I like the ring of that! The`#GETNAME`dawg haha! How do you like your new nickname?`': {
                 '[{great, good, love}]': {
                     '`My bros tell me I\'m the best at comin up with nicknames. Like, dude, whenever someone new joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
                         '[{cool, impressive, interesting}]': {
@@ -156,6 +179,7 @@ newuser_transitions = {
                             '`Aight bro, idk what to say...`': 'new_user'
                         }
 
+
                     }
                 },
                 '[{computer}]': {
@@ -167,11 +191,14 @@ newuser_transitions = {
                 },
                 'error': {
                     '`Ok bro, I get it!`': 'new_user'
+
+                        
                 }
             },
             '#IF($ACTIVITYLEVEL=no)`Hey bro, I don’/t judge. But if you don/’t mind me asking, why don/’t you go to the gym?\n`': 'whynot',
             '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no activity. Do you feel like you go to the gym as often as you/’d like?\n`': {
                 'state': 'activityanswer',
+
                 '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, {do, am}], right, correct, true, factual, facts, def, always, totally}]': {
                     '`That\'s what\'s but then bro! It\'s about whatever works best for you.`': 'new_user'
                 },
@@ -185,14 +212,17 @@ newuser_transitions = {
             },
             'error': {
                 '`Bro exercisin outside of the gym is a totally valid option. Do you feel like you workout as much as you\'d like to?`': 'activityanswer'
+
             }
         }
     },
     '#GATE`Helping gym rats figure out their routine gets me pumped!\n On a scale of 1-10, how swole are you?`': {
         'state': 'getting_level',
+
         '#FITNESSLEVEL #GETFITNESSLEVEL': {
             '#IF($FITNESSLEVEL=zero)': {
                 '`I gotchu bro. Everyone starts from somewhere. Is there a reason why you aren\'t hitting the gym?`': 'whynot'
+
             },
             '#IF($FITNESSLEVEL=notswole)': {
                 'state': 'notswole',
@@ -264,7 +294,6 @@ newuser_transitions = {
         'error': 'chatting',
         'score': 0.1,
     },
-
 }
 whynot_transitions = {
     'state': 'whynot',
@@ -718,16 +747,7 @@ class MacroWeather(Macro):
         return output
 
 
-class MacroNameCheck(Macro):
-    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
 
-        if vars['RETURNUSER']:
-            output = "Last time I recommended " + vars['PREVREC'][vars['NAME'][-1]] + ". How did you enjoy it?"
-
-        else:
-            output = "It\'s nice to meet you " + vars['NAME'][
-                -1] + ". Were you interested in a movie or music reccommendation?"
-        return output
 
 
 def get_ACTIVITYLEVEL(vars: Dict[str, Any]):
@@ -776,22 +796,6 @@ def get_INITMOOD(vars: Dict[str, Any]):
     return ls[random.randrange(len(ls))]
 
 
-class MacroRec(Macro):
-    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
-        if "music" in args[0]:
-            if len(vars["MUSIC"]) >= 1:
-                rec = vars["MUSIC"].pop()
-                vars['PREVREC'][vars['NAME'][-1]] = rec
-            else:
-                "I have given you all that I have! You should listen to Shape of You again!"
-                rec = "Shape of You"
-        else:
-            if len(vars["MOVIE"]) >= 1:
-                rec = vars["MOVIE"].pop()
-                vars['PREVREC'][vars['NAME'][-1]] = rec
-            else:
-                "I have given you all that I have! You should listen to Shape of You again!"
-                rec = "The Help"
 
 
 class MacroSETINITMOOD(Macro):
@@ -914,6 +918,7 @@ macros = {
     'WHYNOT': MacroGPTJSON(
         'Why does this person not go to the gym?',
         {V.WHYNOT.name: ["judgement", "safety", "busy", "disability"]}, {V.WHYNOT.name: []}),
+
     'GETNAME': MacroGetName(),
     'SETINITMOOD': MacroSETINITMOOD(),
     'GETINITMOOD': MacroNLG(get_INITMOOD),
@@ -934,10 +939,12 @@ df.load_transitions(intro_transitions)
 df.load_transitions(checkup_transitions)
 df.load_transitions(name_transitions)
 df.load_transitions(newuser_transitions)
+df.load_transitions(consent_transitions)
 df.add_macros(macros)
 
 if __name__ == '__main__':
     # PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
     PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
+
     openai.api_key_path = PATH_API_KEY
     save(df, 'resources/gymbrot.pkl')
