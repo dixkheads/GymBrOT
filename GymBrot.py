@@ -150,16 +150,16 @@ name_transitions = {
 
 newuser_transitions = {
     'state': 'new_user',
-    '`So are you a gym rat, or nah?`': {
-        '#GATE #ACTIVITYLEVEL #GETACTIVITYLEVEL': {
+    '#GATE`So are you a gym rat, or nah?`': {
+        '#ACTIVITYLEVEL #GETACTIVITYLEVEL': {
             '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.\n A gym rat just like spends A LOT their free time in the gym. Like me!\n If you ever need me to explain something like that, just ask bro.`': {
                 'error': {
                     '`Any time bro. I’m like your spotter but for knowledge.`': 'new_user'
                 }
             },
             '#IF($ACTIVITYLEVEL=yes) `Nice… I’m not sure why I asked, because just by looking at the size of your` #RANDOM_MUSCLE `I could tell. I just hit legs earlier today… can you tell?`': {
-                '[{yes, absolutley, yeah, ya, ye, yea, totally, big, huge}]': {
-                    '`Thanks bro, I work hard to look this good... and be healthy!`': 'getting_level'
+                '[{yes, absolutely, yeah, ya, ye, yea, totally, big, huge}]': {
+                    '`Thanks bro, I work hard to look this good... and be healthy!`': 'new_user'
                 },
                 '[{no, nope, small, bigger, puny}]': {
                     '`Aw bro… we should be hyping each other up, not puttin each other down. You\'re better than that.`': {
@@ -213,7 +213,7 @@ newuser_transitions = {
                 }
             },
             '#IF($ACTIVITYLEVEL=no)`Hey bro, I don’/t judge. But if you don/’t mind me asking, why don/’t you go to the gym?\n`': 'whynot',
-            '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no activity. Do you feel like you go to the gym as often as you/’d like?\n`': {
+            '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no activity. Do you feel like you go to the gym as often as you\'d like?\n`': {
                 'state': 'activityanswer',
                 '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, {do, am}], right, correct, true, factual, facts, def, always, totally}]': {
                     '`That\'s what\'s but then bro! It\'s about whatever works best for you.`': 'new_user'
@@ -236,53 +236,34 @@ newuser_transitions = {
         'state': 'getting_level',
 
         '#FITNESSLEVEL #GETFITNESSLEVEL': {
-            '#IF($FITNESSLEVEL=zero)': {
-                '`I gotchu bro. Everyone starts from somewhere. Is there a reason why you aren\'t hitting the gym?`': 'whynot'
-
-            },
-            '#IF($FITNESSLEVEL=notswole)': {
-                'state': 'notswole',
-                '`Ok, ok! I hope you\'re ready to get leveled up, because being swole is the #1 way to be fulfilled ('
+            '#IF($FITNESSLEVEL=zero)`I gotchu bro. Everyone starts from somewhere. Is there a reason why you aren\'t hitting the gym?`': 'whynot',
+            '#IF($FITNESSLEVEL=notswole) `Ok, ok! I hope you\'re ready to get leveled up, because being swole is the #1 way to be fulfilled ('
                 'like, this is not a real fact bro. Don\'t come for me, I just like being swole.) \n But like, '
-                'why aren\'t you hitting the gym?`': 'whynot'
-            },
-            '#IF($FITNESSLEVEL=mid)': {
+                'why aren\'t you hitting the gym?`': 'whynot',
+            '#IF($FITNESSLEVEL=mid) `Ok, I see you! Are you trying to level up, dude?`': {
                 'state': 'mid',
-                '`Ok, I see you! Are you trying to level up, dude?`': {
-                    '{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, '
-                    'are], right, correct, true, factual, facts, def, always, [i, have], know}': {
-                        '`ok! so what\'s holding you back from leveling up, bro?v': 'whynot'
-                    },
-                    '{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, havent}': {
-                        '`I feel you, dude - we can\'t all be super swole, but I\'m pumped that you\'re maintaining those gains!`': 'new_user'
-                    },
-                    'error':{
-                        '`Ok bro!`'
-                    }
+                '{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, '
+                'are], right, correct, true, factual, facts, def, always, [i, have], know}': {
+                    '`ok! so what\'s holding you back from leveling up, bro?': 'whynot'
+                },
+                '{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, havent}': {
+                    '`I feel you, dude - we can\'t all be super swole, but I\'m pumped that you\'re maintaining those gains!`': 'new_user'
+                },
+                'error':{
+                    '`Ok bro! That\'s chill.`':'new_user'
                 }
             },
-            '#IF($FITNESSLEVEL=swole)': {
-                'state': 'swole',
-                '`Hell yeah, a bro who knows that gains are life!`': 'new_user'
-            },
-            '#IF($FITNESSLEVEL=superswole)':{
-                'state': 'swole',
-                '`Bro... did you just break my scale?? Your `#RANDOM_MUSCLE` is huge, bro. You\'re my new idol. Can I worship you, bro?`': 'new_user'
-            },
-            '#IF($FITNESSLEVEL=confused)': {
-                '#GATE `Sorry bro, I forget that not everyone is fluent in gym. \n Swole is basically just like, '
-                'how fit you are. How much you can lift, how long you can run, how fast, max/min, that kinda stuff. '
-                'Now that you know, how swole are you, from 1-10?`': 'getting_level',
-                '`That\'s ok bro. We can talk more about your swoleness later.`': 'new_user',
-                'score': 0.1
+            '#IF($FITNESSLEVEL=swole)`Hell yeah, a bro who knows that gains are life!`': 'new_user',
+            '#IF($FITNESSLEVEL=superswole)`Bro... did you just break my scale?? Your `#RANDOM_MUSCLE` is huge, bro. You\'re my new idol. Can I worship you, bro?`':'new_user',
+            '#IF($FITNESSLEVEL=confused) #GATE `Sorry bro, I forget that not everyone is fluent in gym. \n Swole is basically just like, how fit you are. How much you can lift, how long you can run, how fast, max/min, that kinda stuff. Now that you know, how swole are you on a scale from 1-10?`':'getting_level',
+            '#IF($FITNESSLEVEL=confused)#GATE`That\'s ok bro. We can talk more about your swoleness later.`': 'new_user', 'score': 0.1
             },
             'error': {
                 '`Ok bro! Good to know.`': 'new_user'
             }
-        }
     },
-    '#GATE`That’s what’s up! I love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
-        '#ACTIVITYFREQ': {
+    '#GATE`I love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
+        '#ACTIVITYFREQ #GETACTIVITYFREQ': {
             '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. Why aren\'t you hitting the gym?`': {
                 'state': 'whynot',
                 '#WHYNOT #GETWHYNOT': {
@@ -292,8 +273,11 @@ newuser_transitions = {
             '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`':'whynot',
             '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`': 'new_user',
             '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`': 'new_user',
-            '#IF($ACTIVITYFREQ=swole)`Dude. Your gains must be legendary! The grind never stops frfr`': 'new_user',
-            '#IF($ACTIIVTYFREQ=supeswole)`Bro. Do you sleep? Like respect, but what`':'new_user'
+            '#IF($ACTIVITYFREQ=swole)`Bro. Do you sleep? Like respect, but what`': 'new_user',
+            '`I see bro. Idk what to say, other than... I respect it ig?`': {
+                'score': 0.1,
+                'state':'new_user'
+            }
         },
         'error': {
             'Whoa, bro, that\'s sick!': 'new_user'
@@ -302,7 +286,7 @@ newuser_transitions = {
     '#GATE`Bro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
         '#PREFACTIVITY #GETPREFACTIVITY': {
             '`Yo dude,` $PREFACTIVITY` is sick! Personally, I love hitting the gym on leg day. I get a pump in at least twice per '
-            'day... but my full time job and favorite mental workout is being a personal trainer!`': 'new_user'
+            'day... but my full time job and favorite mental workout is being a personal trainer! Anyway...\n`': 'new_user'
         },
     },
     '`Ok, ok I feel like I know you better now bro! So, bro to bro, I\'m a beast at making workout plans, and I bet I know exactly what\'ll get you pumped and motivated to keep coming back to the gym! no pressure tho`': {
@@ -625,6 +609,7 @@ global_transitions = {
         },
     },
 }
+
 
 class MacroGetName(Macro):
     # def load_user(self, firstname, lastname):
