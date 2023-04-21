@@ -64,7 +64,7 @@ consent_transitions = {
 
 intro_transitions = {
     'state': 'intro',
-    '#VISITS`Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? \nAnyway dude, you ready to grind today?!?!`': {
+    '#VISITS `Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? \n` #GREETING': {
         '#INITMOOD': {
             '#IF($INITMOOD=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
                 'state': 'offer',
@@ -242,11 +242,11 @@ newuser_transitions = {
                 'why aren\'t you hitting the gym?`': 'whynot',
             '#IF($FITNESSLEVEL=mid) `Ok, I see you! Are you trying to level up, dude?`': {
                 'state': 'mid',
-                '{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, '
-                'are], right, correct, true, factual, facts, def, always, [i, have], know}': {
-                    '`ok! so what\'s holding you back from leveling up, bro?': 'whynot'
+                '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, '
+                'are], right, correct, true, factual, facts, def, always, [i, have], know}]': {
+                    '`ok! so what\'s holding you back from leveling up, bro?`': 'whynot'
                 },
-                '{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, havent}': {
+                '[{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, havent}]': {
                     '`I feel you, dude - we can\'t all be super swole, but I\'m pumped that you\'re maintaining those gains!`': 'new_user'
                 },
                 'error':{
@@ -758,26 +758,41 @@ def get_ACTIVITYLEVEL(vars: Dict[str, Any]):
 
 
 def get_FITNESSLEVEL(vars: Dict[str, Any]):
-    level = int(vars[V.FITNESSLEVEL.name])
-
-    if level == 0:
-        vars['FITNESSLEVEL'] = "zero"
-    elif level < 3:
-        vars['FITNESSLEVEL'] = "notswole"
-    elif level < 8:
-        vars['FITNESSLEVEL'] = "mid"
-    elif level < 11:
-        vars['FITNESSLEVEL'] = "swole"
-    elif level > 11:
-        vars['FITNESSLEVEL'] = "superswole"
+    if instance(vars[V.FITNESSLEVEL.name],int):
+        level = int(vars[V.FITNESSLEVEL.name])
+        if level == 0:
+            vars['FITNESSLEVEL'] = "zero"
+        elif level < 3:
+            vars['FITNESSLEVEL'] = "notswole"
+        elif level < 8:
+            vars['FITNESSLEVEL'] = "mid"
+        elif level < 11:
+            vars['FITNESSLEVEL'] = "swole"
+        elif level > 11:
+            vars['FITNESSLEVEL'] = "superswole"
+    else:
+        vars['FITNESSLEVEL'] = [V.FITNESSLEVEL.name]
     print(vars['FITNESSLEVEL'])
     return True
 
 
 def get_ACTIVITYFREQ(vars: Dict[str, Any]):
-    vars['ACTIVITYFREQ'] = vars[V.ACTIVITYFREQ.name][random.randrange(len(vars[V.ACTIVITYFREQ.name]))]
+    if isinstance(vars[V.ACTIVITYFREQ.name], int):
+        level = int(vars[V.ACTIVITYFREQ.name])
+        if level == 0:
+            vars['ACTIVITYFREQ'] = "never"
+        elif level < 3:
+            vars['ACTIVITYFREQ'] = "low"
+        elif level < 5:
+            vars['ACTIVITYFREQ'] = "mid"
+        elif level < 8:
+            vars['ACTIVITYFREQ'] = "high"
+        elif level > 7:
+            vars['ACTIVITYFREQ'] = "superswole"
+    else:
+        vars['FITNESSLEVEL'] = [V.FITNESSLEVEL.name]
     print(vars['ACTIVITYFREQ'])
-    return
+    return True
 
 
 def get_PREFACTIVITY(vars: Dict[str, Any]):
