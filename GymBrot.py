@@ -893,13 +893,14 @@ class MacroNLG(Macro):
 
 class MacroRandomMuscle(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
-        with open('file_path') as ont_file:
+        path = '/Users/kristen/PycharmProjects/GymBrOT/resources/ontology_workouts.json'
+        with open(path) as ont_file:
             ont_file = ont_file.read()
             parsed_file = json.loads(ont_file)
             musc_groups = parsed_file["ontology"]["muscle groups"]
-            group = list(musc_groups.items())[random.randrange(len(musc_groups))]
-            group = musc_groups[group]
-            musc = list(group.items())[random.randrange(len(group))]
+            group = list(musc_groups)[random.randrange(len(musc_groups))]
+            parsed_musc= parsed_file["ontology"][group]
+            musc = parsed_musc[random.randrange(len(parsed_musc))]
         return musc
 
 
