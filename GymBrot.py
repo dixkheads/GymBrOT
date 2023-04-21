@@ -90,8 +90,17 @@ intro_transitions = {
                 }
             },
             '#IF($INITMOOD=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do '
-            'when I feel off, hit the gym! Have you been workin on your gains?`': 'offer'
-        }
+            'when I feel off, hit the gym! Have you been workin on your gains?`': 'offer',
+
+            '#GATE `Haha bro, are you even human? what emotions do you have? jkjk, I just couldn\'t catch your vibe, so lemme repeat myself.`' :{
+                '` `':'intro',
+                'score':0.1,
+            },
+            '`Aight, I can take a hint. Peace bro.`':{
+                '` `':'end',
+                'score':0.1
+            }
+        },
     }
 
 }
@@ -105,10 +114,10 @@ name_transitions = {
             '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': 'check-up',
 
             '#IF($RETURNUSER=False)`Yeah...`$NAME `I like the ring of that! The`$NAME`dawg haha! How do you like your new nickname?`': {
-                '[{great, good, love, happy, like, fan, into, sweet, [!-dont, {like, love}], [!-not, {happy, into, fan, great}]}, wow, amazing, incredible, beautiful, happy, friend]': {
+                '[{great, good, love, happy, like, fan, into, sweet, [!-dont, {like, love}], [!-not, {happy, into, fan, great}], wow, amazing, incredible, beautiful, happy, friend}]': {
                     '`My bros tell me I\'m the best at comin up with nicknames. Like, dude, whenever someone new joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
-                        '[{cool, impressive, interesting, sweet, sick, rad, radical, dope, slay, love, like, amazing}, [!-not, {happy, into, fan, great}], wow]': {
-                            '`Yeah, it is pretty cool. We haven\t met before, have we bro? I bet you have a bunch of sick talents I don\'t even know about yet! Let me learn a little more about you...\n`': 'new_user'
+                        '[{cool, impressive, interesting, sweet, sick, rad, radical, dope, slay, love, like, amazing, [!-not, {happy, into, fan, great}], wow}]': {
+                            '`Yeah, it is pretty cool. We haven\'t met before, have we bro? I bet you have a bunch of sick talents I don\'t even know about yet! Let me learn a little more about you...\n`': 'new_user'
                         },
                         '[{okay, weird, [too, much], weirdo, overdone, cheesy, bad, [not, good], lame}]': {
                             '`Oh... I thought you\'d be a little more impressed. That\'s cool though bro. But I get it, you\'re ready for me to learn a bit more about you!`': 'new_user'
@@ -118,7 +127,7 @@ name_transitions = {
                         }
                     }
                 },
-                '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, bland, worst, [not, {good, great, amazing, incredible}], nah, nope, nada}, enemy, hate, evil, stupid, terrible]': {
+                '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, bland, worst, [not, {good, great, amazing, incredible}], nah, nope, nada, enemy, hate, evil, stupid, terrible}]': {
                     '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. We\'ll stick with`$NAME` Enough about names. I want to learn some more about you, bro!`': 'new_user'
                 },
                 'error':{
