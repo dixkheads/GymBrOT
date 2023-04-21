@@ -65,9 +65,9 @@ consent_transitions = {
 intro_transitions = {
     'state': 'intro',
     '#VISITS`Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? Anyway dude, you ready to grind today?!?!`': {
-        '#INITMOOD #IF($INITMOOD=positive)': {
-            '`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
-                'state':'offer',
+        '#INITMOOD': {
+            '#IF($INITMOOD=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
+                'state': 'offer',
                 '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, {are, know}], right, correct, true, factual, facts, def, always, [i, have], totally}]': {
                     '`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`': 'name'
                 },
@@ -78,20 +78,24 @@ intro_transitions = {
                     '`Hold up bro, I couldn\'t catch your vibe. Can you say that again?`': 'offer'
                 }
             },
-        },
-        '#IF($INITMOOD=negative)`That’s tough bro. Hopefully it\'s not because of your finals... I\'m sorry if I started off too strong bro.`': {
+            '#IF($INITMOOD=negative)`That’s tough bro. Hopefully it\'s not because of your finals... I\'m sorry if I started off too strong bro.`': {
                 '[{okay, fine, [no, worries], [dont, worry], sorry, ok, alright, just, enough}]': {  # supposed to be forgiveness
                     '`Thanks dude! You know what I heard? Going to the gym is like scientifically proven to help improve your mood. Have you been workin on your gains?\n`': 'offer'
                 },
                 '[{thanks, work, try, better, bad, too, strong, not}]': {  # supposed to be non-forgiveness
                     '`Yeah dude, I\'ll work on that. But you know, that\'s what I\'m all about! Working to better myself. Enough about me though, you know going to the gym is scientifically proven to help improve your mood. Have you been workin on your gains?\n`': 'offer'
+                },
+                'error':{
+                    '`Hey bro, I get it. Sometimes it really do be like that.`':'name'
                 }
-        },
-        '#IF($INITMOOD=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do when I feel off, hit the gym! Have you been workin on your gains?`': 'offer',
-            'error': 'offer',
-
+            },
+            '#IF($INITMOOD=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do '
+            'when I feel off, hit the gym! Have you been workin on your gains?`': 'offer'
+        }
     }
+
 }
+
 
 name_transitions = {
     'state': 'name',
@@ -101,18 +105,21 @@ name_transitions = {
             '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': 'check-up',
 
             '#IF($RETURNUSER=False)`Yeah...`$NAME `I like the ring of that! The`$NAME`dawg haha! How do you like your new nickname?`': {
-                '[{great, good, love, happy, like, fan, into, sweet, [!-dont, {like, love}], [!-not, {happy, into, fan, great}]}]': {
+                '[{great, good, love, happy, like, fan, into, sweet, [!-dont, {like, love}], [!-not, {happy, into, fan, great}]}, wow, amazing, incredible, beautiful, happy, friend]': {
                     '`My bros tell me I\'m the best at comin up with nicknames. Like, dude, whenever someone new joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
-                        '[{cool, impressive, interesting, sweet, sick, rad, radical, dope, slay, love, like, amazing}, [!-not, {happy, into, fan, great}]]': {
+                        '[{cool, impressive, interesting, sweet, sick, rad, radical, dope, slay, love, like, amazing}, [!-not, {happy, into, fan, great}], wow]': {
                             '`Yeah, it is pretty cool. We haven\t met before, have we bro? I bet you have a bunch of sick talents I don\'t even know about yet! Let me learn a little more about you...\n`': 'new_user'
                         },
                         '[{okay, weird, [too, much], weirdo, overdone, cheesy, bad, [not, good], lame}]': {
                             '`Oh... I thought you\'d be a little more impressed. That\'s cool though bro. But I get it, you\'re ready for me to learn a bit more about you!`': 'new_user'
+                        },
+                        'error':{
+                            '`That\'s ok bro, I know you love me haha.`' : 'new_user'
                         }
                     }
                 },
-                '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, bland, worst, [not, {good, great, amazing, incredible}]}]': {
-                    '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. We\'ll stick with`$GETNAME` Enough about names. I want to learn some more about you, bro!`': 'new_user'
+                '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, bland, worst, [not, {good, great, amazing, incredible}], nah, nope, nada}, enemy, hate, evil, stupid, terrible]': {
+                    '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. We\'ll stick with`$NAME` Enough about names. I want to learn some more about you, bro!`': 'new_user'
                 }
             },
             '#IF($NAME=N/A)`Wait bro... are you sure that\'s your name? Like, what do people call you?`': {
@@ -268,21 +275,14 @@ newuser_transitions = {
                     '$WHYNOT': 'end'
                 }
             },
-            '#IF($ACTIVITYFREQ=low)': {
-                '`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`': 'whynot'
-            },
-            '#IF($ACTIVITYFREQ=mid)': {
-                '`Ok, I see you! Gettin those gains in!`': 'new_user'
-            },
-            '#IF($ACTIVITYFREQ=high)': {
-                '`Yoooo, you should be my full-time lifting buddy!`': 'new_user'
-            },
-            '#IF($ACTIVITYFREQ=swole)': {
-                '`Dude. Your gains must be legendary! The grind never stops frfr`': 'new_user'
-            },
-            'error': {
-                'Whoa, bro, that\'s sick!': 'new_user'
-            }
+            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`':'whynot',
+            '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`': 'new_user',
+            '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`': 'new_user',
+            '#IF($ACTIVITYFREQ=swole)`Dude. Your gains must be legendary! The grind never stops frfr`': 'new_user',
+            '#IF($ACTIIVTYFREQ=supeswole)`Bro. You\'re my new icon, bro. Can I worship you??`':'new_user'
+        },
+        'error': {
+            'Whoa, bro, that\'s sick!': 'new_user'
         },
     },
     '#GATE`Bro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
@@ -530,6 +530,12 @@ sports_transitions = {
         'error': 'chatting'
     }
 }
+family_transitions = {
+    'state': 'family',
+    '`Yo bro, I love the gym. Part of it is because it gives me the family I always wanted but could never have. What\'s your family like?`': {
+        'error': 'chatting'
+    }
+}
 food_transitions = {
     'state': 'food',
     '`You know, you can\'t get swole without exercise, but a healthy diet is important too, bro. What kind of food do you like?`': {
@@ -555,6 +561,13 @@ hobby_transitions = {
         'error': 'chatting'
     }
 }
+hometown_transitions = {
+    'state': 'hometown',
+    '`I\'ve been going to the gym for a looooong time... before I got jacked, I used to just do math '
+    'calculations, because I was a node in a cluster. Lol, glad those days are over. Where did you grow up?`': {
+        'error': 'chatting'
+    }
+}
 
 checkup_transitions = {
     'state': 'workout_progress_feelings',
@@ -577,7 +590,7 @@ global_transitions = {
         '`whoa bro. I love you in a bromance kinda way. I\'m just a chatbot, and I don\'t feel emotions like romantic '
         'love (even tho you\'re my gym bro!)`': 'chatting'
     },
-    '[[help, make, workout, plan], [help, workout, {plan, planning}]]': 'formulate_plan',
+    '[[help, make, workout, plan], [help, workout, {plan, planning}]': 'formulate_plan',
     '[{something, else, [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
         '#TOPICSHIFT #IF(NEWTOPIC=weather)': 'weather',
         '#TOPICSHIFT #IF(NEWTOPIC=music)': 'music',
@@ -598,7 +611,6 @@ global_transitions = {
         },
     },
 }
-
 
 class MacroGetName(Macro):
     # def load_user(self, firstname, lastname):
