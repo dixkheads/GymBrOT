@@ -11,7 +11,7 @@ import numpy as np
 
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
-os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
+# os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 #os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 #This is a test to see if it has pushed
 
@@ -65,8 +65,8 @@ consent_transitions = {
 intro_transitions = {
     'state': 'intro',
     '#VISITS`Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? Anyway dude, you ready to grind today?!?!`': {
-        '#INITMOOD #IF($INITMOOD=positive)': {
-            '`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
+        '#INITMOOD': {
+            '#IF($INITMOOD=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
                 'state': 'offer',
                 '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, {are, know}], right, correct, true, factual, facts, def, always, [i, have], totally}]': {
                     '`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`': 'name'
@@ -102,7 +102,7 @@ name_transitions = {
             'state': 'got_name',
             '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': 'check-up',
 
-            '#IF($RETURNUSER=False)`Yeah...`#GETNAME `I like the ring of that! The`#GETNAME`dawg haha! How do you like your new nickname?`': {
+            '`Yeah...`$NAME `I like the ring of that! The`$NAME`dawg haha! How do you like your new nickname?`': {
                 '[{great, good, love}]': {
                     '`My bros tell me I\'m the best at comin up with nicknames. Like, dude, whenever someone new joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
                         '[{cool, impressive, interesting}]': {
@@ -114,7 +114,7 @@ name_transitions = {
                     }
                 },
                 '[{no, not, bad, sucky, sucks}]': {
-                    '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. We\'ll stick with`#GETNAME` Enough about names. I want to learn some more about you, bro!`': 'new_user'
+                    '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. We\'ll stick with`$NAME` Enough about names. I want to learn some more about you, bro!`': 'new_user'
                 }
             }
         },
@@ -295,6 +295,7 @@ newuser_transitions = {
         'score': 0.1,
     },
 }
+
 whynot_transitions = {
     'state': 'whynot',
     '#IF($WHYNOT=judgement)': {
@@ -612,19 +613,7 @@ global_transitions = {
 
 
 class MacroGetName(Macro):
-    def load_user(self, firstname, lastname):
-        df = pd.read_csv(USERDATA_ADDR)
-        user_data = df[(df['firstname'] == firstname) & (df['lastname'] == lastname)]
-        if user_data.empty:
-            print("User not found.")
-            vars['RETURNUSER'] = 'False'
-        else:
-            user_data = user_data.iloc[0]
-            column_names = df.columns
-            for column_name in column_names:
-                self.vars[column_name] = user_data[column_name]
-            print("User data loaded successfully.")
-            vars['RETURNUSER'] = 'True'
+    # def load_user(self, firstname, lastname):
 
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
         r = re.compile(
@@ -662,8 +651,25 @@ class MacroGetName(Macro):
         #     vars['RETURNUSER'] = 'False'
         #     vars['NAME'].append(completeName)
         # return True
+        print(firstname, lastname)
+        # self.load_user(firstname, lastname)
+        df = pd.read_csv(USERDATA_ADDR)
+        # print("check1")
+        # print(df.columns)
+        vars['NAME'] = completeName
+        user_data = df[(df['firstname'] == firstname) & (df['lastname'] == lastname)]
+        # print("check2")
+        if user_data.empty:
+            print("User not found.")
+            vars['RETURNUSER'] = False
+        else:
+            user_data = user_data.iloc[0]
+            column_names = df.columns
+            for column_name in column_names:
+                vars[column_name] = user_data[column_name]
+            print("User data loaded successfully.")
+            vars['RETURNUSER'] = True
 
-        self.load_user(firstname, lastname)
         return True
 
 
@@ -943,7 +949,10 @@ df.load_transitions(consent_transitions)
 df.add_macros(macros)
 
 if __name__ == '__main__':
-    PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+    # PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
      #PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'# PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
+    PATH_API_KEY = 'resources/openai_key.txt'
     openai.api_key_path = PATH_API_KEY
-    save(df, 'resources/gymbrot.pkl')
+    # save(df, 'resources/gymbrot.pkl')
+    df.run()
+
