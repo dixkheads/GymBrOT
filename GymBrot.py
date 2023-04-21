@@ -100,7 +100,7 @@ name_transitions = {
             'state': 'got_name',
             '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': 'check-up',
 
-            '#IF($RETURNUSER=False)`Yeah...`#GETNAME `I like the ring of that! The`#GETNAME`dawg haha! How do you like your new nickname?`': {
+            '#IF($RETURNUSER=False)`Yeah...`$NAME `I like the ring of that! The`$NAME`dawg haha! How do you like your new nickname?`': {
                 '[{great, good, love, happy, like, fan, into, sweet, [!-dont, {like, love}], [!-not, {happy, into, fan, great}]}]': {
                     '`My bros tell me I\'m the best at comin up with nicknames. Like, dude, whenever someone new joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
                         '[{cool, impressive, interesting, sweet, sick, rad, radical, dope, slay, love, like, amazing}, [!-not, {happy, into, fan, great}]]': {
