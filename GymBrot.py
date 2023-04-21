@@ -120,6 +120,9 @@ name_transitions = {
                 },
                 '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, bland, worst, [not, {good, great, amazing, incredible}], nah, nope, nada}, enemy, hate, evil, stupid, terrible]': {
                     '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. We\'ll stick with`$NAME` Enough about names. I want to learn some more about you, bro!`': 'new_user'
+                },
+                'error':{
+                    '`Everyone likes different things haha. I won\'t take it personally.`':'new_user'
                 }
             },
             '#IF($NAME=N/A)`Wait bro... are you sure that\'s your name? Like, what do people call you?`': {
@@ -127,6 +130,9 @@ name_transitions = {
                         '': 'got_name'
                     },
                     'error': 'end'
+            },
+            'error':{
+                '`Hold up bro, I couldn\'t catch your vibe.`#GETNAME':'got_name'
             }
         }
     },
@@ -200,7 +206,6 @@ newuser_transitions = {
             '#IF($ACTIVITYLEVEL=no)`Hey bro, I don’/t judge. But if you don/’t mind me asking, why don/’t you go to the gym?\n`': 'whynot',
             '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no activity. Do you feel like you go to the gym as often as you/’d like?\n`': {
                 'state': 'activityanswer',
-
                 '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, {do, am}], right, correct, true, factual, facts, def, always, totally}]': {
                     '`That\'s what\'s but then bro! It\'s about whatever works best for you.`': 'new_user'
                 },
@@ -253,7 +258,7 @@ newuser_transitions = {
             },
             '#IF($FITNESSLEVEL=superswole)':{
                 'state': 'swole',
-                '`Bro... did you just break my scale?? Bro, you\'re my new idol. Can I worship you, bro?`': 'new_user'
+                '`Bro... did you just break my scale?? Your `#RANDOM_MUSCLE` is huge, bro. You\'re my new idol. Can I worship you, bro?`': 'new_user'
             },
             '#IF($FITNESSLEVEL=confused)': {
                 '#GATE `Sorry bro, I forget that not everyone is fluent in gym. \n Swole is basically just like, '
@@ -279,7 +284,7 @@ newuser_transitions = {
             '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`': 'new_user',
             '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`': 'new_user',
             '#IF($ACTIVITYFREQ=swole)`Dude. Your gains must be legendary! The grind never stops frfr`': 'new_user',
-            '#IF($ACTIIVTYFREQ=supeswole)`Bro. You\'re my new icon, bro. Can I worship you??`':'new_user'
+            '#IF($ACTIIVTYFREQ=supeswole)`Bro. Do you sleep? Like respect, but what`':'new_user'
         },
         'error': {
             'Whoa, bro, that\'s sick!': 'new_user'
@@ -287,7 +292,7 @@ newuser_transitions = {
     },
     '#GATE`Bro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
         '#PREFACTIVITY #GETPREFACTIVITY': {
-            '`Yo dude, $PREFACTIVITY is sick! Personally, I love hitting the gym on leg day. I get a pump in at least twice per '
+            '`Yo dude,` $PREFACTIVITY` is sick! Personally, I love hitting the gym on leg day. I get a pump in at least twice per '
             'day... but my full time job and favorite mental workout is being a personal trainer!`': 'new_user'
         },
     },
