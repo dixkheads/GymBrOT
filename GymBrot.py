@@ -112,7 +112,7 @@ name_transitions = {
                     }
                 },
                 '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, bland, worst, [not, {good, great, amazing, incredible}]}]': {
-                    '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. We\'ll stick with`#GETNAME` Enough about names. I want to learn some more about you, bro!`': 'new_user'
+                    '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. We\'ll stick with`$GETNAME` Enough about names. I want to learn some more about you, bro!`': 'new_user'
                 }
             },
             '#IF($NAME=N/A)`Wait bro... are you sure that\'s your name? Like, what do people call you?`': {
