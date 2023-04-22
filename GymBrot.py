@@ -112,7 +112,7 @@ name_transitions = {
             '#IF($RETURNUSER=False)`Yeah...`$NAME `I like the ring of that! The`$NAME`dawg haha! How do you like your new nickname?`': {
                 '[{great, good, love, happy, like, fan, into, sweet, [!-dont, {like, love}], [!-not, {happy, into, fan, great}], wow, amazing, incredible, beautiful, happy, friend}]': {
                     '`My bros tell me I\'m the best at comin up with nicknames. \nLike, dude, whenever someone new joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
-                        '[{cool, impressive, interesting, sweet, sick, rad, radical, dope, slay, love, like, amazing, [!-not, {happy, into, fan, great}], wow}]': {
+                        '[{cool, impressive, interesting, sweet, sick, rad, radical, dope, slay, love, like, amazing, [!-not, {happy, into, fan, great}], wow, chill}]': {
                             '`Yeah, it is pretty cool. We haven\'t met before, have we bro? \nI bet you have a bunch of sick talents I don\'t even know about yet! \nLet me learn a little more about you...\n`': 'new_user'
                         },
                         '[{okay, weird, [too, much], weirdo, overdone, cheesy, bad, [not, good], lame}]': {
@@ -128,7 +128,8 @@ name_transitions = {
                 },
                 'error':{
                     '`Everyone likes different things haha. I won\'t take it personally.`':'new_user'
-                }
+                },
+                'score':0.1
             },
             '#IF($NAME=N/A)`Wait bro... are you sure that\'s your name? Like, what do people call you?`': {
                     '#GETNAME': 'got_name',
@@ -144,7 +145,7 @@ name_transitions = {
 
 newuser_transitions = {
     'state': 'new_user',
-    '#GATE`So are you a gym rat, or nah?`': {
+    '#GATE`\nSo are you a gym rat, or nah?`': {
         '#ACTIVITYLEVEL': {
             '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.\n A gym rat just like spends A LOT their free time in the gym. Like me!\n If you ever need me to explain something like that, just ask bro.`': {
                 'error': {
@@ -209,16 +210,16 @@ newuser_transitions = {
             '#IF($ACTIVITYLEVEL=no)`Hey bro, I don\'t judge. But if you don\'t mind me asking, why don\'t you go to the gym?\n`': 'whynot',
             '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no activity. \nDo you feel like you go to the gym as often as you\'d like?\n`': {
                 '#VIBECHECK':{
-                     'IF($VIBE=positive)`That\'s what\'s but then bro! It\'s about whatever works best for you.`':'new_user',
-                     'IF($VIBE=neutral)`It happens bro, sometimes life and stuff gets in the way. \nBut if you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`':'whynot',
-                     'IF($VIBE=negative)`It happens bro, sometimes life and stuff gets in the way. \nBut if you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`':'whynot',
+                     '#IF($VIBE=positive)`That\'s what\'s but then bro! It\'s about whatever works best for you.`':'new_user',
+                     '#IF($VIBE=neutral)`It happens bro, sometimes life and stuff gets in the way. \nBut if you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`':'whynot',
+                     '#IF($VIBE=negative)`It happens bro, sometimes life and stuff gets in the way. \nBut if you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`':'whynot',
                      '#GATE `Hey bro, sometimes these things are difficult to talk about, and I get it... \nor maybe I just didn\'t understand you dude. \nCould you repeat that?`':{ 'state':'activityanswer', 'score': 0.1},
                      '#GATE `If you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`':{ 'state':'whynot', 'score': 0.01}
                 }
             }
         },
     },
-    '#GATE`Helping gym rats figure out their routine gets me pumped!\n On a scale of 1-10, how swole are you?`': {
+    '#GATE`\nHelping gym rats figure out their routine gets me pumped!\n On a scale of 1-10, how swole are you?`': {
         'state': 'getting_level',
 
         '#FITNESSLEVEL #GETFITNESSLEVEL': {
@@ -232,7 +233,7 @@ newuser_transitions = {
                     '#IF($VIBE=positive)`ok! so what\'s holding you back from leveling up, bro?`': 'whynot',
                     '#IF($VIBE=negative)`I feel you, dude - we can\'t all be super swole, but I\'m pumped that you\'re maintaining those gains!`' : 'new_user',
                     '#IF($VIBE=neutral)`Ok bro! That\'s chill.`':'new_user',
-                    '`Not sure I could catch your vibe, but that\'s alright bro, we\'ll talk abt something else`':{'state':'newuser', 'score':0.1}
+                    '`Not sure I could catch your vibe, but that\'s alright bro, we\'ll talk abt something else`':{'state':'new_user', 'score':0.1}
                 },
             },
             '#IF($FITNESSLEVEL=swole)`Hell yeah, a bro who knows that gains are life!`': 'new_user',
@@ -246,10 +247,10 @@ newuser_transitions = {
             '`Ok bro! Good to know.`': 'new_user'
         }
     },
-    '#GATE`I love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
+    '#GATE`\nI love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
         '#ACTIVITYFREQ': {
             '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. \nWhy aren\'t you hitting the gym?`': 'whynot',
-            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`':'whynot',
+            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`':'whynot_no_q',
             '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`': 'new_user',
             '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`': 'new_user',
             '#IF($ACTIVITYFREQ=swole)`Bro. Do you sleep? Like respect, but what`': 'new_user',
@@ -262,13 +263,13 @@ newuser_transitions = {
             '`Whoa, bro, that\'s sick!`': 'new_user'
         },
     },
-    '#GATE`Bro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
+    '#GATE`\nBro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
         '#PREFACTIVITY': {
             '`Yo dude,` $PREFACTIVITY` is sick! Personally, I love hitting the gym on leg day. I get a pump in at least twice per '
             'day... \nbut my full time job and favorite mental workout is being a personal trainer! Anyway...\n`': 'new_user'
         },
     },
-    '`Ok, ok I feel like I know you better now bro! \nSo, bro to bro, I\'m a beast at making workout plans, and I bet I know exactly what\'ll get you pumped and motivated to keep coming back to the gym! \nno pressure tho`': {'state':'topicshift', 'score':0.1}
+    '`\nOk, ok I feel like I know you better now bro! \nSo, bro to bro, I\'m a beast at making workout plans, and I bet I know exactly what\'ll get you pumped and motivated to keep coming back to the gym! \nno pressure tho\n`': {'state':'topicshift_no_q', 'score':0.1}
 }
 
 """
@@ -633,6 +634,10 @@ whynot_transitions = {
                             'hitting the gym?`':{'state':'whynot','score':0.1}
                         },
                     }
+                },
+                'error':{
+                    '`Yeah, it\'s pretty cool, huh! I hope you\'re able to find something. If you can\'t find '
+                    'anything, just lmk and I can help you make a sweet workout routine, totally free.`':'whynot_no_q'
                 }
             },
             '#IF($WHYNOT=no)': {
@@ -643,7 +648,7 @@ whynot_transitions = {
             '`Hey bro, I\'m not sure how to talk about that. Let\'s just chat for now`':{'state':'chatting','score':0.01},
         },
         'error':{
-            '#GATE CSorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
+            '#GATE `Sorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
             '`Sorry bro, I really don\'t know how to help you. There\'s an issue on my end.`':'end'
 
         }
@@ -786,24 +791,25 @@ global_transitions = {
         'love (even tho you\'re my gym bro!)`': 'chatting'
     },
     '[[help, make, workout, plan], [help, workout, {plan, planning}]]': 'end',
-    '[{something, else, [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
-        'state':'topicshift',
+    '[{[something, else], [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
+        'score':0.1,
+        'state':'topicshift_no_q',
         '`what did you wanna talk about?`':{
+            'state':'topicshift',
             '#TOPICSHIFT':{
-                'state': 'topicshift',
-                '#IF($NEWTOPIC=weather)': 'weather',
-                '#IF($NEWTOPIC=movie)': 'movie',
-                '#IF($NEWTOPIC=music)': 'music',
-                '#IF($NEWTOPIC=sports)': 'sports',
-                '#IF($NEWTOPIC=food)': 'food',
-                '#IF($NEWTOPIC=work)': 'work',
-                '#IF($NEWTOPIC=travel)': 'travel',
-                '#IF($NEWTOPIC=hobbies)': 'hobbies',
-                '#IF($NEWTOPIC=hometown)': 'hometown',
-                '#IF($NEWTOPIC=school)': 'school',
-                '#IF($NEWTOPIC=workout planning)': 'formulate_plan',
-                '#IF($NEWTOPIC=concerns)':'whynot',
-                '#IF(NEWTOPIC=N/A)`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`':'chatting',
+                '#IF($NEWTOPIC=weather)` `': 'weather',
+                '#IF($NEWTOPIC=movie)` `': 'movie',
+                '#IF($NEWTOPIC=music)` `': 'music',
+                '#IF($NEWTOPIC=sports)` `': 'sports',
+                '#IF($NEWTOPIC=food)` `': 'food',
+                '#IF($NEWTOPIC=work)` `': 'work',
+                '#IF($NEWTOPIC=travel)` `': 'travel',
+                '#IF($NEWTOPIC=hobbies)` `': 'hobbies',
+                '#IF($NEWTOPIC=hometown)` `': 'hometown',
+                '#IF($NEWTOPIC=school)` `': 'school',
+                '#IF($NEWTOPIC=workout planning)` `': 'formulate_plan',
+                '#IF($NEWTOPIC=concerns)` `':'whynot_no_q',
+                '#IF($NEWTOPIC=N/A)`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`':'chatting',
                 '`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`': {'state':'chatting', 'score':0.1}
             },
         },
@@ -1110,15 +1116,16 @@ macros = {
     'VISITS': MacroVisits(),
     'TOPICSHIFT': MacroGPTJSON(
         'What topic of conversation is this person trying to introduce? Possible topics are music, movies, weather, '
-        'sports, workout planning, and concerns. If it is not one of these, return N/A',
+        'sports, workout planning, and concerns. If it is not one of these, return N/A. Please do not return anything else.',
         {"NEWTOPIC": "holiday"}, {"NEWTOPIC": "N/A"}),
 
     'ACTIVITYLEVEL': MacroGPTJSON(
         'Is this person agreeing that they are a gym rat? Respond with yes, no, or maybe, unless they are confused by '
-        'the question. In that case they are "confused"',
+        'the question. In that case they are "confused". ',
         {"ACTIVITYLEVEL": "yes"}, {"ACTIVITYLEVEL": "N/A"}),
     'FITNESSLEVEL': MacroGPTJSON(
-        'How physically fit/swole is this person on a scale of 0 through 10 with 10 being the highest?',
+        'How physically fit/swole is this person on a scale of 0 through 10 with 10 being the highest? '
+        'Please do not return anything other than a number',
         {"FITNESSLEVEL":"1"}, {"FITNESSLEVEL": "N/A"}),
     'ACTIVITYFREQ': MacroGPTJSON(
         'How many times a week does a person go to the gym, with 0 being never, 1 or 2 being low, less than 5 being '
@@ -1129,7 +1136,7 @@ macros = {
         'i.e. "lifting", "going to the gym", "working out", "running".',
         {"PREFACTIVITY": "lifting"}, {"PREFACTIVITY": "N/A"}),
     'WHYNOT': MacroGPTJSON(
-        'Why does this person not go to the gym? Options are judgement, safety, busy, disability, or no',
+        'Why does this person not go to the gym? Options are judgement, safety, busy, disability, or no. If it is none of these, return N/A',
         {"WHYNOT": "judgement"}, {"WHYNOT": "N/A"}),
 
     'GETNAME': MacroGPTJSON( 'What is this persons name?',
@@ -1137,7 +1144,8 @@ macros = {
 
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
     'VIBECHECK': MacroGPTJSON(
-         'Is this user positive, negative, neutral, or asking a question?',
+         'Is this user positive, negative, neutral, or asking a question? If they are agreeing with something, '
+         'they are positive. Respond ONLY with positive, negative, neutral, question, or N/A.',
          {"VIBE": "positive"}, {"VIBE": "N/A"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
