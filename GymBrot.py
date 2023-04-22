@@ -19,6 +19,7 @@ os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 model = 'gpt-3.5-turbo'
 #USERDATA_ADDR = "/Users/kristen/PycharmProjects/GymBrOT/resources/userdata.csv"
 USERDATA_ADDR = "resources/userdata.csv"
+WORKOUT_ADDR = "resources/workout-data.csv"
 
 def save(df: DialogueFlow, varfile: str):
     df.run()
@@ -847,6 +848,37 @@ def get_ACTIVITYFREQ(vars: Dict[str, Any]):
 
         # return rec
 
+class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Workout name: Description, name: Des, name: Des}, {n: d, n: d, n: d}, ...]
+    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+        workout_list = []
+        workout_level = ""
+        if vars['ACTIVITYFREQ'] == "never":
+            workout_level = "Beginner"
+        elif vars['ACTIVITYFREQ'] == "low" or vars['ACTIVITYFREQ'] == "mid"
+            workout_level = "Intermediate"
+        else:
+            workout_level = "Advanced"
+        df = pd.read_csv(WORKOUT_ADDR)
+        for i in range(1, 10):
+            workout_dict = {}
+            for j in range(1, 3):
+                # workout_level variable has three possible values: Beginner, Intermediate, Advanced
+                # These levels are also the possible values for df['Difficulty']
+                # For each iteration of j, based on the value of workout_level, add to the workout_dict an exercise in df with df['exercise_name'] as key and df['steps'] as value
+                # Select a random exercise from the workout data based on the workout level
+                exercise = df[df['Difficulty'] == workout_level].sample(n=1)
+
+                # Add the exercise name and steps to the workout dictionary
+                workout_dict[exercise['exercise_name'].values[0]] = exercise['steps'].values[0]
+
+                # Add the set of exercises to the workout list
+            workout_list.append(workout_dict)
+
+        print(workout_list)
+        vars['WORKOUTLIST'] = workout_list
+        return True
+
+
 
 class MacroSaveUser(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
@@ -975,7 +1007,8 @@ macros = {
         {"INITMOOD": "positive"}, {"INITMOOD": "N/A"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
-    'WEATHER': MacroWeather()
+    'WEATHER': MacroWeather(),
+    'GETWORKOUTLIST': MacroGIVEREC()
 }
 
 df.load_transitions(intro_transitions)
