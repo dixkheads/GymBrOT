@@ -61,8 +61,8 @@ consent_transitions = {
 intro_transitions = {
     'state': 'intro',
     '#VISITS `Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? \n` #GREETING': {
-        '#INITMOOD': {
-            '#IF($INITMOOD=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`':{
+        '#VIBECHECK': {
+            '#IF($VIBE=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`':{
                 'state': 'offer',
                 '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, {are, know}], right, correct, true, factual, facts, def, always, [i, have], totally}]': {
                     '`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`': 'name'
@@ -74,7 +74,7 @@ intro_transitions = {
                     '`Hold up bro, I couldn\'t catch your vibe. Can you say that again?`': 'offer'
                 }
             },
-            '#IF($INITMOOD=negative)`That’s tough bro. Hopefully it\'s not because of your finals... \nI\'m sorry if I started off too strong bro.`': {
+            '#IF($VIBE=negative)`That’s tough bro. Hopefully it\'s not because of your finals... \nI\'m sorry if I started off too strong bro.`': {
                 '[{okay, fine, [no, worries], [dont, worry], sorry, ok, alright, just, enough}]': {  # supposed to be forgiveness
                     '`Thanks dude! You know what I heard? Going to the gym is like scientifically proven to help improve your mood. Have you been workin on your gains?\n`': 'offer'
                 },
@@ -85,7 +85,7 @@ intro_transitions = {
                     '`Hey bro, I get it. Sometimes it really do be like that.`':'name'
                 },
             },
-            '#IF($INITMOOD=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do '
+            '#IF($VIBE=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do '
             'when I feel off, hit the gym! Have you been workin on your gains?`': 'offer','score':1,
 
             '#GATE `Haha bro, are you even human? what emotions do you have? \njkjk, I just couldn\'t catch your vibe, so lemme repeat myself.\n`' : {'state':'intro', 'score': 0.1},
@@ -152,7 +152,7 @@ newuser_transitions = {
                 }
             },
             '#IF($ACTIVITYLEVEL=yes) `Nice… I’m not sure why I asked, because just by looking at the size of your` #RANDOM_MUSCLE `I could tell. \nI just hit legs earlier today… can you tell?`': {
-                '[{yes, absolutely, yeah, ya, ye, yea, totally, big, huge}]': {
+                '[{yes, absolutely, yeah, ya, ye, yea, totally, big, huge, swole, good, totally, wow}]': {
                     '`Thanks bro, I work hard to look this good... and be healthy!`': 'new_user'
                 },
                 '[{no, nope, small, bigger, puny}]': {
@@ -265,13 +265,10 @@ newuser_transitions = {
     '#GATE`Bro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
         '#PREFACTIVITY': {
             '`Yo dude,` $PREFACTIVITY` is sick! Personally, I love hitting the gym on leg day. I get a pump in at least twice per '
-            'day... but my full time job and favorite mental workout is being a personal trainer! Anyway...\n`': 'new_user'
+            'day... \nbut my full time job and favorite mental workout is being a personal trainer! Anyway...\n`': 'new_user'
         },
     },
-    '`Ok, ok I feel like I know you better now bro! So, bro to bro, I\'m a beast at making workout plans, and I bet I know exactly what\'ll get you pumped and motivated to keep coming back to the gym! no pressure tho`': {
-        '[{gym, workout, plan, help, yes, curious, want, please}]': 'formulate_plan',
-        'error': {'state':'chatting','score': 0.1}
-    },
+    '`Ok, ok I feel like I know you better now bro! \nSo, bro to bro, I\'m a beast at making workout plans, and I bet I know exactly what\'ll get you pumped and motivated to keep coming back to the gym! \nno pressure tho`': 'topicshift'
 }
 
 """
@@ -590,7 +587,7 @@ whynot_transitions = {
                         }
                     }
                 },
-                '[knew but no access]': {
+                '[{knew, know, [no, access], [not, solution]}]': {
                     'state':'costno',
                     '`Oof, bro, I thought I was gaming the system. Oh! I just remembered bro, '
                     'some public parks also some gym-like equipment. If you\'re really set on using '
@@ -641,7 +638,14 @@ whynot_transitions = {
             '#IF($WHYNOT=no)': {
                 '`Hey bro, that\'s totally cool, let\'s talk about something else. Did you wanna chat, or plan a '
                 'workout?`':'topicshift'
-            }
+            },
+            '#GATE `Hey bro, I\'m not sure how to talk about that, but is there anything else holding you back?`':{'state':'whynot','score':0.1},
+            '`Hey bro, I\'m not sure how to talk about that. Let\'s just chat for now`':{'state':'chatting','score':0.01},
+        },
+        'error':{
+            '#GATE CSorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
+            '`Sorry bro, I really don\'t know how to help you. There\'s an issue on my end.`':'end'
+
         }
     }
 }
@@ -1121,20 +1125,23 @@ macros = {
         {"NEWTOPIC": "holiday"}, {"NEWTOPIC": "N/A"}),
 
     'ACTIVITYLEVEL': MacroGPTJSON(
-        'Is this person agreeing that they are a gym rat? Respond with yes, no, or maybe, unless they are confused by the question. In that case they are "confused"',
+        'Is this person agreeing that they are a gym rat? Respond with yes, no, or maybe, unless they are confused by '
+        'the question. In that case they are "confused"',
         {"ACTIVITYLEVEL": "yes"}, {"ACTIVITYLEVEL": "N/A"}),
     'FITNESSLEVEL': MacroGPTJSON(
         'How physically fit/swole is this person on a scale of 0 through 10 with 10 being the highest?',
         {"FITNESSLEVEL":"1"}, {"FITNESSLEVEL": "N/A"}),
     'ACTIVITYFREQ': MacroGPTJSON(
-        'How many times a week does a person go to the gym, with 0 being never, 1 or 2 being low, less than 5 being mid, less than 8 being high, and greater than 8 being swole. They may go more than once per day',
+        'How many times a week does a person go to the gym, with 0 being never, 1 or 2 being low, less than 5 being '
+        'mid, less than 8 being high, and greater than 8 being swole. They may go more than once per day',
         {"ACTIVITYFREQ": "never"}, {"ACTIVITYFREQ": "N/A"}),
     'PREFACTIVITY': MacroGPTJSON(
-        'What activity does the person do to exercise? Return a phrase that does not take an article, i.e. "lifting", "going to the gym", "working out", "running".',
+        'What activity does the person do to exercise? Return a gerund phrase that does not take an article, '
+        'i.e. "lifting", "going to the gym", "working out", "running".',
         {"PREFACTIVITY": "lifting"}, {"PREFACTIVITY": "N/A"}),
     'WHYNOT': MacroGPTJSON(
-        'Why does this person not go to the gym?',
-        {"WHYNOT": ["judgement", "safety", "busy", "disability"]}, {"WHYNOT": []}),
+        'Why does this person not go to the gym? Options are judgement, safety, busy, disability, or no',
+        {"WHYNOT": "judgement"}, {"WHYNOT": "N/A"}),
 
     'GETNAME': MacroGPTJSON( 'What is this persons name?',
         {"NAME": "James Smith"}, {"NAME": "N/A"}),
@@ -1148,7 +1155,6 @@ macros = {
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
     'WEATHER': MacroWeather(),
-    'GETWORKOUTLIST': MacroGIVEREC()
 }
 
 
