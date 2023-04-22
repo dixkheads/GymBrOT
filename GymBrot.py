@@ -454,7 +454,7 @@ whynot_transitions = {
                                         'you\'re not gettin to the gym as much as you\'d like?`':'whynot',
                                         '#IF(VIBE=negative)':{
                                             #ADD here
-                                        }, 
+                                        },
                                         '#IF(VIBE=negative)':{
                                             #ADD here
                                         },
@@ -463,7 +463,7 @@ whynot_transitions = {
                                         },
                                         '#IF(VIBE=question)':{
                                             #ADD here
-                                        }, 
+                                        },
                                         '#GATE':{'state':'', 'score':0.1}
                                     },
                                 }
@@ -508,6 +508,12 @@ whynot_transitions = {
                                 '#GATE':{'state':'','score':0.1}
                             }
                         }
+                    },
+                    '[{disability, disabled, wheelchair, disorder, disease, accomadations}]':{
+                        '`Hey bro, thanks for feeling comfortable enough to share this with me. '
+                        'Everyones\' bodies are different with different needs,\n and that will never be something a true homie, '
+                        'like me, will judge you for. If you\'re interested we can find other options\n that can still get you '
+                        'swole and help you achieve your fitness goals.`':'disability'
                     }
                 }
             },
@@ -537,6 +543,7 @@ whynot_transitions = {
             'Everyones\' bodies are different with different needs,\n and that will never be something a true homie, '
             'like me, will judge you for. If you\'re interested we can find other options\n that can still get you '
             'swole and help you achieve your fitness goals.`': {
+                'state':'disability',
                 '#VIBECHECK':{
                     '#IF(VIBE=positive)`For sure bro, it\'s best to start slow with low-impact exercises. \nLike '
                     'bro, water aerobics can be a great option!`':{
@@ -559,7 +566,7 @@ whynot_transitions = {
                                 #ADD HERE
                             },
                             '#IF(VIBE=question)':{
-                                
+
                             },
                             '#GATE':{'state':'', 'score':0.1}
                         },
@@ -575,39 +582,57 @@ whynot_transitions = {
                     },
                     '#GATE':{'state':'','score':0.1}
                 }
-            },  
+            },
             '#IF($WHYNOT=cost)': {
-                '`That\'s real bro. I understand times can be tough. Depending on where you live, some colleges, universities, apartment complexes, and even some offices have gyms that you can use for free!`'
-                '[not know]': {
+                '`That\'s real bro. I understand times can be tough. Depending on where you live, some colleges, '
+                'universities, apartment complexes, and even some offices have gyms that you can use for free!`'
+                '[{[{dont, not},know], unsure, [how, find]}]': {
                     '`Hey bro, no shame in that. Do you think you might have access to something like that?`': {
-                        '{yes}': {
-                            '`Perfect! Before we move on bro, is there any other reason that\'s been keeping you out of the gym?': 'whynot'
+                        '[{yes, yeah, do, might, check, try, access, maybe, possibly, perhaps, [!-{probably,maybe}, '
+                        'not]}]': {
+                            '`Perfect! Before we move on bro, is there any other reason that\'s been keeping you out '
+                            'of the gym?': 'whynot'
                         },
-                        '{no}': 'costno'
+                        '[{no, dont, [{probably, maybe}, not], unsure}]': 'costno',
+                        'error':{
+                            '`As one of your homies, I want to find solutions that work for you! '
+                            'But bro, there are plenty of workouts you can do without equipment, by using your body '
+                            'weight instead. If you didn\'t know bro, these exercises are called calisthenics. Would '
+                            'that be something you\'re interested in?`':'bodyweight'
+                        }
                     }
                 },
                 '[knew but no access]': {
-                    'state:costno `Oof, bro, I thought I was gamin the system. Oh! I just remembered bro, some public parks also have access to some gym-like equipment. If you\'re really set on using equipment, this could be a good alternative bro!`': {
-                        '{good idea}': {
-                            '`Thanks bro. As one of your homies, I want to find solutions that work for you! But bro, there are plenty of workouts you can do without equipment, by using your body weight instead. If you didn\'t know bro, these exercises are called calisthenics. Would that be something you\'re interested in?`': {
-                                '{yes}': {
-                                    '`Nice bro! You know, I can help you make a workout using calisthenics. I\'m a beast at making workout plans!`': 'schedule'
-                                    # probably will need to fix this transition
-                                },
-                                'state:costno2{no}': {
-                                    '`Okay bro... well there are other exercies you can do that don\'t require equipment and aren\t consider calisthenics like cardio, would you be interested in something like that?': {
-                                        '{yes}': {
-                                            '`Nice bro! You know, I can help you make a workout without using calisthenics or equipment. I\'m a beast at making workout plans!`': 'schedule'
-                                            # probably will need to fix this transition
+                    'state':'costno',
+                    '`Oof, bro, I thought I was gaming the system. Oh! I just remembered bro, '
+                    'some public parks also some gym-like equipment. If you\'re really set on using '
+                    'equipment, this could be a good alternative bro!`': {
+                        '#VIBECHECK':{
+                            '#IF(VIBE=positive)`As one of your homies, I want to find solutions that work for you! '
+                            'But bro, there are plenty of workouts you can do without equipment, by using your body '
+                            'weight instead. If you didn\'t know bro, these exercises are called calisthenics. Would '
+                            'that be something you\'re interested in?`':{
+                                'state':'bodyweight',
+                                '#VIBECHECK':{
+                                    '#IF(VIBE=positive)`Nice bro! You know, I can help you make a workout using '
+                                    'calisthenics. I\'m a beast at making workout plans!` #SET(PREFACTIVITY=calisthenics)':'schedule',
+                                    '#IF(VIBE=negative)`Okay bro... well there are other exercies you can do that '
+                                    'don\'t require equipment and aren\t consider calisthenics like cardio, '
+                                    'would you be interested in something like that?`':{
+                                        '#VIBECHECK':{
+                                            '#IF(VIBE=positive)`Nice bro! You know, I can help you make a workout without using '
+                                            'calisthenics or equipment. I\'m a beast at making workout plans!`':'schedule',
+                                            '`Hm... bro, it\'s sounding like there may be another reason why you\'re '
+                                            'not going to the gym.`': {'state':'whynot', 'score':0.1}
                                         },
-                                        '`Hm... bro, it\'s sounding like there may be another reason why you\'re not going to the gym.`': 'whynot'
                                     }
-                                }
-                            }
+                                },
+                            },
+                            '#IF(VIBECHECK=negative)`Not your style, I get it, bro. But to be real with you, '
+                            'there are plenty of workouts you can do without equipment, by using your body weight '
+                            'instead. If you didn\'t know bro, these exercises are called calisthenics. Would that be '
+                            'something you\'re interested in?`':'bodyweight'
                         },
-                        '{bad idea}': {
-                            '`Not your style, I get it, bro. But to be real with you, there are plenty of workouts you can do without equipment, by using your body weight instead. If you didn\'t know bro, these exercises are called calisthenics. Would that be something you\'re interested in?`': 'costno2'
-                        }
                     }
                 }
             },
@@ -618,6 +643,7 @@ whynot_transitions = {
         }
     }
 }
+
 
 workout_planning_transitions = {
     'state': 'formulate_plan'
@@ -740,7 +766,7 @@ global_transitions = {
     '[{birthday, birth, day, annual, celebration}]': {
         '`whoa dude. like. congrats!!!!`': 'chatting'
     },
-    '[quit gymbrot]': {
+    '[quit, gymbrot]': {
         '`Cya later bro!`': 'end'
     },
     '[{emergency, [immediate, danger]}]': {
@@ -756,22 +782,22 @@ global_transitions = {
     },
     '[[help, make, workout, plan], [help, workout, {plan, planning}]]': 'end',
     '[{something, else, [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
-        '#TOPICSHIFT #IF(NEWTOPIC=weather)': 'weather',
-        '#TOPICSHIFT #IF(NEWTOPIC=music)': 'music',
-        '#TOPICSHIFT #IF(NEWTOPIC=movie)': 'movie',
-        '#TOPICSHIFT #IF(NEWTOPIC=sports)': 'sports',
-        '#TOPICSHIFT #IF(NEWTOPIC=food)': 'food',
-        '#TOPICSHIFT #IF(NEWTOPIC=work)': 'work',
-        '#TOPICSHIFT #IF(NEWTOPIC=travel)': 'travel',
-        '#TOPICSHIFT #IF(NEWTOPIC=hobbies)': 'hobbies',
-        '#TOPICSHIFT #IF(NEWTOPIC=hometown)': 'hometown',
-        '#TOPICSHIFT #IF(NEWTOPIC=school)': 'school',
-        '#TOPICSHIFT #IF(NEWTOPIC=workout planning)': 'formulate_plan',
-        '#TOPICSHIFT #IF(NEWTOPIC=N/A)': {
-            '`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`': 'chatting'
-        },
-        'error': {
-            '`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`': 'chatting'
+        'state':'topicshift',
+        '#TOPICSHIFT':{
+            'state': 'topicshift',
+            '#IF(NEWTOPIC=weather)': 'weather',
+            '#IF(NEWTOPIC=movie)': 'movie',
+            '#IF(NEWTOPIC=music)': 'music',
+            '#IF(NEWTOPIC=sports)': 'sports',
+            '#IF(NEWTOPIC=food)': 'food',
+            '#IF(NEWTOPIC=work)': 'work',
+            '#IF(NEWTOPIC=travel)': 'travel',
+            '#IF(NEWTOPIC=hobbies)': 'hobbies',
+            '#IF(NEWTOPIC=hometown)': 'hometown',
+            '#IF(NEWTOPIC=school)': 'school',
+            '#IF(NEWTOPIC=workout planning)': 'formulate_plan',
+            '#TOPICSHIFT #IF(NEWTOPIC=N/A)`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`':'chatting',
+            '`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`': {'state':'chatting', 'score':0.1}
         },
     },
 }
@@ -1090,7 +1116,7 @@ class MacroRandomMuscle(Macro):
 macros = {
     'VISITS': MacroVisits(),
     'TOPICSHIFT': MacroGPTJSON(
-        'What topic of conversation is this person trying to introduce?',
+        'What topic of conversation is this person trying to introduce? Possible topics are music, movies, weather, sports, and workout planning',
         {"NEWTOPIC": "holiday"}, {"NEWTOPIC": "N/A"}),
 
     'ACTIVITYLEVEL': MacroGPTJSON(
