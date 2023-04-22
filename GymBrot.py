@@ -1103,7 +1103,7 @@ macros = {
         'How many times a week does a person go to the gym, with 0 being never, 1 or 2 being low, less than 5 being mid, less than 8 being high, and greater than 8 being swole. They may go more than once per day',
         {"ACTIVITYFREQ": "never"}, {"ACTIVITYFREQ": "N/A"}),
     'PREFACTIVITY': MacroGPTJSON(
-        'What activity does the person do to exercise?',
+        'What activity does the person do to exercise? Return a phrase that does not take an article, i.e. "lifting", "going to the gym", "working out", "running".',
         {"PREFACTIVITY": "lifting"}, {"PREFACTIVITY": "N/A"}),
     'WHYNOT': MacroGPTJSON(
         'Why does this person not go to the gym?',
@@ -1114,17 +1114,16 @@ macros = {
 
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
     'GETACTIVITYFREQ': MacroNLG(get_ACTIVITYFREQ),
+
     'VIBECHECK': MacroGPTJSON(
-        'Is this user positive, negative, or neutral?',
-        {"VIBE": "positive"}, {"VIBE": "N/A"}),
-    'INITMOOD': MacroGPTJSON(
-        'Is this user positive, negative, or neutral?',
-        {"INITMOOD": "positive"}, {"INITMOOD": "N/A"}),
+         'Is this user positive, negative, neutral, or asking a question?',
+         {"VIBE": "positive"}, {"VIBE": "N/A"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
     'WEATHER': MacroWeather(),
     'GETWORKOUTLIST': MacroGIVEREC()
 }
+
 
 df.load_transitions(intro_transitions)
 df.load_transitions(consent_transitions)
