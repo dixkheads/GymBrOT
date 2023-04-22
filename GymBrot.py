@@ -13,6 +13,7 @@ import numpy as np
 # This is a test to see if it has pushed
 # os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
+os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
 
 model = 'gpt-3.5-turbo'
@@ -319,9 +320,7 @@ whynot_transitions = {
                             'totally}]': {
                                 '`I\'m glad I could help bro. I have some more ideas if you\'d like me to drop these '
                                 'knowledge bombs on you.`': {
-
                                     '[{yes, drop}]': {
-
                                         '`Bringin a couple of your homies to the gym may also be helpful. If they are '
                                         'gym rats they can help you learn how to use the machines or practice your '
                                         'form, and even if they aren\'t they can just help support you if you\'re '
@@ -368,12 +367,16 @@ whynot_transitions = {
                                                     }
                                                 },
                                                 '[{bad idea}]': {
-                                                    '`Okay, okay, lone wolf type of vibe, I get you, hahaha. But, really if you don\'t want to bring anyone to the gym, that\'s fine. But, bro, just in general,  it\'s important to remember that everyone is at the gym to work on themselves. None of the homies in the gym are there to judge. And I know, it\'s easier said than done to just not worry about what our bros think of us, but with a little practice and time spent in the gym, I think you\'ll feel much more comfortable, bro.`'
+                                                    '`Okay, okay, lone wolf type of vibe, I get you, hahaha. But, really if you don\'t want to bring anyone to the gym,\n`'
+                                                    '` that\'s fine. But, bro, just in general,  it\'s important to remember that everyone is at the gym to work on themselves.\n`'
+                                                    '`None of the homies in the gym are there to judge. And I know, it\'s easier said than done to just not worry about what our \n`'
+                                                    '`bros think of us, but with a little practice and time spent in the gym, I think you\'ll feel much more comfortable, bro.`'
                                                 }
                                             }
                                         },
                                         '[{no}]': {
-                                            '`That\'s cool bro. I\'ve given you all the advice you need, haha. Before we move on, is there any other reason why you\'re not hittin the gym as much as you\'d like?`': 'whynot'
+                                            '`That\'s cool bro. I\'ve given you all the advice you need, haha. Before we move on, is there any other reason why you\'re not \n`'
+                                            '`hittin the gym as much as you\'d like?`': 'whynot'
                                         }
                                     }
                                 },
@@ -400,20 +403,46 @@ whynot_transitions = {
     },
 
     '#IF($WHYNOT=safety)': {
-
+        '[]': {
+            '``'
+        }
     },
     '#IF($WHYNOT=busy)': {
         '`I get it bro, sometimes life gets in the way. Espically right now bro, I\'m sure you\'re swamped with work because the semester is ending.': {
             '{yes}': {
-                '`Tell me about it bro... but seriously when I first started going the gym, it was pretty low on my priority list, so when things got busy, and life got in the way, it was always the first thing in my schedule to go. But bro, being totally real with you, workin out just makes me feel so much better, so I have to make time for it! If you want I can help you manage your time better so you can make it to the gym, but before that I gotta know, is there any other reason you\'re not going to the gym?`': 'whynot'
+                '`Tell me about it bro... but seriously when I first started going the gym, it was pretty low on my priority list, so when things got busy,\n`'
+                '` and life got in the way, it was always the first thing in my schedule to go. But bro, being totally real with you, workin out just makes me \n`'
+                '`feel so much better, so I have to make time for it! If you want I can help you manage your time better so you can make it to the gym, but before \n`'
+                '`that I gotta know, is there any other reason you\'re not going to the gym?`': 'whynot'
             },
             '{no}': {
-                '`Really? Lucky you, bro. But seriously, when I first started going the gym, it was pretty low on my priority list, so when things got busy, and life got in the way, it was always the first thing in my schedule to go. But bro, being totally real with you, workin out just makes me feel so much better, so I have to make time for it! If you want I can help you manage your time better so you can make it to the gym, but before that I gotta know, is there any other reason you\'re not going to the gym?`': 'whynot'
+                '`Really? Lucky you, bro. But seriously, when I first started going the gym, it was pretty low on my priority list, so when things got busy, \n`'
+                '`and life got in the way, it was always the first thing in my schedule to go. But bro, being totally real with you, workin out just makes me feel \n`'
+                '`so much better, so I have to make time for it! If you want I can help you manage your time better so you can make it to the gym, but before that I \n`'
+                '`gotta know, is there any other reason you\'re not going to the gym?`': 'whynot'
             }
         }
     },
     '#IF($WHYNOT=disability)': {
-
+        '`Hey bro, thanks for feeling comfortable enough to share this with me. Everyones\' bodies are different with different needs, and that will never be something a true homie, like me, will judge you for. If you\'re interested we can find other options that can still get you swole and help you achieve your fitness goals.`': {
+            '{yes}': {
+                '`For sure bro, it\'s best to start slow with low-impact exercises. Like bro, water aerobics can be a great option!`': {
+                    '[{good, love}]': {
+                        '`Great bro! Also, don\'t be afraid to modify exercises if they are too challengin or if they are causing you pain`': {
+                            '[thank, you]': {
+                                '`Anytime bro!`'
+                            }
+                        }
+                    },
+                    '[{bad, no, not}]': {
+                        '``'
+                    }
+                }
+            },
+            '{no}': {
+                '``'
+            }
+        }
     },
     '#IF($WHYNOT=cost)': {
         '`That\'s real bro. I understand times can be tough. Depending on where you live, some colleges, universities, apartment complexes, and even some offices have gyms that you can use for free!`'
@@ -587,7 +616,7 @@ global_transitions = {
         '`whoa bro. I love you in a bromance kinda way. I\'m just a chatbot, and I don\'t feel emotions like romantic '
         'love (even tho you\'re my gym bro!)`': 'chatting'
     },
-    '[[help, make, workout, plan], [help, workout, {plan, planning}]': 'formulate_plan',
+    '[[help, make, workout, plan], [help, workout, {plan, planning}]]': 'end',
     '[{something, else, [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
         '#TOPICSHIFT #IF(NEWTOPIC=weather)': 'weather',
         '#TOPICSHIFT #IF(NEWTOPIC=music)': 'music',
@@ -945,7 +974,7 @@ macros = {
     'INITMOOD': MacroGPTJSON(
         'Is this user positive, negative, or neutral?',
         {V.INITMOOD.name: "positive"}, {V.INITMOOD.name: "N/A"}),
-    'GREETING': MacroGreeting,
+    'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
     'WEATHER': MacroWeather()
 }
