@@ -123,7 +123,7 @@ name_transitions = {
                         }
                     }
                 },
-                '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, bland, worst, [not, {good, great, amazing, incredible}], nah, nope, nada, enemy, hate, evil, stupid, terrible}]': {
+                '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, bland, worst, [not, {good, great, amazing, incredible}], nah, nope, nada, enemy, hate, evil, stupid, terrible, ass}]': {
                     '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. \nWe\'ll stick with`$NAME`. \nEnough about names. I want to learn some more about you, bro!`': 'new_user'
                 },
                 'error':{
@@ -247,7 +247,7 @@ newuser_transitions = {
         }
     },
     '#GATE`I love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
-        '#ACTIVITYFREQ #GETACTIVITYFREQ #GETWORKOUTLIST': {
+        '#ACTIVITYFREQ': {
             '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. \nWhy aren\'t you hitting the gym?`': 'whynot',
             '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`':'whynot',
             '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`': 'new_user',
@@ -259,7 +259,7 @@ newuser_transitions = {
             }
         },
         'error': {
-            'Whoa, bro, that\'s sick!': 'new_user'
+            '`Whoa, bro, that\'s sick!`': 'new_user'
         },
     },
     '#GATE`Bro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
@@ -268,7 +268,7 @@ newuser_transitions = {
             'day... \nbut my full time job and favorite mental workout is being a personal trainer! Anyway...\n`': 'new_user'
         },
     },
-    '`Ok, ok I feel like I know you better now bro! \nSo, bro to bro, I\'m a beast at making workout plans, and I bet I know exactly what\'ll get you pumped and motivated to keep coming back to the gym! \nno pressure tho`': 'topicshift'
+    '`Ok, ok I feel like I know you better now bro! \nSo, bro to bro, I\'m a beast at making workout plans, and I bet I know exactly what\'ll get you pumped and motivated to keep coming back to the gym! \nno pressure tho`': {'state':'topicshift', 'score':0.1}
 }
 
 """
@@ -788,25 +788,27 @@ global_transitions = {
     '[[help, make, workout, plan], [help, workout, {plan, planning}]]': 'end',
     '[{something, else, [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
         'state':'topicshift',
-        '#TOPICSHIFT':{
-            'state': 'topicshift',
-            '#IF(NEWTOPIC=weather)': 'weather',
-            '#IF(NEWTOPIC=movie)': 'movie',
-            '#IF(NEWTOPIC=music)': 'music',
-            '#IF(NEWTOPIC=sports)': 'sports',
-            '#IF(NEWTOPIC=food)': 'food',
-            '#IF(NEWTOPIC=work)': 'work',
-            '#IF(NEWTOPIC=travel)': 'travel',
-            '#IF(NEWTOPIC=hobbies)': 'hobbies',
-            '#IF(NEWTOPIC=hometown)': 'hometown',
-            '#IF(NEWTOPIC=school)': 'school',
-            '#IF(NEWTOPIC=workout planning)': 'formulate_plan',
-            '#TOPICSHIFT #IF(NEWTOPIC=N/A)`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`':'chatting',
-            '`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`': {'state':'chatting', 'score':0.1}
+        '`what did you wanna talk about?`':{
+            '#TOPICSHIFT':{
+                'state': 'topicshift',
+                '#IF($NEWTOPIC=weather)': 'weather',
+                '#IF($NEWTOPIC=movie)': 'movie',
+                '#IF($NEWTOPIC=music)': 'music',
+                '#IF($NEWTOPIC=sports)': 'sports',
+                '#IF($NEWTOPIC=food)': 'food',
+                '#IF($NEWTOPIC=work)': 'work',
+                '#IF($NEWTOPIC=travel)': 'travel',
+                '#IF($NEWTOPIC=hobbies)': 'hobbies',
+                '#IF($NEWTOPIC=hometown)': 'hometown',
+                '#IF($NEWTOPIC=school)': 'school',
+                '#IF($NEWTOPIC=workout planning)': 'formulate_plan',
+                '#IF($NEWTOPIC=concerns)':'whynot',
+                '#IF(NEWTOPIC=N/A)`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`':'chatting',
+                '`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`': {'state':'chatting', 'score':0.1}
+            },
         },
-    },
+    }
 }
-
 
 class MacroGetName(Macro):
     # def load_user(self, firstname, lastname):
@@ -1121,7 +1123,8 @@ class MacroRandomMuscle(Macro):
 macros = {
     'VISITS': MacroVisits(),
     'TOPICSHIFT': MacroGPTJSON(
-        'What topic of conversation is this person trying to introduce? Possible topics are music, movies, weather, sports, and workout planning',
+        'What topic of conversation is this person trying to introduce? Possible topics are music, movies, weather, '
+        'sports, workout planning, and concerns. If it is not one of these, return N/A',
         {"NEWTOPIC": "holiday"}, {"NEWTOPIC": "N/A"}),
 
     'ACTIVITYLEVEL': MacroGPTJSON(
@@ -1147,8 +1150,6 @@ macros = {
         {"NAME": "James Smith"}, {"NAME": "N/A"}),
 
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
-    'GETACTIVITYFREQ': MacroNLG(get_ACTIVITYFREQ),
-
     'VIBECHECK': MacroGPTJSON(
          'Is this user positive, negative, neutral, or asking a question?',
          {"VIBE": "positive"}, {"VIBE": "N/A"}),
@@ -1156,7 +1157,6 @@ macros = {
     'RANDOM_MUSCLE': MacroRandomMuscle(),
     'WEATHER': MacroWeather(),
 }
-
 
 df.load_transitions(intro_transitions)
 df.load_transitions(consent_transitions)
