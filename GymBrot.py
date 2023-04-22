@@ -14,7 +14,7 @@ import numpy as np
 os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 #os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
-# This is a test to see if it has pushed
+
 
 model = 'gpt-3.5-turbo'
 #USERDATA_ADDR = "/Users/kristen/PycharmProjects/GymBrOT/resources/userdata.csv"
@@ -816,35 +816,14 @@ def get_ACTIVITYFREQ(vars: Dict[str, Any]):
             vars['ACTIVITYFREQ'] = "high"
         elif level > 7:
             vars['ACTIVITYFREQ'] = "superswole"
-    #else:
-     #   vars['FITNESSLEVEL'] = vars["FITNESSLEVEL"]
+
     print(vars['ACTIVITYFREQ'])
     return True
 
 
-#def get_PREFACTIVITY(vars: Dict[str, Any]):
-    #vars['PREFACTIVITY'] = vars[V.PREFACTIVITY.name][random.randrange(len(vars[V.PREFACTIVITY.name]))]
-    #print(vars['PREFACTIVITY'])
-    #return
 
 
-#def get_WHYNOT(vars: Dict[str, Any]):
-#    vars['WHYNOT'] = vars[V.WHYNOT.name][random.randrange(len(vars[V.WHYNOT.name]))]
-#    print(vars['WHYNOT'])
- #   return
 
-
-#def get_INITMOOD(vars: Dict[str, Any]):
-#    ls = vars[V.INITMOOD.name]
- #   return ls[random.randrange(len(ls))]
-
-
-#class MacroSETINITMOOD(Macro):
-#    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
-#        vars['INITMOOD'] = get_INITMOOD(vars)
-#        return True
-
-        # return rec
 
 class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Workout name: Description, name: Des, name: Des}, {n: d, n: d, n: d}, ...]
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
@@ -994,14 +973,11 @@ macros = {
         {"WHYNOT": ["judgement", "safety", "busy", "disability"]}, {"WHYNOT": []}),
 
     'GETNAME': MacroGPTJSON( 'What is this persons name?',
-        {"NAME": "James Smith"}, {"ACTIVITYFREQ": "N/A"}),
-    #'SETINITMOOD': MacroSETINITMOOD(),
-   # 'GETINITMOOD': MacroNLG(get_INITMOOD),
-    #'GETACTIVITYLEVEL': MacroNLG(get_ACTIVITYLEVEL),
+        {"NAME": "James Smith"}, {"NAME": "N/A"}),
+
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
     'GETACTIVITYFREQ': MacroNLG(get_ACTIVITYFREQ),
-    #'GETPREFACTIVITY': MacroNLG(get_PREFACTIVITY),
-   # 'GETWHYNOT': MacroNLG(get_WHYNOT),
+
     'INITMOOD': MacroGPTJSON(
         'Is this user positive, negative, or neutral?',
         {"INITMOOD": "positive"}, {"INITMOOD": "N/A"}),
