@@ -62,7 +62,7 @@ intro_transitions = {
     'state': 'intro',
     '#VISITS `Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? \n` #GREETING': {
         '#INITMOOD': {
-            '#IF($INITMOOD=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`': {
+            '#IF($INITMOOD=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`':{
                 'state': 'offer',
                 '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, {are, know}], right, correct, true, factual, facts, def, always, [i, have], totally}]': {
                     '`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`': 'name'
@@ -72,7 +72,7 @@ intro_transitions = {
                 },
                 'error': {
                     '`Hold up bro, I couldn\'t catch your vibe. Can you say that again?`': 'offer'
-                },'score':1,
+                }
             },
             '#IF($INITMOOD=negative)`That’s tough bro. Hopefully it\'s not because of your finals... \nI\'m sorry if I started off too strong bro.`': {
                 '[{okay, fine, [no, worries], [dont, worry], sorry, ok, alright, just, enough}]': {  # supposed to be forgiveness
@@ -83,13 +83,13 @@ intro_transitions = {
                 },
                 'error':{
                     '`Hey bro, I get it. Sometimes it really do be like that.`':'name'
-                },'score':1,
+                },
             },
             '#IF($INITMOOD=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do '
             'when I feel off, hit the gym! Have you been workin on your gains?`': 'offer','score':1,
 
-            '#GATE `Haha bro, are you even human? what emotions do you have? \njkjk, I just couldn\'t catch your vibe, so lemme repeat myself.\n`' : 'intro', 'score': 0.1,
-            '#GATE`Aight, I can take a hint. Peace bro.`':'end','score':0.01
+            '#GATE `Haha bro, are you even human? what emotions do you have? \njkjk, I just couldn\'t catch your vibe, so lemme repeat myself.\n`' : {'state':'intro', 'score': 0.1},
+            '#GATE`Aight, I can take a hint. Peace bro.`':{'state':'end', 'score': 0.01}
 
         },
         'error':{
