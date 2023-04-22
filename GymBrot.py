@@ -203,7 +203,7 @@ newuser_transitions = {
                     }
                 },
                 '[{computer, bot, comp, robot, ai, machine, code, coding}]': {
-                    '`What do you mean I\'m a computer… Error 404: Incompatible hardware detected. \nSystem shutoff initiated… hahaha just messing with you bro. \nJust because I\'m a computer doesn\'t mean I don\'t have a healthy lifestyle and sick muscles.`': {
+                    '`What do you mean I\'m a computer… Error 404: Incompatible hardware detected. \nSystem shutoff initiated… hahaha just messin with you bro. \nJust because I\'m a computer doesn\'t mean I don\'t have a healthy lifestyle and sick muscles.`': {
                         'error': {
                             'It\'s okay... this isn\'t that important so, let\'s just change the topic, bro.\n`': 'new_user'
                         }
@@ -302,20 +302,16 @@ whynot_transitions = {
         '`Yo, bro I hear you. Can I be real with you for a sec? It is completely normal to have some anxiety about '
         'going to the gym. I know we don\'t know each other like that so I won\'t push you to discuss it more, '
         'but if you want I can give you some advice.`': {
-
             '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, {are, '
             'know}], right, correct, true, factual, facts, def, always, [i, have], totally}]': {
-
-                '`Okay, bro, for sure. It\’s good to start small. Just go and do a short workout. if the vibe is '
-                'right, you can keep going for longer sets as you get more comfortable. Like bro, think about it this '
-                'way. When you start lifting you don\’t max out the weight immediately, right? We have to start with '
-                'five or ten pounds and as we get more comfortable we keep adding on. You following me, dude?`': {
-
+                '`Okay, bro, for sure. It\’s good to start small. Just go and do a short workout. if the vibe is\n`'
+                '`right, you can keep going for longer sets as you get more comfortable. Like bro, think about it this\n`'
+                '`way. When you start lifting you don\’t max out the weight immediately, right? We have to start with\n`'
+                '`five or ten pounds and as we get more comfortable we keep adding on. You following me, dude?`': {
+                    'state': 'judgefirst',
                     '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], right, '
                     'correct, true, factual, facts, def, always, follow, following, totally}]': {
-
                         '`Great! Does that sound like something you could do bro?`': {
-
                             '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, '
                             '{can, could}], [it, {does,do}], right, correct, true, factual, facts, def, always, '
                             'totally}]': {
@@ -334,78 +330,134 @@ whynot_transitions = {
                                                 'than done to just not worry about what our bros think of us, '
                                                 'but with a little practice and time spent in the gym, '
                                                 'I think you\'ll feel much more comfortable, bro.`': {
+                                                    'state': 'judgelast',
                                                     '[{thank you}]': {
-                                                        '`No problem bro! Oh wait, I almost forgot, sometimes just '
-                                                        'having a plan for what you\'ll do in the gym can releave '
-                                                        'some of that stress, because, you\'ll like know what to do! '
-                                                        'If you want I can help you plan out that workout so you can '
-                                                        'start getting those gains.`': {
+                                                        '`No problem bro! Oh wait, I almost forgot, sometimes just\n`'
+                                                        '`having a plan for what you\'ll do in the gym can relieve\n`'
+                                                        '`some of that stress, because, you\'ll like know what to do!\n`'
+                                                        '`If you want I can help you plan out that workout so you can\n`'
+                                                        '`start getting those gains.`': {
                                                             '[yes]': 'schedule',
                                                             # come back to this I don't know the name of the transtion
                                                             '[{no, maybe}]': {
-                                                                '`You\'re the boss, bro. We can come back to that '
-                                                                'later, but for now is there any other reason you '
-                                                                'aren\'t hittin the gym?`': 'whynot'
-                                                            }
-                                                        },
-                                                        '[{not convinced}]': {
-                                                            '`Totally valid, bro. Like I said it\'s easier said than '
-                                                            'done. You know what\'s something that might help you bro? '
-                                                            'Having a plan for what you\'ll do in the gym. Some of my '
-                                                            'bros say it helps relieve their stress because they know '
-                                                            'exactly what they want to do when they get to the gym! If '
-                                                            'you want, I can help you plan out that workout do you can '
-                                                            'start getting those gains.`': {
-                                                                '[yes]': 'schedule',
-                                                                # come back to this I don't know the name of the transtion
-                                                                '[{no, maybe}]': {
-                                                                    '`You\'re the boss, bro. We can come back to that '
-                                                                    'later, but for now is there any other reason you '
-                                                                    'aren\'t hittin the gym?`': 'whynot'
-                                                                }
+                                                                '`You\'re the boss, bro. We can come back to that`'
+                                                                '`later, but for now is there any other reason you`'
+                                                                '`aren\'t hittin the gym?`': 'whynot'
+                                                        }
+                                                    },
+                                                    '[{not convinced}]': {
+                                                        '`Totally valid, bro. Like I said it\'s easier said than`'
+                                                        '`done. You know what\'s something that might help you bro?\n`'
+                                                        '`Having a plan for what you\'ll do in the gym. Some of my`'
+                                                        '`bros say it helps relieve their stress because they know\n`'
+                                                        '`exactly what they want to do when they get to the gym! If`'
+                                                        '`you want, I can help you plan out that workout do you can\n`'
+                                                        '`start getting those gains.`': {
+                                                            '[yes]': 'schedule',
+                                                            # come back to this I don't know the name of the transtion
+                                                            '[{no, maybe}]': {
+                                                                '`You\'re the boss, bro. We can come back to that`'
+                                                                '`later, but for now is there any other reason you\n`'
+                                                                '`aren\'t hittin the gym?`': 'whynot'
                                                             }
                                                         }
                                                     }
-                                                },
-                                                '[{bad idea}]': {
-                                                    '`Okay, okay, lone wolf type of vibe, I get you, hahaha. But, really if you don\'t want to bring anyone to the gym,\n`'
-                                                    '` that\'s fine. But, bro, just in general,  it\'s important to remember that everyone is at the gym to work on themselves.\n`'
-                                                    '`None of the homies in the gym are there to judge. And I know, it\'s easier said than done to just not worry about what our \n`'
-                                                    '`bros think of us, but with a little practice and time spent in the gym, I think you\'ll feel much more comfortable, bro.`'
                                                 }
+                                            },
+                                            '[{bad idea}]': {
+                                                '`Okay, okay, lone wolf type of vibe, I get you, hahaha. But, really if you don\'t want to bring anyone to the gym,\n`'
+                                                '` that\'s fine. But, bro, just in general,  it\'s important to remember that everyone is at the gym to work on themselves.\n`'
+                                                '`None of the homies in the gym are there to judge. And I know, it\'s easier said than done to just not worry about what our \n`'
+                                                '`bros think of us, but with a little practice and time spent in the gym, I think you\'ll feel much more comfortable, bro.`' : 'judgelast'
                                             }
-                                        },
-                                        '[{no}]': {
-                                            '`That\'s cool bro. I\'ve given you all the advice you need, haha. Before we move on, is there any other reason why you\'re not \n`'
-                                            '`hittin the gym as much as you\'d like?`': 'whynot'
                                         }
+                                    },
+                                    '[{no}]': {
+                                        '`That\'s cool bro. I\'ve given you all the advice you need, haha. Before we move on, is there any other reason why you\'re not \n`'
+                                        '`hittin the gym as much as you\'d like?`': 'whynot'
                                     }
-                                },
-                                '[{no}]': {
-
+                                }
+                            },
+                            '[{no}]': {
+                                '`I see bro... you\'re a go getter, but I wouldn\'t recommend hittin the gym as hard as you can right off the bat.\n`'
+                                '` I\'d consider us homies, and homie to homie that\'s how you end up getting hurt bro!`': {
+                                    '[okay, right, yes]': {
+                                        '`Glad we could clear that up bro! I know we just met, but your health and wellbein is super important to me bro!`': 'judgelast'
+                                    }
                                 }
                             }
-                        },
-                        '[{no}]': {
-
+                        }
+                    },
+                    '[{no}]': {
+                        '`Maybe the metaphor was too much, bro. The point is it\'s totally fine to start off small. You don\'t have to start off squatin\n`'
+                        '` 200lbs. And honestly, bro, you shouldn\'t for your health.`': 'judgefirst'
                         }
                     }
                 },
-
             },
             '[{something, else, chat, casual, no,}]': {
                 '`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`': {
 
                 }
-
             }
-
         }
     },
-
     '#IF($WHYNOT=safety)': {
-        '[]': {
-            '``'
+        '`I see, bro... I know we don\'t know each other super well, but bro, is this something I can help you with? \n`'
+        '`Like are you afraid of getting hurt while workin out or is someone threatening you?`': {
+            '[working, out, lifting]': {
+                '`Oh yeah, I see. I won\'t lie to you bro, you can get hurt while workin out, but most people don\'t for two reasons:\n`'
+                '`they have spotters and they know their limits.`': {
+                    'state': 'safetyfirst',
+                    '[how, not]': {
+                        '`Totally bro, let me elaborate for ya. Finding a spotter can be tough, but gym bros are usually open to being spotters,\n`'
+                        '`even if they don\'t know you well. You could even bring one of your homies! Do you think you\'d be able to find a spotter?`': {
+                            '[yes]': {
+                                '`Perfect bro! As for understandin your limits, it\'s important bro so you don\'t get hurt. It\'s repetative I know, but you\'ll have o start off small so that you understand your body more and more overtime!`': {
+                                    '[for, sure, yes, yeah]': {
+                                        '`Thanks for listening bro. Before we move on, is there any other reason keepin you out of the gym?`': 'whynot'
+                                    },
+                                    '[no]': {
+                                        '`I see, bro. You like to jump right into everything, but it is really important to know your limits to stay staff in the gym. I can only repeat myself so many times bro, so why don\'t you tell me if theres anything else keeping you out of the gym?`': 'whynot'
+                                    }
+                                }
+                            },
+                            '[no]': {
+                                '`Bro, I think if you really put yourself out there you could, but I won\'t push you now. Is there any other reason you\'re not getting to the gym as much as you\'d like`': 'whynot'
+                            }
+                        }
+                    },
+                    '[okay]': {
+                        '`Do you these two recs are things you could practice bro?`': {
+                            '[yes]': {
+                                'Perfect bro, now that we have that out of the way, is there any other reason you\'re not gettin to the gym as much as you\'d like?`': 'whynot'
+                            }
+                        }
+                    },
+                    '[what, spotter]': {
+                        '`Sorry bro! A spotter is a person who supports you while you\'re doing an exercise so you can safely lift or push, for example, more weight than you\'re ueed to. They\'re some real homies! If you ever need me to explain something like that bro, feel free to ask. But now that we have that cleared up, do you think you could find a spotter?`': 'safetyfirst'
+                    }
+                }
+            },
+            '[threatening, person, scared]': {
+                '`Whoa bro. That\'s not ok. You don\'t have to tell me about it, but if there\'s someone in particular making you feel afraid, you gotta \n`'
+                '`let the staff know. Trust me, real gym bros just wanna bring good vibes, so if someone is giving you majorly bad vibes someone will be able to help.\n`'
+                '`Would this be somethin you\'d be comfortable doing?`': {
+                    '[yes]': {
+                        '`I just want to let you know bro, you\'re one of the most couragous people I know, and I think you\'re doing the right thing! I don\'t want to push the subject though, so is there any other reason why you\'re not going to the gym?`': 'whynot'
+                    },
+                    '[no]': {
+                        '`Hey bro, no worries. There are definatly ways we can workout without going to the gym, and if you\'re intested, we can plan your workout around that later!`': {
+                            '[yes, sure]': {
+                                '`Great dude! I\'m glad we could talk about this! But I gotta know, is there any other reason you\'re not going to the gym as often as you\'d like?`': 'whynot'
+                            },
+                            '[no]': {
+                                '`I won\'t push you bro, what else would you like to talk about?': 'chatting'
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     '#IF($WHYNOT=busy)': {
@@ -425,23 +477,29 @@ whynot_transitions = {
         }
     },
     '#IF($WHYNOT=disability)': {
-        '`Hey bro, thanks for feeling comfortable enough to share this with me. Everyones\' bodies are different with different needs, and that will never be something a true homie, like me, will judge you for. If you\'re interested we can find other options that can still get you swole and help you achieve your fitness goals.`': {
+        '`Hey bro, thanks for feeling comfortable enough to share this with me. Everyones\' bodies are different with different needs,\n`'
+        '`and that will never be something a true homie, like me, will judge you for. If you\'re interested we can find other options\n`'
+        'that can still get you swole and help you achieve your fitness goals.`': {
             '{yes}': {
                 '`For sure bro, it\'s best to start slow with low-impact exercises. Like bro, water aerobics can be a great option!`': {
                     '[{good, love}]': {
                         '`Great bro! Also, don\'t be afraid to modify exercises if they are too challengin or if they are causing you pain`': {
+                            'state': 'disability1',
                             '[thank, you]': {
-                                '`Anytime bro!`'
+                                '`Anytime bro! You know your body better than I do, so when you go to the gym make sure to listen to what it\'s tellin you bro. If something doesn\'t feel right it probably isn\'t, and if you need some more help in the gym it\'s best to consult a trainer or physical therapist! But hey, now that we cleared that up, is there any other reason why you\'re not going to the gym?`': 'whynot'
+                            },
+                            '[not, interested]': {
+                                '`That\'s fine bro, I know this can be a heavy topic, but before we move on, is there any other reason you\'re not hittin the gym as much as you\'d like?`': 'whynot'
                             }
                         }
                     },
                     '[{bad, no, not}]': {
-                        '``'
+                        '`Hmm, okay bro. Well you can also make sure to modify the exercies you\'re doing espically if they\'re too challengin or if they are causing you too much pain!`': 'disability1'
                     }
                 }
             },
             '{no}': {
-                '``'
+                '`I know this can be a heavy topic for people, bro, so I won\' push you, but before we move on, is there any other reason you don\'t make it to the gym as much as you\'d like?`': 'whynot'
             }
         }
     },
