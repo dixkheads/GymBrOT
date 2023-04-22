@@ -265,7 +265,7 @@ newuser_transitions = {
             }
     },
     '#GATE`I love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
-        '#ACTIVITYFREQ #GETACTIVITYFREQ': {
+        '#ACTIVITYFREQ #GETACTIVITYFREQ #GETWORKOUTLIST': {
             '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. \nWhy aren\'t you hitting the gym?`': 'whynot',
             '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`':'whynot',
             '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`': 'new_user',
@@ -788,7 +788,7 @@ class MacroWeather(Macro):
 
 
 def get_FITNESSLEVEL(vars: Dict[str, Any]):
-    level = int(vars[V.FITNESSLEVEL.name])
+    level = int(vars["FITNESSLEVEL"])
     if level == 0:
         vars['FITNESSLEVEL'] = "zero"
     elif level < 3:
@@ -799,8 +799,6 @@ def get_FITNESSLEVEL(vars: Dict[str, Any]):
         vars['FITNESSLEVEL'] = "swole"
     elif level > 11:
         vars['FITNESSLEVEL'] = "superswole"
-    else:
-        vars['FITNESSLEVEL'] = [V.FITNESSLEVEL.name]
     print(vars['FITNESSLEVEL'])
     return True
 
@@ -854,7 +852,7 @@ class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Wo
         workout_level = ""
         if vars['ACTIVITYFREQ'] == "never":
             workout_level = "Beginner"
-        elif vars['ACTIVITYFREQ'] == "low" or vars['ACTIVITYFREQ'] == "mid"
+        elif vars['ACTIVITYFREQ'] == "low" or vars['ACTIVITYFREQ'] == "mid":
             workout_level = "Intermediate"
         else:
             workout_level = "Advanced"
@@ -874,7 +872,7 @@ class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Wo
                 # Add the set of exercises to the workout list
             workout_list.append(workout_dict)
 
-        print(workout_list)
+
         vars['WORKOUTLIST'] = workout_list
         return True
 
@@ -961,7 +959,8 @@ class MacroNLG(Macro):
 
 class MacroRandomMuscle(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
-        path = '/Users/kristen/PycharmProjects/GymBrOT/resources/ontology_workouts.json'
+        #path = '/Users/kristen/PycharmProjects/GymBrOT/resources/ontology_workouts.json'
+        path = 'C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT/resources/ontology_workouts.json'
         with open(path) as ont_file:
             ont_file = ont_file.read()
             parsed_file = json.loads(ont_file)
@@ -994,7 +993,8 @@ macros = {
         'Why does this person not go to the gym?',
         {"WHYNOT": ["judgement", "safety", "busy", "disability"]}, {"WHYNOT": []}),
 
-    'GETNAME': MacroGetName(),
+    'GETNAME': MacroGPTJSON( 'What is this persons name?',
+        {"NAME": "James Smith"}, {"ACTIVITYFREQ": "N/A"}),
     #'SETINITMOOD': MacroSETINITMOOD(),
    # 'GETINITMOOD': MacroNLG(get_INITMOOD),
     #'GETACTIVITYLEVEL': MacroNLG(get_ACTIVITYLEVEL),
