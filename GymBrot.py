@@ -291,6 +291,7 @@ To Do: put a question asking why not in the whynot transitions
 """
 whynot_transitions = {
     'state': 'whynot',
+    '`Why don/’t you go to the gym?`':{
     '#WHYNOT':{
     '#IF($WHYNOT=judgement)': {
         '`Yo, bro I hear you. Can I be real with you for a sec? It is completely normal to have some anxiety about '
@@ -534,6 +535,7 @@ whynot_transitions = {
     },
     '#IF($WHYNOT=no)': {
         '`Hey bro, that\'s totally cool, let\'s talk about something else. What would you like to talk about bro?`': 'chatting'
+    }
     }
     }
 }
