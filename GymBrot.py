@@ -39,13 +39,7 @@ if (os.path.exists('resources/gymbrot.pkl')):
     load(df, 'resources/gymbrot.pkl')
 
 
-#class V(Enum):
-#    INITMOOD = 1,
-#    ACTIVITYLEVEL = 2,
-#    FITNESSLEVEL = 3,
-#    ACTIVITYFREQ = 4,
-#    PREFACTIVITY = 5,
-#    WHYNOT = 6
+
 
 
 consent_transitions = {
@@ -58,7 +52,7 @@ consent_transitions = {
     '`while exercising, please stop immediately and seek guidance from a certified fitness professional.`'
     '`\nWith that all out of the way, if you understand and wish to continue, please type \"I understand\" now.`': {
         '[i, understand]': {
-            '`Great! Thank you and best of luck on your fitness journey!\n`': 'intro'
+            '`Great! When you leave the conversation just say \"quit gymbrot\"\nThank you and best of luck on your fitness journey!\n`': 'intro'
         },
         'error': 'end'
     }
@@ -78,7 +72,7 @@ intro_transitions = {
                 },
                 'error': {
                     '`Hold up bro, I couldn\'t catch your vibe. Can you say that again?`': 'offer'
-                }
+                },'score':1,
             },
             '#IF($INITMOOD=negative)`That’s tough bro. Hopefully it\'s not because of your finals... \nI\'m sorry if I started off too strong bro.`': {
                 '[{okay, fine, [no, worries], [dont, worry], sorry, ok, alright, just, enough}]': {  # supposed to be forgiveness
@@ -89,20 +83,20 @@ intro_transitions = {
                 },
                 'error':{
                     '`Hey bro, I get it. Sometimes it really do be like that.`':'name'
-                }
+                },'score':1,
             },
             '#IF($INITMOOD=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do '
-            'when I feel off, hit the gym! Have you been workin on your gains?`': 'offer',
+            'when I feel off, hit the gym! Have you been workin on your gains?`': 'offer','score':1,
 
-            '#GATE `Haha bro, are you even human? what emotions do you have? \njkjk, I just couldn\'t catch your vibe, so lemme repeat myself.`' :{
-                '` `':'intro',
-                'score':0.1,
-            },
-            '`Aight, I can take a hint. Peace bro.`':{
-                '` `':'end',
-                'score':0.1
-            }
+            '#GATE `Haha bro, are you even human? what emotions do you have? \njkjk, I just couldn\'t catch your vibe, so lemme repeat myself.\n`' : 'intro', 'score': 0.1,
+            '#GATE`Aight, I can take a hint. Peace bro.`':'end','score':0.01
+
         },
+        'error':{
+            '#GATE `Haha bro, are you even human? what emotions do you have? \njkjk, I just couldn\'t catch your vibe, so lemme repeat myself.\n`' : 'intro', 'score': 0.1,
+            '#GATE`Aight, I can take a hint. Peace bro.`':'end','score':0.01
+
+        }
     }
 
 }
@@ -663,6 +657,9 @@ checkup_transitions = {
 global_transitions = {
     '[{birthday, birth, day, annual, celebration}]': {
         '`whoa dude. like. congrats!!!!`': 'chatting'
+    },
+    '[quit gymbrot]': {
+        '`Cya later bro!`': 'end'
     },
     '[{emergency, [immediate, danger]}]': {
         '`wait, dude. Don\'t tell me. call emergency services or talk to someone who can help you in person. I\'m not capable of calling for help or giving you advice about this.`': 'end'
