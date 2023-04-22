@@ -152,7 +152,7 @@ name_transitions = {
 newuser_transitions = {
     'state': 'new_user',
     '#GATE`So are you a gym rat, or nah?`': {
-        '#ACTIVITYLEVEL ': {
+        '#ACTIVITYLEVEL': {
             '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.\n A gym rat just like spends A LOT their free time in the gym. Like me!\n If you ever need me to explain something like that, just ask bro.`': {
                 'error': {
                     '`Any time bro. I’m like your spotter but for knowledge.`': 'new_user'
@@ -787,18 +787,17 @@ class MacroWeather(Macro):
 
 
 def get_FITNESSLEVEL(vars: Dict[str, Any]):
-    if instance(vars[V.FITNESSLEVEL.name],int):
-        level = int(vars[V.FITNESSLEVEL.name])
-        if level == 0:
-            vars['FITNESSLEVEL'] = "zero"
-        elif level < 3:
-            vars['FITNESSLEVEL'] = "notswole"
-        elif level < 8:
-            vars['FITNESSLEVEL'] = "mid"
-        elif level < 11:
-            vars['FITNESSLEVEL'] = "swole"
-        elif level > 11:
-            vars['FITNESSLEVEL'] = "superswole"
+    level = int(vars[V.FITNESSLEVEL.name])
+    if level == 0:
+        vars['FITNESSLEVEL'] = "zero"
+    elif level < 3:
+        vars['FITNESSLEVEL'] = "notswole"
+    elif level < 8:
+        vars['FITNESSLEVEL'] = "mid"
+    elif level < 11:
+        vars['FITNESSLEVEL'] = "swole"
+    elif level > 11:
+        vars['FITNESSLEVEL'] = "superswole"
     else:
         vars['FITNESSLEVEL'] = [V.FITNESSLEVEL.name]
     print(vars['FITNESSLEVEL'])
