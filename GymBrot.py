@@ -290,114 +290,107 @@ whynot_transitions = {
                     '`five or ten pounds and as we get more comfortable we keep adding on. You following me, dude?`':{
                         'state': 'judgefirst',
                         '#VIBECHECK': {
-                            '#IF(VIBE=positive)': {
-                                '`Great! Does that sound like something you could do bro?`': {
-                                    '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, '
-                                    '{can, could}], [it, {does,do}], right, correct, true, factual, facts, def, always, '
-                                    'totally}]': {
-                                        '`I\'m glad I could help bro. I have some more ideas if you\'d like me to drop these '
-                                        'knowledge bombs on you.`': {
-                                            '[{yes, drop}]': {
-                                                '`Bringin a couple of your homies to the gym may also be helpful. If they are '
-                                                'gym rats they can help you learn how to use the machines or practice your '
-                                                'form, and even if they aren\'t they can just help support you if you\'re '
-                                                'feeling out of place bro.`': {
-                                                    '[{good idea}]': {
-                                                        '`Thanks, bro. Man, I\'m on a role, I can feel my temporalis is '
-                                                        'working up a sweat. But seriously bro, it\'s important to remember '
-                                                        'that everyone is at the gym to work on themselves. None of the '
-                                                        'homies in the gym are there to judge. And I know, it\'s easier said '
-                                                        'than done to just not worry about what our bros think of us, '
-                                                        'but with a little practice and time spent in the gym, '
-                                                        'I think you\'ll feel much more comfortable, bro.`': {
-                                                            'state': 'judgelast',
-                                                            '[{thank you}]': {
-                                                                '`No problem bro! Oh wait, I almost forgot, sometimes just\n`'
-                                                                '`having a plan for what you\'ll do in the gym can relieve\n`'
-                                                                '`some of that stress, because, you\'ll like know what to do!\n`'
-                                                                '`If you want I can help you plan out that workout so you can\n`'
-                                                                '`start getting those gains.`': {
-                                                                    '[yes]': 'schedule',
+                            '#IF(VIBE=positive)`Great! Does that sound like something you could do bro?`': {
+                                '#VIBECHECK':{
+                                    '#IF(VIBE=positive)`I\'m glad I could help bro. I have some more ideas if you\'d like me to drop these '
+                                    'knowledge bombs on you.`':{
+                                        '#VIBECHECK':{
+                                            '#IF(VIBE=positive)`Bringin a couple of your homies to the gym may also be helpful. If they are '
+                                            'gym rats they can help you learn how to use the machines or practice your '
+                                            'form, and even if they aren\'t they can just help support you if you\'re '
+                                            'feeling out of place bro.`':{
+                                                '#VIBECHECK':{
+                                                    '#IF(VIBE=positive)`Thanks, bro. Man, I\'m on a role, I can feel my temporalis is '
+                                                    'working up a sweat. But seriously bro, it\'s important to remember '
+                                                    'that everyone is at the gym to work on themselves. None of the '
+                                                    'homies in the gym are there to judge. And I know, it\'s easier said '
+                                                    'than done to just not worry about what our bros think of us, '
+                                                    'but with a little practice and time spent in the gym, '
+                                                    'I think you\'ll feel much more comfortable, bro.`':{
+                                                        'state': 'judgelast',
+                                                        '#VIBECHECK':{
+                                                            '#IF(VIBE=positive)`No problem bro! Oh wait, I almost forgot, sometimes just\n`'
+                                                            '`having a plan for what you\'ll do in the gym can relieve\n`'
+                                                            '`some of that stress, because, you\'ll like know what to do!\n`'
+                                                            '`If you want I can help you plan out that workout so you can\n`'
+                                                            '`start getting those gains.`':{
+                                                                'state':'end_of_judgment',
+                                                                '#VIBECHECK':{
+                                                                    '#IF(VIBE=positive)': 'schedule',
                                                                     # come back to this I don't know the name of the transtion
-                                                                    '[{no, maybe}]': {
-                                                                        '`You\'re the boss, bro. We can come back to that`'
-                                                                        '`later, but for now is there any other reason you`'
-                                                                        '`aren\'t hittin the gym?`': 'whynot'
-                                                                    }
+                                                                    '#IF(VIBE=negative)`You\'re the boss, bro. We can come back to that`'
+                                                                    '`later, but for now is there any other reason you`'
+                                                                    '`aren\'t hittin the gym?`': 'whynot'
                                                                 },
-
                                                             },
-                                                            '[{not convinced}]': {
-                                                                '`Totally valid, bro. Like I said it\'s easier said than`'
-                                                                '`done. You know what\'s something that might help you bro?\n`'
-                                                                '`Having a plan for what you\'ll do in the gym. Some of my`'
-                                                                '`bros say it helps relieve their stress because they know\n`'
-                                                                '`exactly what they want to do when they get to the gym! If`'
-                                                                '`you want, I can help you plan out that workout do you can\n`'
-                                                                '`start getting those gains.`': {
-                                                                    '[yes]': 'schedule',
-                                                                    # come back to this I don't know the name of the transtion
-                                                                    '[{no, maybe}]': {
-                                                                        '`You\'re the boss, bro. We can come back to that`'
-                                                                        '`later, but for now is there any other reason you\n`'
-                                                                        '`aren\'t hittin the gym?`': 'whynot'
-                                                                    }
-                                                                }
-                                                            }
+                                                            '#IF(VIBE=negative)`Totally valid, bro. Like I said it\'s easier said than`'
+                                                            '`done. You know what\'s something that might help you bro?\n`'
+                                                            '`Having a plan for what you\'ll do in the gym. Some of my`'
+                                                            '`bros say it helps relieve their stress because they know\n`'
+                                                            '`exactly what they want to do when they get to the gym! If`'
+                                                            '`you want, I can help you plan out that workout do you can\n`'
+                                                            '`start getting those gains.`':'end_of_judgement'
                                                         },
                                                     },
-                                                    '[{bad idea}]': {
-                                                        '`Okay, okay, lone wolf type of vibe, I get you, hahaha. But, really if you don\'t want to bring anyone to the gym,\n`'
-                                                        '` that\'s fine. But, bro, just in general,  it\'s important to remember that everyone is at the gym to work on themselves.\n`'
-                                                        '`None of the homies in the gym are there to judge. And I know, it\'s easier said than done to just not worry about what our \n`'
-                                                        '`bros think of us, but with a little practice and time spent in the gym, I think you\'ll feel much more comfortable, bro.`': 'judgelast'
-                                                    }
-                                                },
+                                                    '#IF(VIBE=negative)`Okay, okay, lone wolf type of vibe, I get you, hahaha. But, really if you don\'t want to bring anyone to the gym,\n`'
+                                                    '` that\'s fine. But, bro, just in general,  it\'s important to remember that everyone is at the gym to work on themselves.\n`'
+                                                    '`None of the homies in the gym are there to judge. And I know, it\'s easier said than done to just not worry about what our \n`'
+                                                    '`bros think of us, but with a little practice and time spent in the gym, I think you\'ll feel much more comfortable, bro.`':'judgelast',
+                                                    '#IF(VIBE=neutral)':{
+                                                        #ADD here
+                                                    },
+                                                    '#IF(VIBE=question)':{
+                                                        #ADD here
+                                                    },
+                                                    '#GATE':{'state':'', 'score':0.1}
+                                                }
                                             },
-                                            '[{no}]': {
-                                                '`That\'s cool bro. I\'ve given you all the advice you need, haha. Before we move on, is there any other reason why you\'re not \n`'
-                                                '`hittin the gym as much as you\'d like?`': 'whynot'
-                                            }
-
-                                        },
-                                    },
-                                    '[{no}]': {
-                                        '`I see bro... you\'re a go getter, but I wouldn\'t recommend hittin the gym as hard as you can right off the bat.\n`'
-                                        '` I\'d consider us homies, and homie to homie that\'s how you end up getting hurt bro!`': {
-                                            '[okay, right, yes]': {
-                                                '`Glad we could clear that up bro! I know we just met, but your health and wellbein is super important to me bro!`': 'judgelast'
-                                            }
+                                            '#IF(VIBE=negative)':{
+                                                #ADD here
+                                            },
+                                            '#IF(VIBE=neutral)':{
+                                                #ADD here
+                                            },
+                                            '#IF(VIBE=question)':{
+                                                #ADD here
+                                            },
+                                            '#GATE':{'state':'', 'score':0.1}
                                         }
-                                    }
-                                },
-
-                            },
-                            '#IF(VIBE=negative)': {
-                                '`Maybe the metaphor was too much, bro. The point is it\'s totally fine to start off small. You don\'t have to start off squatin\n`'
-                                '` 200lbs. And honestly, bro, you shouldn\'t for your health.`': 'judgefirst'
-                            },
-                            '#IF(VIBE=neutral)':{
-
+                                    },
+                                    '#IF(VIBE=negative)`I see bro... you\'re a go getter, but I wouldn\'t recommend hittin the gym as hard as you can right off the bat.\n`'
+                                    '` I\'d consider us homies, and homie to homie that\'s how you end up getting hurt bro!`':{
+                                        'error':{
+                                            '`Glad we could clear that up bro! I know we just met, but your health and wellbein is super important to me bro!`': 'judgelast'
+                                        } 
+                                    },
+                                    '#IF(VIBE=neutral)':{
+                                        #ADD HERE
+                                    },
+                                    '#IF(VIBE=question)':{
+                                        #ADD HERE
+                                    },
+                                    '#GATE':{'state':'', 'score':0.1}
+                                }
+                            },   
+                    
+                            '#IF(VIBE=negative)`Maybe the metaphor was too much, bro. The point is it\'s totally fine to start off small. You don\'t have to start off squatin\n`'
+                                '` 200lbs. And honestly, bro, you shouldn\'t for your health.`': 'judgefirst',
+                            '#IF(VIBE=neutral)': {
+                                
                             }
-
-                        },
-                    },
-                    '#IF(VIBE=negative)':{
-                        '`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`': {
-                        #Add here
-                            }
-                    },
-                    '#IF(VIBE=neutral)':{
-                        '`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`': {
-                        #Add here
                         }
                     },
-                    '#IF(VIBE=question)':{
-                        '`Sure bro, what is it?`':{
-                            #Add here
-                        }
+                           
+                    '#IF(VIBE=negative)`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`':{
+                        #ADD here
+                    },
+                    '#IF(VIBE=neutral)`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`':{
+                        #ADD here
+                    },
+                    '#IF(VIBE=question)`Sure bro, what is it?`':{
+                        #ADD here
                     }
-                },
+                }
             },
         },
 
