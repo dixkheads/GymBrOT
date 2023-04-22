@@ -207,19 +207,19 @@ newuser_transitions = {
 
                 }
             },
-            '#IF($ACTIVITYLEVEL=no)`Hey bro, I don’/t judge. But if you don/’t mind me asking, why don/’t you go to the gym?\n`': 'whynot',
+            '#IF($ACTIVITYLEVEL=no)`Hey bro, I don’/t judge. But if you don/’t mind me asking, why don/’t you go to the gym?\n`':'whynot',
             '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no activity. \nDo you feel like you go to the gym as often as you\'d like?\n`': {
                 'state': 'activityanswer',
-                '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, {do, am}], right, correct, true, factual, facts, def, always, totally}]': {
-                    '`That\'s what\'s but then bro! It\'s about whatever works best for you.`': 'new_user'
+                '#VIBECHECK':{
+                    'IF($VIBE=positive)`That\'s what\'s but then bro! It\'s about whatever works best for you.`':'new_user',
+                    'IF($VIBE=neutral)`It happens bro, sometimes life and stuff gets in the way. \nBut if you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`':'whynot',
+                    'IF($VIBE=negative)`It happens bro, sometimes life and stuff gets in the way. \nBut if you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`':'whynot',
+                    '#GATE `Hey bro, sometimes these things are difficult to talk about, and I get it... \nor maybe I just didn\'t understand you dude. \nCould you repeat that?`':{ 'state':'activityanswer', 'score': 0.1},
+                    '#GATE `If you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`':{ 'state':'whynot', 'score': 0.01}
+
                 },
-                '[{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, havent}]': {
-                    '`It happens bro, sometimes life and stuff gets in the way. \nBut if you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`': 'whynot'
-                },
-                'error': {
-                    '#GATE `Hey bro, sometimes these things are difficult to talk about, and I get it... \nor maybe I just didn\'t understand you dude. \nCould you repeat that?`': 'activityanswer',
-                    '`word.`': 'new_user', 'score':0.1
-                }
+
+
             },
             'error': {
                 '`Bro exercisin outside of the gym is a totally valid option. \nDo you feel like you workout as much as you\'d like to?`': 'activityanswer'
@@ -291,6 +291,7 @@ To Do: put a question asking why not in the whynot transitions
 """
 whynot_transitions = {
     'state': 'whynot',
+    '#WHYNOT':{
     '#IF($WHYNOT=judgement)': {
         '`Yo, bro I hear you. Can I be real with you for a sec? It is completely normal to have some anxiety about '
         'going to the gym. I know we don\'t know each other like that so I won\'t push you to discuss it more, '
@@ -533,6 +534,7 @@ whynot_transitions = {
     },
     '#IF($WHYNOT=no)': {
         '`Hey bro, that\'s totally cool, let\'s talk about something else. What would you like to talk about bro?`': 'chatting'
+    }
     }
 }
 
@@ -1031,7 +1033,9 @@ macros = {
 
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
     'GETACTIVITYFREQ': MacroNLG(get_ACTIVITYFREQ),
-
+    'VIBECHECK': MacroGPTJSON(
+        'Is this user positive, negative, or neutral?',
+        {"VIBE": "positive"}, {"VIBE": "N/A"}),
     'INITMOOD': MacroGPTJSON(
         'Is this user positive, negative, or neutral?',
         {"INITMOOD": "positive"}, {"INITMOOD": "N/A"}),
