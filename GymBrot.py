@@ -11,9 +11,9 @@ import numpy as np
 
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
-# os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
+os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
-os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
+#os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
 
 model = 'gpt-3.5-turbo'
@@ -38,13 +38,13 @@ if (os.path.exists('resources/gymbrot.pkl')):
     load(df, 'resources/gymbrot.pkl')
 
 
-class V(Enum):
-    INITMOOD = 1,
-    ACTIVITYLEVEL = 2,
-    FITNESSLEVEL = 3,
-    ACTIVITYFREQ = 4,
-    PREFACTIVITY = 5,
-    WHYNOT = 6
+#class V(Enum):
+#    INITMOOD = 1,
+#    ACTIVITYLEVEL = 2,
+#    FITNESSLEVEL = 3,
+#    ACTIVITYFREQ = 4,
+#    PREFACTIVITY = 5,
+#    WHYNOT = 6
 
 
 consent_transitions = {
@@ -152,7 +152,7 @@ name_transitions = {
 newuser_transitions = {
     'state': 'new_user',
     '#GATE`So are you a gym rat, or nah?`': {
-        '#ACTIVITYLEVEL #GETACTIVITYLEVEL': {
+        '#ACTIVITYLEVEL ': {
             '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.\n A gym rat just like spends A LOT their free time in the gym. Like me!\n If you ever need me to explain something like that, just ask bro.`': {
                 'error': {
                     '`Any time bro. I’m like your spotter but for knowledge.`': 'new_user'
@@ -280,7 +280,7 @@ newuser_transitions = {
         },
     },
     '#GATE`Bro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
-        '#PREFACTIVITY #GETPREFACTIVITY': {
+        '#PREFACTIVITY': {
             '`Yo dude,` $PREFACTIVITY` is sick! Personally, I love hitting the gym on leg day. I get a pump in at least twice per '
             'day... but my full time job and favorite mental workout is being a personal trainer! Anyway...\n`': 'new_user'
         },
@@ -678,24 +678,24 @@ class MacroGetName(Macro):
         #     vars['RETURNUSER'] = 'False'
         #     vars['NAME'].append(completeName)
         # return True
-        print(firstname, lastname)
+        #print(firstname, lastname)
         # self.load_user(firstname, lastname)
-        df = pd.read_csv(USERDATA_ADDR)
+        #df = pd.read_csv(USERDATA_ADDR)
         # print("check1")
         # print(df.columns)
-        vars['NAME'] = completeName
-        user_data = df[(df['firstname'] == firstname) & (df['lastname'] == lastname)]
+        #vars['NAME'] = completeName
+        #user_data = df[(df['firstname'] == firstname) & (df['lastname'] == lastname)]
         # print("check2")
-        if user_data.empty:
-            print("User not found.")
-            vars['RETURNUSER'] = False
-        else:
-            user_data = user_data.iloc[0]
-            column_names = df.columns
-            for column_name in column_names:
-                vars[column_name] = user_data[column_name]
-            print("User data loaded successfully.")
-            vars['RETURNUSER'] = True
+        #if user_data.empty:
+        #    print("User not found.")
+         #   vars['RETURNUSER'] = False
+        #else:
+         #   user_data = user_data.iloc[0]
+         #   column_names = df.columns
+          #  for column_name in column_names:
+          #      vars[column_name] = user_data[column_name]
+           # print("User data loaded successfully.")
+           # vars['RETURNUSER'] = True
 
         return True
 
@@ -707,11 +707,11 @@ class MacroVisits(Macro):
             vars[vn] = 1
             vars['NAME'] = []
             vars['RETURNUSER'] = False
-            vars[V.INITMOOD] = []
-            vars[V.ACTIVITYLEVEL] = []
-            vars[V.ACTIVITYFREQ] = []
-            vars[V.FITNESSLEVEL] = []
-            vars[V.PREFACTIVITY] = []
+            vars["INITMOOD"] = []
+            vars["ACTIVITYLEVEL"] = []
+            vars["ACTIVITYFREQ"] = []
+            vars["FITNESSLEVEL"] = []
+            vars["PREFACTIVITY"] = []
         else:
             count = vars[vn] + 1
             vars[vn] = count
@@ -780,10 +780,10 @@ class MacroWeather(Macro):
         return output
 
 
-def get_ACTIVITYLEVEL(vars: Dict[str, Any]):
-    vars['ACTIVITYLEVEL'] = vars[V.ACTIVITYLEVEL.name][random.randrange(len(vars[V.ACTIVITYLEVEL.name]))]
-    print(vars['ACTIVITYLEVEL'])
-    return
+#def get_ACTIVITYLEVEL(vars: Dict[str, Any]):
+ #   vars['ACTIVITYLEVEL'] = vars[V.ACTIVITYLEVEL.name][random.randrange(len(vars[V.ACTIVITYLEVEL.name]))]
+  #  print(vars['ACTIVITYLEVEL'])
+   #I unde return
 
 
 def get_FITNESSLEVEL(vars: Dict[str, Any]):
@@ -806,8 +806,8 @@ def get_FITNESSLEVEL(vars: Dict[str, Any]):
 
 
 def get_ACTIVITYFREQ(vars: Dict[str, Any]):
-    if isinstance(vars[V.ACTIVITYFREQ.name], int):
-        level = int(vars[V.ACTIVITYFREQ.name])
+    if isinstance(vars["ACTIVITYFREQ"], int):
+        level = int(vars["ACTIVITYFREQ"])
         if level == 0:
             vars['ACTIVITYFREQ'] = "never"
         elif level < 3:
@@ -818,33 +818,33 @@ def get_ACTIVITYFREQ(vars: Dict[str, Any]):
             vars['ACTIVITYFREQ'] = "high"
         elif level > 7:
             vars['ACTIVITYFREQ'] = "superswole"
-    else:
-        vars['FITNESSLEVEL'] = [V.FITNESSLEVEL.name]
+    #else:
+     #   vars['FITNESSLEVEL'] = vars["FITNESSLEVEL"]
     print(vars['ACTIVITYFREQ'])
     return True
 
 
-def get_PREFACTIVITY(vars: Dict[str, Any]):
-    vars['PREFACTIVITY'] = vars[V.PREFACTIVITY.name][random.randrange(len(vars[V.PREFACTIVITY.name]))]
-    print(vars['PREFACTIVITY'])
-    return
+#def get_PREFACTIVITY(vars: Dict[str, Any]):
+    #vars['PREFACTIVITY'] = vars[V.PREFACTIVITY.name][random.randrange(len(vars[V.PREFACTIVITY.name]))]
+    #print(vars['PREFACTIVITY'])
+    #return
 
 
-def get_WHYNOT(vars: Dict[str, Any]):
-    vars['WHYNOT'] = vars[V.WHYNOT.name][random.randrange(len(vars[V.WHYNOT.name]))]
-    print(vars['WHYNOT'])
-    return
+#def get_WHYNOT(vars: Dict[str, Any]):
+#    vars['WHYNOT'] = vars[V.WHYNOT.name][random.randrange(len(vars[V.WHYNOT.name]))]
+#    print(vars['WHYNOT'])
+ #   return
 
 
-def get_INITMOOD(vars: Dict[str, Any]):
-    ls = vars[V.INITMOOD.name]
-    return ls[random.randrange(len(ls))]
+#def get_INITMOOD(vars: Dict[str, Any]):
+#    ls = vars[V.INITMOOD.name]
+ #   return ls[random.randrange(len(ls))]
 
 
-class MacroSETINITMOOD(Macro):
-    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
-        vars['INITMOOD'] = get_INITMOOD(vars)
-        return True
+#class MacroSETINITMOOD(Macro):
+#    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+#        vars['INITMOOD'] = get_INITMOOD(vars)
+#        return True
 
         # return rec
 
@@ -949,31 +949,31 @@ macros = {
 
     'ACTIVITYLEVEL': MacroGPTJSON(
         'Is this person agreeing that they are a gym rat? Respond with yes, no, or maybe, unless they are confused by the question. In that case they are "confused"',
-        {V.ACTIVITYLEVEL.name: "yes"}, {V.ACTIVITYLEVEL.name: "N/A"}),
+        {"ACTIVITYLEVEL": "yes"}, {"ACTIVITYLEVEL": "N/A"}),
     'FITNESSLEVEL': MacroGPTJSON(
         'How physically fit/swole is this person on a scale of 0 through 10 with 10 being the highest?',
-        {V.FITNESSLEVEL.name: "1"}, {V.FITNESSLEVEL.name: "N/A"}),
+        {"FITNESSLEVEL":"1"}, {"FITNESSLEVEL": "N/A"}),
     'ACTIVITYFREQ': MacroGPTJSON(
         'How many times a week does a person go to the gym, with 0 being never, 1 or 2 being low, less than 5 being mid, less than 8 being high, and greater than 8 being swole. They may go more than once per day',
-        {V.ACTIVITYFREQ.name: "never"}, {V.ACTIVITYFREQ.name: "N/A"}),
+        {"ACTIVITYFREQ": "never"}, {"ACTIVITYFREQ": "N/A"}),
     'PREFACTIVITY': MacroGPTJSON(
         'What activity does the person do to exercise?',
-        {V.PREFACTIVITY.name: "lifting"}, {V.PREFACTIVITY.name: "N/A"}),
+        {"PREFACTIVITY": "lifting"}, {"PREFACTIVITY": "N/A"}),
     'WHYNOT': MacroGPTJSON(
         'Why does this person not go to the gym?',
-        {V.WHYNOT.name: ["judgement", "safety", "busy", "disability"]}, {V.WHYNOT.name: []}),
+        {"WHYNOT": ["judgement", "safety", "busy", "disability"]}, {"WHYNOT": []}),
 
     'GETNAME': MacroGetName(),
-    'SETINITMOOD': MacroSETINITMOOD(),
-    'GETINITMOOD': MacroNLG(get_INITMOOD),
-    'GETACTIVITYLEVEL': MacroNLG(get_ACTIVITYLEVEL),
+    #'SETINITMOOD': MacroSETINITMOOD(),
+   # 'GETINITMOOD': MacroNLG(get_INITMOOD),
+    #'GETACTIVITYLEVEL': MacroNLG(get_ACTIVITYLEVEL),
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
     'GETACTIVITYFREQ': MacroNLG(get_ACTIVITYFREQ),
-    'GETPREFACTIVITY': MacroNLG(get_PREFACTIVITY),
-    'GETWHYNOT': MacroNLG(get_WHYNOT),
+    #'GETPREFACTIVITY': MacroNLG(get_PREFACTIVITY),
+   # 'GETWHYNOT': MacroNLG(get_WHYNOT),
     'INITMOOD': MacroGPTJSON(
         'Is this user positive, negative, or neutral?',
-        {V.INITMOOD.name: "positive"}, {V.INITMOOD.name: "N/A"}),
+        {"INITMOOD": "positive"}, {"INITMOOD": "N/A"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
     'WEATHER': MacroWeather()
@@ -991,9 +991,12 @@ df.load_global_nlu(global_transitions)
 df.add_macros(macros)
 
 if __name__ == '__main__':
-    # PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+     PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+     openai.api_key_path = PATH_API_KEY
+     df.run()
     #PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
-    PATH_API_KEY = 'resources/openai_key.txt'
-    openai.api_key_path = PATH_API_KEY
+    #PATH_API_KEY = 'resources/openai_key.txt'
+
+
     # save(df, 'resources/gymbrot.pkl')
-    df.run()
+
