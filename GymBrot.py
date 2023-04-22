@@ -958,7 +958,8 @@ class MacroWeather(Macro):
 
 
 def get_FITNESSLEVEL(vars: Dict[str, Any]):
-    level = int(vars["FITNESSLEVEL"])
+    level = int(vars[V.FITNESSLEVEL.name])
+
     if level == 0:
         vars['FITNESSLEVEL'] = "zero"
     elif level < 3:
@@ -967,28 +968,13 @@ def get_FITNESSLEVEL(vars: Dict[str, Any]):
         vars['FITNESSLEVEL'] = "mid"
     elif level < 11:
         vars['FITNESSLEVEL'] = "swole"
-    elif level > 11:
+    elif level > 10:
         vars['FITNESSLEVEL'] = "superswole"
     print(vars['FITNESSLEVEL'])
     return True
 
 
-def get_ACTIVITYFREQ(vars: Dict[str, Any]):
-    if isinstance(vars["ACTIVITYFREQ"], int):
-        level = int(vars["ACTIVITYFREQ"])
-        if level == 0:
-            vars['ACTIVITYFREQ'] = "never"
-        elif level < 3:
-            vars['ACTIVITYFREQ'] = "low"
-        elif level < 5:
-            vars['ACTIVITYFREQ'] = "mid"
-        elif level < 8:
-            vars['ACTIVITYFREQ'] = "high"
-        elif level > 7:
-            vars['ACTIVITYFREQ'] = "superswole"
 
-    print(vars['ACTIVITYFREQ'])
-    return True
 
 
 
