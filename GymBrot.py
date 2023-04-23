@@ -14,7 +14,7 @@ import numpy as np
 # This is a test to see if it has pushed
 os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
-#os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
+os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 
 
 model = 'gpt-3.5-turbo'
@@ -208,7 +208,7 @@ newuser_transitions = {
 
                 }
             },
-            '#IF($ACTIVITYLEVEL=no)`Hey bro, I don\'t judge. But if you don\'t mind me asking, why don\'t you go to the gym more?\n`': 'whynot',
+            '#IF($ACTIVITYLEVEL=no)`Hey bro, I don\'t judge. But if you don\'t mind me asking, why don\'t you go to the gym?\n`': 'whynot',
             '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no activity. \nDo you feel like you go to the gym as often as you\'d like?\n`': {
                 '#VIBECHECK':{
                      '#IF($VIBE=positive)`That\'s what\'s but then bro! It\'s about whatever works best for you.`':'new_user',
@@ -250,11 +250,11 @@ newuser_transitions = {
     },
     '#GATE`\nI love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
         '#ACTIVITYFREQ': {
-            '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. \nWhy aren\'t you hitting the gym?`': 'whynot',
-            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`':'whynot_no_q',
-            '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`': 'new_user',
-            '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`': 'new_user',
-            '#IF($ACTIVITYFREQ=swole)`Bro. Do you sleep? Like respect, but what`': 'new_user',
+            '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. \nWhy aren\'t you hitting the gym?`#GIVEREC': 'whynot',
+            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`#GIVEREC ':'whynot_no_q',
+            '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`#GIVEREC': 'new_user',
+            '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`#GIVEREC': 'new_user',
+            '#IF($ACTIVITYFREQ=swole)`Bro. Do you sleep? Like respect, but what`#GIVEREC': 'new_user',
             '`I see bro. Idk what to say, other than... I respect it ig?`': {
                 'score': 0.1,
                 'state':'new_user'
@@ -488,8 +488,8 @@ whynot_transitions = {
                                         '#IF($VIBE=positive)`Great dude! I\'m glad we could talk about this!\n But I gotta '
                                         'know, is there any other reason you\'re not going to the gym as often as you\'d '
                                         'like?`':'whynot',
-                                        '#IF($VIBE=negative)`I won\'t push you bro, what else would you like to talk about?`':'formulate_plan',
-                                        '#IF($VIBE=neutral)`I won\'t push you bro, what else would you like to talk about?`':'formulate_plan',
+                                        '#IF($VIBE=negative)`I won\'t push you bro, what else would you like to talk about?`':'chatting',
+                                        '#IF($VIBE=neutral)`I won\'t push you bro, what else would you like to talk about?`':'chatting',
                                         '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
                                         '`Sometimes I wonder if it\'s really a person I\'m talking to, behind '
                                         'the keys, or if it\'s another bot, like me. lmao. '
@@ -648,7 +648,7 @@ whynot_transitions = {
                 'workout?`':'topicshift'
             },
             '#GATE `Hey bro, I\'m not sure how to talk about that, but is there anything else holding you back?`':{'state':'whynot','score':0.1},
-            '`Hey bro, I\'m not sure how to talk about that. Let\'s talk about schedules.`':{'state':'formulate_plan','score':0.01},
+            '`Hey bro, I\'m not sure how to talk about that. Let\'s just chat for now`':{'state':'chatting','score':0.01},
         },
         'error':{
             '#GATE `Sorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
@@ -660,12 +660,12 @@ whynot_transitions = {
 
 workout_planning_transitions = {
     'state': 'formulate_plan',
-    '`\nSo what days and times on those days would work for you to go to the gym for an hour?`':{
-        '#GIVEREC #DAYS #CREATECALENDAR': {
-            '`Ok I attached an example schedule with workout recommendations for the week of May 7th 2023.\nYou should check it out.`':'ending'
+    '`So what days and times would work for you to go to the gym for an hour?`':{
+        '#DAYS #CREATECALENDAR': {
+            'Ok I see, now what times work. Let me find something that works.'
         },
             'error': {
-                'state':'ending'
+
             }
         }
 
@@ -687,7 +687,7 @@ ending_transition = {
                                     '`Catch you on the flip side! Thanks for being a bro, bro!`': 'end'
                                 },
                                 'error': {
-                                    '`This is when you say goodbye, bro.`': {
+                                    '`This is when you say goodbye, bro.': {
                                         '[{good, bye, see, ya, later}]': {
                                             '`Catch you on the flip side! Thanks for being a bro, bro!`': 'end'
                                         },
@@ -1086,7 +1086,7 @@ class MacroCreateCalendar(Macro):
 
         d = datetime.now().date()
 
-        for i in range(0,min(len(vars['TIMES']),len(vars['DAYS']))):
+        for i in range(1,min(len(vars['TIMES']),len(vars['DAYS']))):
             recc = []
             day = vars['DAYS'].pop()
             hour = vars['TIMES'].pop()
@@ -1206,16 +1206,16 @@ macros = {
     'VISITS': MacroVisits(),
     'TOPICSHIFT': MacroGPTJSON(
         'What topic of conversation is this person trying to introduce? Possible topics are music, movies, weather, '
-        'sports, workout planning, and concerns. If it is not one of these, return N/A. Please do not return anything else. Return workout planning if you are unsure.',
+        'sports, workout planning, and concerns. If it is not one of these, return N/A. Please do not return anything else.',
         {"NEWTOPIC": "holiday"}, {"NEWTOPIC": "N/A"}),
 
     'ACTIVITYLEVEL': MacroGPTJSON(
         'Is this person agreeing that they are a gym rat? Respond with yes, no, or maybe, unless they are confused by '
-        'the question. In that case they are "confused". Return yes if you are unsure. ',
+        'the question. In that case they are "confused". ',
         {"ACTIVITYLEVEL": "yes"}, {"ACTIVITYLEVEL": "N/A"}),
     'FITNESSLEVEL': MacroGPTJSON(
         'How physically fit/swole is this person on a scale of 0 through 10 with 10 being the highest? '
-        'Please do not return anything other than a number. Return 1 as a default if you are unsure.',
+        'Please do not return anything other than a number',
         {"FITNESSLEVEL":"1"}, {"FITNESSLEVEL": "N/A"}),
     'ACTIVITYFREQ': MacroGPTJSON(
         'How many times a week does a person go to the gym, with 0 being never, 1 or 2 being low, less than 5 being '
@@ -1223,7 +1223,7 @@ macros = {
         {"ACTIVITYFREQ": "never"}, {"ACTIVITYFREQ": "N/A"}),
     'PREFACTIVITY': MacroGPTJSON(
         'What activity does the person do to exercise? Return a gerund phrase that does not take an article, '
-        'i.e. "lifting", "going to the gym", "working out", "running".If you are unsure just put running.',
+        'i.e. "lifting", "going to the gym", "working out", "running".',
         {"PREFACTIVITY": "lifting"}, {"PREFACTIVITY": "N/A"}),
     'WHYNOT': MacroGPTJSON(
         'Why does this person not go to the gym? Options are judgement, safety, busy, disability, or no. If it is none of these, return N/A',
@@ -1235,7 +1235,7 @@ macros = {
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
     'VIBECHECK': MacroGPTJSON(
          'Is this user positive, negative, neutral, or asking a question? If they are agreeing with something, '
-         'they are positive. If you need more context just put positive.',
+         'they are positive.',
          {"VIBE": "positive"}, {"VIBE": "N/A"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
@@ -1258,11 +1258,12 @@ df.load_transitions(normal_dialogue_transitions)
 df.load_transitions(workout_planning_transitions)
 df.load_transitions(weather_transitions)
 df.load_global_nlu(global_transitions)
-df.load_transitions(ending_transition)
 df.add_macros(macros)
 
 if __name__ == '__main__':
      PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+     #PATH_API_KEY = 'C:\\Users\\sarah\\PycharmProjects\GymBrOT\\resources\\openai_key.txt'
+
      openai.api_key_path = PATH_API_KEY
      df.run()
     #PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
