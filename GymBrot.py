@@ -1204,16 +1204,16 @@ macros = {
     'VISITS': MacroVisits(),
     'TOPICSHIFT': MacroGPTJSON(
         'What topic of conversation is this person trying to introduce? Possible topics are music, movies, weather, '
-        'sports, workout planning, and concerns. If it is not one of these, return N/A. Please do not return anything else.',
+        'sports, workout planning, and concerns. If it is not one of these, return N/A. Please do not return anything else. Return workout planning if you are unsure.',
         {"NEWTOPIC": "holiday"}, {"NEWTOPIC": "N/A"}),
 
     'ACTIVITYLEVEL': MacroGPTJSON(
         'Is this person agreeing that they are a gym rat? Respond with yes, no, or maybe, unless they are confused by '
-        'the question. In that case they are "confused". ',
+        'the question. In that case they are "confused". Return yes if you are unsure. ',
         {"ACTIVITYLEVEL": "yes"}, {"ACTIVITYLEVEL": "N/A"}),
     'FITNESSLEVEL': MacroGPTJSON(
         'How physically fit/swole is this person on a scale of 0 through 10 with 10 being the highest? '
-        'Please do not return anything other than a number',
+        'Please do not return anything other than a number. Return 1 as a default if you are unsure.',
         {"FITNESSLEVEL":"1"}, {"FITNESSLEVEL": "N/A"}),
     'ACTIVITYFREQ': MacroGPTJSON(
         'How many times a week does a person go to the gym, with 0 being never, 1 or 2 being low, less than 5 being '
@@ -1221,7 +1221,7 @@ macros = {
         {"ACTIVITYFREQ": "never"}, {"ACTIVITYFREQ": "N/A"}),
     'PREFACTIVITY': MacroGPTJSON(
         'What activity does the person do to exercise? Return a gerund phrase that does not take an article, '
-        'i.e. "lifting", "going to the gym", "working out", "running".',
+        'i.e. "lifting", "going to the gym", "working out", "running".If you are unsure just put running.',
         {"PREFACTIVITY": "lifting"}, {"PREFACTIVITY": "N/A"}),
     'WHYNOT': MacroGPTJSON(
         'Why does this person not go to the gym? Options are judgement, safety, busy, disability, or no. If it is none of these, return N/A',
@@ -1233,7 +1233,7 @@ macros = {
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
     'VIBECHECK': MacroGPTJSON(
          'Is this user positive, negative, neutral, or asking a question? If they are agreeing with something, '
-         'they are positive.',
+         'they are positive. If you need more context just put positive.',
          {"VIBE": "positive"}, {"VIBE": "N/A"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
