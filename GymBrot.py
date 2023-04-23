@@ -654,7 +654,6 @@ whynot_transitions = {
         'error':{
             '#GATE `Sorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
             '`Sorry bro, I really don\'t know how to help you. There\'s an issue on my end.`':'end'
-
         }
     }
 }
