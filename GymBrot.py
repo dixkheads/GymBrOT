@@ -14,7 +14,7 @@ import numpy as np
 # This is a test to see if it has pushed
 # os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
-os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
+#os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 
 
 model = 'gpt-3.5-turbo'
@@ -1259,7 +1259,8 @@ df.load_global_nlu(global_transitions)
 df.add_macros(macros)
 
 if __name__ == '__main__':
-     PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+     #PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+     #PATH_API_KEY = 'C:\\Users\\sarah\\PycharmProjects\GymBrOT\\resources\\openai_key.txt'
      openai.api_key_path = PATH_API_KEY
      df.run()
     #PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
