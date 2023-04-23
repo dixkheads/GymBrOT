@@ -250,11 +250,11 @@ newuser_transitions = {
     },
     '#GATE`\nI love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
         '#ACTIVITYFREQ': {
-            '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. \nWhy aren\'t you hitting the gym?`#GIVEREC': 'whynot',
-            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`#GIVEREC ':'whynot_no_q',
-            '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`#GIVEREC': 'new_user',
-            '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`#GIVEREC': 'new_user',
-            '#IF($ACTIVITYFREQ=swole)`Bro. Do you sleep? Like respect, but what`#GIVEREC': 'new_user',
+            '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. \nWhy aren\'t you hitting the gym?`': 'whynot',
+            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`':'whynot_no_q',
+            '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`': 'new_user',
+            '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`': 'new_user',
+            '#IF($ACTIVITYFREQ=swole)`Bro. Do you sleep? Like respect, but what`': 'new_user',
             '`I see bro. Idk what to say, other than... I respect it ig?`': {
                 'score': 0.1,
                 'state':'new_user'
@@ -659,11 +659,11 @@ whynot_transitions = {
 workout_planning_transitions = {
     'state': 'formulate_plan',
     '`So what days and times would work for you to go to the gym for an hour?`':{
-        '#DAYS #CREATECALENDAR': {
-            'Ok I see, now what times work. Let me find something that works.'
+        '#GIVEREC #DAYS #CREATECALENDAR': {
+            '`Ok I attached an example schedule with workout recommendations for the week of May 7th 2023.\nYou should check it out.`':'ending'
         },
             'error': {
-
+                'state':'ending'
             }
         }
 
