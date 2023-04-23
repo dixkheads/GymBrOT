@@ -208,7 +208,7 @@ newuser_transitions = {
 
                 }
             },
-            '#IF($ACTIVITYLEVEL=no)`Hey bro, I don\'t judge. But if you don\'t mind me asking, why don\'t you go to the gym?\n`': 'whynot',
+            '#IF($ACTIVITYLEVEL=no)`Hey bro, I don\'t judge. But if you don\'t mind me asking, why don\'t you go to the gym more?\n`': 'whynot',
             '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no activity. \nDo you feel like you go to the gym as often as you\'d like?\n`': {
                 '#VIBECHECK':{
                      '#IF($VIBE=positive)`That\'s what\'s but then bro! It\'s about whatever works best for you.`':'new_user',
@@ -486,8 +486,8 @@ whynot_transitions = {
                                         '#IF($VIBE=positive)`Great dude! I\'m glad we could talk about this!\n But I gotta '
                                         'know, is there any other reason you\'re not going to the gym as often as you\'d '
                                         'like?`':'whynot',
-                                        '#IF($VIBE=negative)`I won\'t push you bro, what else would you like to talk about?`':'chatting',
-                                        '#IF($VIBE=neutral)`I won\'t push you bro, what else would you like to talk about?`':'chatting',
+                                        '#IF($VIBE=negative)`I won\'t push you bro, what else would you like to talk about?`':'formulate_plan',
+                                        '#IF($VIBE=neutral)`I won\'t push you bro, what else would you like to talk about?`':'formulate_plan',
                                         '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
                                         '`Sometimes I wonder if it\'s really a person I\'m talking to, behind '
                                         'the keys, or if it\'s another bot, like me. lmao. '
@@ -646,7 +646,7 @@ whynot_transitions = {
                 'workout?`':'topicshift'
             },
             '#GATE `Hey bro, I\'m not sure how to talk about that, but is there anything else holding you back?`':{'state':'whynot','score':0.1},
-            '`Hey bro, I\'m not sure how to talk about that. Let\'s just chat for now`':{'state':'chatting','score':0.01},
+            '`Hey bro, I\'m not sure how to talk about that. Let\'s talk about schedules.`':{'state':'formulate_plan','score':0.01},
         },
         'error':{
             '#GATE `Sorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
@@ -658,7 +658,7 @@ whynot_transitions = {
 
 workout_planning_transitions = {
     'state': 'formulate_plan',
-    '`\nSo what days and times would work for you to go to the gym for an hour?`':{
+    '`\nSo what days and times on those days would work for you to go to the gym for an hour?`':{
         '#GIVEREC #DAYS #CREATECALENDAR': {
             '`Ok I attached an example schedule with workout recommendations for the week of May 7th 2023.\nYou should check it out.`':'ending'
         },
