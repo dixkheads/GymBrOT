@@ -5,7 +5,6 @@ from enum import Enum
 from emora_stdm import DialogueFlow, Macro, Ngrams
 import pickle, os, time, json, requests, re
 import regexutils
-
 from datetime import datetime, timedelta
 from Scheduler.cal_setup import get_calendar_service
 import pandas as pd
@@ -251,11 +250,6 @@ newuser_transitions = {
     },
     '#GATE`\nI love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
         '#ACTIVITYFREQ': {
-            '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. \nWhy aren\'t you hitting the gym?`': 'whynot',
-            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`':'whynot_no_q',
-            '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`': 'new_user',
-            '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`': 'new_user',
-            '#IF($ACTIVITYFREQ=swole)`Bro. Do you sleep? Like respect, but what`': 'new_user',
             '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. \nWhy aren\'t you hitting the gym?`#GIVEREC': 'whynot',
             '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`#GIVEREC ':'whynot_no_q',
             '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`#GIVEREC': 'new_user',
@@ -268,7 +262,6 @@ newuser_transitions = {
         },
         'error': {
             '`Whoa, bro, that\'s sick!`': 'new_user'
-        },
         },'score':2
     },
     '#GATE`\nBro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
@@ -324,7 +317,6 @@ whynot_transitions = {
                                                             '`start getting those gains.`': {
                                                                 'state': 'end_of_judgment',
                                                                 '#VIBECHECK': {
-                                                                    '#IF($VIBE=positive)': 'formulate_plan',
                                                                     '#IF($VIBE=positive)`Ok let\'s do this!`': {'state':'formulate_plan'},
                                                                     '#IF($VIBE=negative)`You\'re the boss, bro. We can come back to that`'
                                                                     '`later, but for now is there any other reason you`'
@@ -665,7 +657,6 @@ whynot_transitions = {
 }
 
 workout_planning_transitions = {
-    'state': 'formulate_plan'
     'state': 'formulate_plan',
     '`So what days and times would work for you to go to the gym for an hour?`':{
         '#DAYS #CREATECALENDAR': {
@@ -673,7 +664,6 @@ workout_planning_transitions = {
         },
             'error': {
 
-}
             }
         }
 
@@ -1023,13 +1013,10 @@ class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Wo
                 exercise = df[df['Difficulty'] == workout_level].sample(n=1)
 
                 # Add the exercise name and steps to the workout dictionary
-                workout_dict[exercise['exercise_name'].values[0]] = exercise['steps'].values[0]
                 workout_dict[exercise['exercise_name'].values[0]] = "".join(exercise['steps'].values[0])
 
                 # Add the set of exercises to the workout list
             workout_list.append(workout_dict)
-
-
         # Mondays at 5 am, Tuesdays at 3 am, Fridays at 4 pm, and Saturdays at 7 am
        # print("This is the type", len(workout_list))
         #print("This is three random values",random.sample(workout_list, 3))
