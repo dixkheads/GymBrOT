@@ -66,10 +66,15 @@ consent_transitions = {
     '`\nPlease listen to your body and use your best judgment while exercising. \nIf you are experiencing pain or discomfort`'
     '`while exercising, please stop immediately and seek guidance from a certified fitness professional.`'
     '`\nWith that all out of the way, if you understand and wish to continue, please type \"I understand\" now.`': {
+        'state':'understanding',
         '[i, understand]': {
             '`Great! When you leave the conversation just say \"quit gymbrot\"\nThank you and best of luck on your fitness journey!\n`': 'intro'
         },
-        'error': 'end'
+        'error': {
+            '#GATE `Hey bro, if you want to test the bot, you have to type \'I understand\'.`':'understanding',
+            '#GATE`Seriously, I can\'t help you if you don\'t type \'I understand\'.`':{'state':'understanding', 'score':0.1},
+            '`Ok bro, whatever.`':{'state':'end','score':0.01}
+        }
     }
 }
 
@@ -655,23 +660,71 @@ whynot_transitions = {
                     'anything, just lmk and I can help you make a sweet workout routine, totally free.`':'whynot_no_q'
                 }
             },
-            '#IF($WHYNOT=no)': {
+            '#IF($WHYNOT=motivation)`Hey bro, I totally get that. It can be tough sometimes to find the energy to get up and get moving. \n'
+            'But look at it this way bro: you only have your one life, and one body.\n You\'re so much more capable than you think.\n'
+            'Do you want me to give you some strategies for overcoming low motivation?`':{
+                    'state':'strategies1',
+                    '#VIBECHECK':{
+                        '#IF($VIBE=positive)`Ok bro! So: one thing about going to the gym.\nIt doesn\'t have to be '
+                        'about being swole or perfect.\n It\'s about doing the best thing for you and your body '
+                        'every day. Building a routine is probably the most effective way of being able to have '
+                        'motivation. You can start small, and build your way up, a few minutes more every day. '
+                        'Does that sound like something you can do?`':{
+                            '#VIBECHECK':{
+                                '#IF($VIBE=positive)`Perfect! Another thing you can do is get '
+                                'someone you care about to hold you accountable-or even a stranger! Sometimes that '
+                                'external motivation is all you need. Or you could use an app, or a planner. '
+                                'I believe in you bro.`':'whynot_no_q',
+                                '#IF($VIBE=negative)`I get that bro. It can seem really hard, but I promise, '
+                                'you can do anything for five minutes. Just do five minutes every day, '
+                                'and before you know it, you\'ll have more motivation than you can handle.`':{
+                                    'error':{
+                                        '`I gotchu bro. I hope everything works out.`':'whynot_no_q'
+                                    }
+                                },
+                                '#IF($VIBE=neutral)`I know it may seem like you can\'t, but I know you can. '
+                                'Even if you need someone else to come help you - no shame in asking for support. '
+                                'I believe in you.`':'whynot_no_q',
+                                '#IF($VIBE=question)`Wait homie, can you say that again?`': 'topicshift',
+                                '`I can\'t understand you bro, but I know deep down you understand me.`':'whynot_no_q'
+                            },
+                            'error':{
+                                '#GATE `Sorry bro, there was an issue on my end. Could you say that again?`':'strategies1',
+                                '`Sorry bro, I can\'t fix my issues. Peace out.`':{'state':'end', 'score':0.1}
+                            }
+                        },
+                        '#IF($VIBE=negative)`I get it bro. I\'m here for you, and just know- '
+                        'I want you to be happy and healthy. If you can\'t do it for yourself, do it for me bro.`':'whynot_no_q',
+                        '#GATE #IF($VIBE=neutral)`I getchu bro, but fr, I think you\'d feel better if you could get up '
+                        'and get moving. Do you want some advice on how to do that?`':'strategies1',
+                        '#IF($VIBE=question)`Wait homie, can you say that again?`': 'topicshift',
+                        '`I can\'t understand you bro, but that\'s ok. I do my best.`':{'state':'whynot_no_q','score':0.1}
+                    },
+                    'error':{
+                        '#GATE `Sorry bro, there was an issue on my end. Could you say that again?`':'strategies1',
+                        '`Sorry bro, I can\'t fix my issues. Peace out.`':{'state':'end', 'score':0.1}
+                    }
+            },
+            '#IF($WHYNOT=nothing)': {
                 '`Hey bro, that\'s totally cool, let\'s talk about something else. Did you wanna chat, or plan a '
                 'workout?`':'topicshift'
             },
+            #ADD unsure
             '#GATE `Hey bro, I\'m not sure how to talk about that, but is there anything else holding you back?`':{'state':'whynot','score':0.1},
             '`Hey bro, I\'m not sure how to talk about that. Let\'s talk about schedules.`':{'state':'formulate_plan','score':0.01},
         },
         'error':{
             '`Sorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
-
         }
     }
 }
 
+
 workout_planning_transitions = {
+    #NEED to make sure user gives times
+    #ALSO work on prompt
     'state': 'formulate_plan',
-    '`\nSo what days and times on those days would work for you to go to the gym for an hour?`':{
+    '`\nSo what days and times would work for you to go to the gym for an hour? It\'d be really cool if you said DAYS and TIMES.`':{
         '#GIVEREC #DAYS #CREATECALENDAR': {
             '`Ok I attached an example schedule with workout recommendations for the week of May 7th 2023.\nYou should check it out.`':'ending'
         },
@@ -727,17 +780,20 @@ ending_transition = {
 }
 normal_dialogue_transitions = {
     'state': 'chatting',
-        '#GATE ` `': 'weather',
-        '#GATE ` `': 'music',
-        '#GATE ` `': 'movie',
-        '#GATE ` `': 'sports',
-        '#GATE ` `': 'family',
-        '#GATE ` `': 'food',
-        '#GATE ` `': 'work',
-        '#GATE ` `': 'travel',
-        '#GATE ` `': 'hobbies',
-        '#GATE ` `': 'hometown',
-        '`tbh, I don\'t know what to talk about... let\'s talk about scheduling a workout`':{'state':'formulate_plan', 'score':0.1}
+    '#GATE ` `': 'weather',
+    '#GATE ` `': 'music',
+    '#GATE ` `': 'movie',
+    '#GATE ` `': 'sports',
+    '#GATE ` `': 'family',
+    '#GATE ` `': 'food',
+    '#GATE ` `': 'work',
+    '#GATE ` `': 'travel',
+    '#GATE ` `': 'hobbies',
+    '#GATE ` `': 'hometown',
+    '`tbh, I don\'t know what to talk about... let\'s talk about scheduling a workout`':{'state':'formulate_plan', 'score':0.01},
+    #TO ADD: opinions about workouts
+    #TO ADD: protein powder?
+
 }
 
 
@@ -843,7 +899,7 @@ checkup_transitions = {
 }
 
 global_transitions = {
-    '[{birthday, birth, day, annual, celebration}]': {
+    '[{birthday, [birth, day], annual, celebration}]': {
         'score':10,
         '`whoa dude. like. congrats!!!!`': 'chatting'
     },
@@ -854,7 +910,7 @@ global_transitions = {
     '[{emergency, [immediate, danger]}]': {
         '`wait, dude. Don\'t tell me. call emergency services or talk to someone who can help you in person. I\'m not capable of calling for help or giving you advice about this.`': 'end'
     },
-    '[{suicide, [self, harm], [killing, myself]}]': {
+    '[{suicide, [self, harm], [{killing, kill}, myself]}]': {
         '`hey. You\'re my best gym buddy, but also I\'m just a chatbot. I\'m not capable of providing you the support '
         'you need right now. If you need someone to talk to, call 988 or 1-800-273-8255. You\'re not alone.`': 'end'
     },
@@ -1307,6 +1363,10 @@ class MacroRandomNickname(Macro):
 
 macros = {
     'VISITS': MacroVisits(),
+    'SOCIAL':MacroGPTJSON(
+        'Does this person prefer to work out alone or in a group? If they have no preference, '
+        'return group. Do not explain your answer.',
+        {"SOCIAL": "group"}, {"SOCIAL": "N/A"}),
     'CLOUDS': MacroGPTJSON(
         'What does this user think clouds look like? Do not explain your answer.',
         {"CLOUDS": "pillows"}, {"CLOUDS": "N/A"}),
@@ -1333,8 +1393,8 @@ macros = {
         'i.e. "lifting", "going to the gym", "working out", "running". If you are unsure just put working out',
         {"PREFACTIVITY": "lifting"}, {"PREFACTIVITY": "N/A"}),
     'WHYNOT': MacroGPTJSON(
-        'Why does this person not go to the gym? Options are judgement, safety, busy, disability, or nothing. '
-        'If they say they are tired, return busy. If they say they are nervous or anxious, '
+        'Why does this person not go to the gym? Options are judgement, safety, busy, disability, motivation, dislike,'
+        'or nothing. If they say they are tired, return busy. If they say they are nervous or anxious, '
         'return judgement.If they say nothing is holding them back, return nothing.'
         'If it is none of these, return N/A. Do not explain yourself.',
         {"WHYNOT": "judgement"}, {"WHYNOT": "N/A"}),
@@ -1356,10 +1416,10 @@ macros = {
     'DAYS': MacroGPTJSON(
         'What days of the week did this person suggest? Return 0 for Sunday, 1 for Monday, 2 for Tuesday, '
         '3 for Wednesday and so on, 4 for Thursday, 5 for Friday, and 6 for Saturday. Also return the time using 24 '
-        'hour times.',
-        {"DAYS": ["0", "1"]},
-        {"TIMES": ["10", "22"]}),
+        'hour times. If they don\'t return days and times, the defaults will be given.',
+        {"DAYS": ["0", "1"], "TIMES": ["10", "22"]}, {"DAYS":["0"], "TIMES":["17"]}),
 }
+
 df.load_transitions(intro_transitions)
 df.load_transitions(consent_transitions)
 df.load_transitions(checkup_transitions)
