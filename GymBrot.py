@@ -79,15 +79,14 @@ intro_transitions = {
         '#VIBECHECK': {
             '#IF($VIBE=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`':{
                 'state': 'offer',
-                '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, {are, know}], right, correct, true, factual, facts, def, always, [i, have], totally}]': {
-                    '`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`': 'name'
+                '#VIBECHECK':{
+                    '#IF($VIBE=positive)`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`':'name',
+                    '#IF($VIBE=negative)`Bro.. you got to get on that, but don’t worry bro I can help with that!\n`':'name',
+                    '`Bro... tbh, I can\'t understand you, but that\'s ok. Gains r life`':'name'
                 },
-                '[{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, havent}]': {
-                    '`Bro.. you got to get on that, but don’t worry bro I can help with that!\n`': 'name'
-                },
-                'error': {
-                    '`Hold up bro, I couldn\'t catch your vibe. Can you say that again?`': 'offer'
-                }
+                '`Hold up bro, I couldn\'t catch your vibe. Can you say that again?`':'offer',
+               
+               
             },
             '#IF($VIBE=negative)`That’s tough bro. Hopefully it\'s not because of your finals... \nI\'m sorry if I started off too strong bro.`': {
                 '[{okay, fine, [no, worries], [dont, worry], sorry, ok, alright, just, enough}]': {  # supposed to be forgiveness
@@ -416,7 +415,8 @@ whynot_transitions = {
                         'don\'t for two reasons:\n they have spotters and they know their limits.`': {
                             'state': 'safetyfirst',
                             '[{[how, {[know, limits], [not, hurt], [be, safe], [find, spotter]}], safety, tell, overwhelmed, '
-                            '[too, much], worried, [not, sure], [no, friends], [cant, find], [!-can, find]}]': {
+                            '[too, much], worried, [not, sure], [no, friends], [cant, find], [!-can, find], [how, use]}]': {
+                                'state':'unaware',
                                 '`Totally bro, let me elaborate for ya. Finding a spotter can be tough, but gym bros are '
                                 'usually open to being spotters,\n even if they don\'t know you well. You could even '
                                 'bring one of your homies! Do you think you\'d be able to find a spotter?`': {
@@ -478,7 +478,8 @@ whynot_transitions = {
                                 'you can safely lift or push, for example, more weight than you\'re ueed to. They\'re '
                                 'some real homies! If you ever need me to explain something like that bro, feel free to'
                                 'ask. But now that we have that cleared up, do you think you could find a spotter?`':'safetyfirst'
-                            }
+                            },
+                            'error':'unaware',
                         }
                     },
                     '[{threatening, person, scared, terrified, threat, threatened, stalker, creep, creepy, afraid, '
@@ -522,7 +523,8 @@ whynot_transitions = {
                         'Everyones\' bodies are different with different needs,\n and that will never be something a true homie, '
                         'like me, will judge you for. If you\'re interested we can find other options\n that can still get you '
                         'swole and help you achieve your fitness goals.`':'disability'
-                    }
+                    },
+                    'error': 'unaware'
             },
             '#IF($WHYNOT=busy)`I get it bro, sometimes life gets in the way. Especially right now bro, I\'m sure you\'re swamped '
                 'with work because the semester is ending.`': {
@@ -663,8 +665,7 @@ whynot_transitions = {
             '`Hey bro, I\'m not sure how to talk about that. Let\'s talk about schedules.`':{'state':'formulate_plan','score':0.01},
         },
         'error':{
-            '#GATE `Sorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
-            '`Sorry bro, I really don\'t know how to help you. There\'s an issue on my end.`':'end'
+            '`Sorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
 
         }
     }
@@ -887,7 +888,6 @@ global_transitions = {
         },
     }
 }
-
 
 class MacroGetName(Macro):
    # def load_user(self, firstname, lastname):
@@ -1338,7 +1338,7 @@ macros = {
         'If it is none of these, return N/A. Do not explain yourself.',
         {"WHYNOT": "judgement"}, {"WHYNOT": "N/A"}),
 
-    'GETNAME': MacroGPTJSON( 'What is this persons name?',
+    'GETNAME': MacroGPTJSON( 'What is this persons name? If they respond with one word, it\'s probably their name',
         {"NAME": "James Smith"}, {"NAME": "N/A"}),
 
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
