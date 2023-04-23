@@ -125,44 +125,43 @@ intro_transitions = {
 
 
 name_transitions = {
-   'state': 'name',
-   '`Wait bro, I almost forgot. Like, what do people call you, dude?`': {
-       '#GETNAME': {
-           'state': 'got_name',
-           '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': 'check-up',
+    'state': 'name',
+    '`Wait bro, I almost forgot. Like, what do people call you, dude?`': {
+        '#GETNAME': {
+            'state': 'got_name',
+            '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': 'check-up',
 
-
-           '#IF($RETURNUSER=False)`Yeah...`$NAME `I like the ring of that! The`$NAME`dawg haha! How do you like your new nickname?`': {
-               '[{great, good, love, happy, like, fan, into, sweet, [!-dont, {like, love}], [!-not, {happy, into, fan, great}], wow, amazing, incredible, beautiful, happy, friend}]': {
-                   '`My bros tell me I\'m the best at comin up with nicknames. \nLike, dude, whenever someone new joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
-                       '[{cool, impressive, interesting, sweet, sick, rad, radical, dope, slay, love, like, amazing, [!-not, {happy, into, fan, great}], wow, chill}]': {
-                           '`Yeah, it is pretty cool. We haven\'t met before, have we bro? \nI bet you have a bunch of sick talents I don\'t even know about yet! \nLet me learn a little more about you...\n`': 'new_user'
-                       },
-                       '[{okay, weird, [too, much], weirdo, overdone, cheesy, bad, [not, good], lame}]': {
-                           '`Oh... I thought you\'d be a little more impressed. \nThat\'s cool though bro. I get it, you\'re ready for me to learn a bit more about you!`': 'new_user'
-                       },
-                       'error':{
-                           '`That\'s ok bro, I know you love me haha.`' : 'new_user'
-                       }
-                   }
-               },
-               '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, bland, worst, [not, {good, great, amazing, incredible}], nah, nope, nada, enemy, hate, evil, stupid, terrible, ass}]': {
-                   '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. \nWe\'ll stick with`$NAME`. \nEnough about names. I want to learn some more about you, bro!`': 'new_user'
-               },
-               'error':{
-                   '`Everyone likes different things haha. I won\'t take it personally.`':'new_user'
-               },
-               'score':0.1
-           },
-           '#IF($NAME=N/A)`Wait bro... are you sure that\'s your name? Like, what do people call you?`': {
-                   '#GETNAME': 'got_name',
-                   'error': 'end'
-           },
-           'error':{
-               '`Hold up bro, I couldn\'t catch your vibe.`#GETNAME':'got_name'
-           }
-       }
-   },
+            '#IF($RETURNUSER=False)`Yeah...`$NAME `I like the ring of that! The`#RANDOM_NAME$NAME`haha! How do you like your new nickname?`': {
+                '[{great, good, love, happy, like, fan, into, sweet, [!-dont, {like, love}], [!-not, {happy, into, fan, great}], wow, amazing, incredible, beautiful, happy, friend}]': {
+                    '`My bros tell me I\'m the best at comin up with nicknames. \nLike, dude, whenever someone new joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
+                        '[{cool, impressive, interesting, sweet, sick, rad, radical, dope, slay, love, like, amazing, [!-not, {happy, into, fan, great}], wow, chill}]': {
+                            '`Yeah, it is pretty cool. We haven\'t met before, have we bro? \nI bet you have a bunch of sick talents I don\'t even know about yet! \nLet me learn a little more about you...\n`': 'new_user'
+                        },
+                        '[{okay, weird, [too, much], weirdo, overdone, cheesy, bad, [not, good], lame}]': {
+                            '`Oh... I thought you\'d be a little more impressed. \nThat\'s cool though bro. I get it, you\'re ready for me to learn a bit more about you!`': 'new_user'
+                        },
+                        'error':{
+                            '`That\'s ok bro, I know you love me haha.`' : 'new_user'
+                        }
+                    }
+                },
+                '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, bland, worst, [not, {good, great, amazing, incredible}], nah, nope, nada, enemy, hate, evil, stupid, terrible, ass}]': {
+                    '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. \nWe\'ll stick with`$NAME`. \nEnough about names. I want to learn some more about you, bro!`': 'new_user'
+                },
+                'error':{
+                    '`Everyone likes different things haha. I won\'t take it personally.`':'new_user'
+                },
+                'score':0.1
+            },
+            '#IF($NAME=N/A)`Wait bro... are you sure that\'s your name? Like, what do people call you?`': {
+                    '#GETNAME': 'got_name',
+                    'error': 'end'
+            },
+            'error':{
+                '`Hold up bro, I couldn\'t catch your vibe.`#GETNAME':'got_name'
+            }
+        }
+    },
 }
 
 
@@ -1324,7 +1323,11 @@ class MacroRandomMuscle(Macro):
        return musc
 
 
-
+class MacroRandomNickname(Macro):
+    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+        nicknames = ['dawg', 'machine','magnet','beast','big','bulk head','slayer', 'brick', 'tough', 'reaper', 'cobra', 'champ', 'muscles', 'hound']
+        chosen = nicknames[random.randrange(len(nicknames))]
+        return chosen
 
 macros = {
     'VISITS': MacroVisits(),
@@ -1364,6 +1367,7 @@ macros = {
          {"VIBE": "negative"}, {"VIBE": "positive"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
+    'RANDOM_NAME' : MacroRandomNickname(),
     'WEATHER': MacroWeather(),
     'GIVEREC': MacroGIVEREC(),
     'CREATECALENDAR': MacroCreateCalendar(),
