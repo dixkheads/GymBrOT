@@ -673,7 +673,7 @@ whynot_transitions = {
 
 workout_planning_transitions = {
     'state': 'formulate_plan',
-    '`\nSo what days and times on those days would work for you to go to the gym for an hour?`':{
+    '`\nSo what days and times would work for you to go to the gym for an hour? Please give both TIMES and DAYS`':{
         '#GIVEREC #DAYS #CREATECALENDAR': {
             '`Ok I attached an example schedule with workout recommendations for the week of May 7th 2023.\nYou should check it out.`':'ending'
         },
