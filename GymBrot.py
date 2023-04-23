@@ -658,9 +658,15 @@ whynot_transitions = {
 
 workout_planning_transitions = {
     'state': 'formulate_plan',
+<<<<<<< HEAD
     '`So what days and times would work for you to go to the gym for an hour?`':{
         '#DAYS #CREATECALENDAR': {
             'Ok I see, now what times work. Let me find something that works.'
+=======
+    '`\nSo what days and times would work for you to go to the gym for an hour?`':{
+        '#GIVEREC #DAYS #CREATECALENDAR': {
+            '`Ok I attached an example schedule with workout recommendations for the week of May 7th 2023.\nYou should check it out.`':'ending'
+>>>>>>> parent of 7eda43c (Update GymBrot.py)
         },
             'error': {
 
