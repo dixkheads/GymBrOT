@@ -705,10 +705,34 @@ whynot_transitions = {
                         '`Sorry bro, I can\'t fix my issues. Peace out.`':{'state':'end', 'score':0.1}
                     }
             },
-            '#IF($WHYNOT=nothing)': {
-                '`Hey bro, that\'s totally cool, let\'s talk about something else. Did you wanna chat, or plan a '
-                'workout?`':'topicshift'
+            '#IF($WHYNOT=dislike)`Bro, that\'s so valid. The gym atmosphere isn\'t for everybody.'
+            ' But fitness IS for all the homies, bro! Do you prefer working out alone, or in a group?`':{
+                '#SOCIAL':{
+                    '#IF($SOCIAL=group)`Hell yeah bro! There are lots of options for group fitness, like yoga, '
+                    'pilates, calisthenics, zumba, cycling, and more! One of the best ways to find group fitness'
+                    ' is to check out your local YMCA (or other gyms), your university, or maybe even your local shared '
+                    'community spaces. There\'s a looot out there, and it\'s a good way to meet new people '
+                    'and get yourself out there`':{
+                        'error':'ending'
+                    },
+                    '#IF($SOCIAL=alone)`Respect bro, sometimes you just need that \'you\' time. '
+                    'There are lots of ways to work out at home, did you want me to give you some ideas?`':{
+                        '#VIBECHECK':{
+                            '#IF($VIBE=positive)': 'bodyweight',
+                            '`Yeah bro, I feel you. That\'s ok. Was there anything else you '
+                            'wanted to talk about?`':{'state':'topicshift','score':0.1}
+                        }
+                    },
+                    '`I can\'t understand you, but that\'s ok. I know you\'re my homie, and that\'s what matters.`':'ending'
+                },
+                'error':{
+                    '#GATE `Sorry bro, there was an issue on my end. Could you say that again?`':'strategies1',
+                    '`Sorry bro, I can\'t fix my issues. Peace out.`':{'state':'end', 'score':0.1}
+                }
             },
+            '#IF($WHYNOT=unsure)`Yo bro, that\'s so valid! That\'s why I\'m here - lemme help you make a plan real fast`':'formulate_plan',
+            '#IF($WHYNOT=nothing)`Hey bro, that\'s totally cool, let\'s talk about something else. Did you wanna chat, or plan a '
+            'workout?`': 'topicshift',
             #ADD unsure
             '#GATE `Hey bro, I\'m not sure how to talk about that, but is there anything else holding you back?`':{'state':'whynot','score':0.1},
             '`Hey bro, I\'m not sure how to talk about that. Let\'s talk about schedules.`':{'state':'formulate_plan','score':0.01},
@@ -849,7 +873,8 @@ movie_transitions = {
 }
 sports_transitions = {
     'state': 'sports',
-    '`Bro to bro, I love the gym, but I\'m not a beast when it comes to regular sports haha. I have to admire people who are tho bc they\'re ripped af. What\'s your favorite sport?`': {
+    '`Bro to bro, I love the gym, but I\'m not a beast when it comes to regular sports haha. \n'
+    'I have to admire people who are tho bc they\'re ripped af. What\'s your favorite sport?`': {
         'error': 'chatting'
     }
 }
@@ -861,13 +886,14 @@ family_transitions = {
 }
 food_transitions = {
     'state': 'food',
-    '`You know, you can\'t get swole without exercise, but a healthy diet is important too, bro. What kind of food do you like?`': {
+    '`You know, you can\'t get swole without exercise, but a healthy diet is important too, bro. \n'
+    'What kind of food do you like?`': {
         'error': 'chatting'
     }
 }
 work_transitions = {
     'state': 'work',
-    '`I\'m so blessed to be able to do my dream job every day fr. Being a personal trainer is sick. What do you do?`': {
+    '`I\'m so blessed to be able to do my dream job every day fr. \nBeing a personal trainer is sick. What do you do?`': {
         'error': 'chatting'
     }
 }
@@ -880,14 +906,15 @@ travel_transitions = {
 }
 hobby_transitions = {
     'state': 'hobbies',
-    '`This is a secret but, when I\'m not working out my pecs, I like to work out my brain. I\'m a chess god. What do you do when you\'re not hitting legs, bro?`': {
+    '`This is a secret but, when I\'m not working out my pecs, I like to work out my brain.\n'
+    ' I\'m a chess god. What do you do when you\'re not hitting legs, bro?`': {
         'error': 'chatting'
     }
 }
 hometown_transitions = {
     'state': 'hometown',
-    '`I\'ve been going to the gym for a looooong time... before I got jacked, I used to just do math '
-    'calculations, because I was a node in a cluster. Lol, glad those days are over. Where did you grow up?`': {
+    '`I\'ve been going to the gym for a looooong time... \nbefore I got jacked, I used to just do math '
+    'calculations, because I was a node in a cluster. \nLol, glad those days are over. Where did you grow up?`': {
         'error': 'chatting'
     }
 }
@@ -944,7 +971,6 @@ global_transitions = {
         },
     }
 }
-
 
 class MacroGetName(Macro):
    # def load_user(self, firstname, lastname):
