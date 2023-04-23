@@ -12,9 +12,9 @@ import numpy as np
 
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
-# os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
+os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
-os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
+#os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 
 
 model = 'gpt-3.5-turbo'
@@ -1084,7 +1084,7 @@ class MacroCreateCalendar(Macro):
 
         d = datetime.now().date()
 
-        for i in range(1,min(len(vars['TIMES']),len(vars['DAYS']))):
+        for i in range(0,min(len(vars['TIMES']),len(vars['DAYS']))):
             recc = []
             day = vars['DAYS'].pop()
             hour = vars['TIMES'].pop()
