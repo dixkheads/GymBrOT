@@ -1,4 +1,4 @@
-import openai, os, requests, re, random, json
+import openai, random
 from typing import Dict, Any, List, Callable, Pattern
 from json import JSONDecodeError
 from enum import Enum
@@ -94,8 +94,8 @@ intro_transitions = {
 
         },
         'error':{
-            '#GATE `Sorry bro, there was an issue on my end. Lemme say that again.\n`' : {'state':'intro', 'score': 0.1},
-            '#GATE`Sorry bro, I can\'t seem to fix my issues. Later and keep workin on those gains !1!!1!`':{'state':'end','score':0.01}
+            '#GATE `Sorry bro, there was an issue on my end. Lemme say that again.\n`': {'state':'intro', 'score': 0.1},
+            '#GATE`Sorry bro, I can\'t seem to fix my issues. Later and keep workin on those gains !1!!1!`': {'state':'end','score':0.01}
 
         }
     }
@@ -273,9 +273,7 @@ newuser_transitions = {
     '`\nOk, ok I feel like I know you better now bro! \nSo, bro to bro, I\'m a beast at making workout plans, and I bet I know exactly what\'ll get you pumped and motivated to keep coming back to the gym! \nno pressure tho\n`': {'state':'topicshift_no_q', 'score':0.1}
 }
 
-"""
-To Do: put a question asking why not in the whynot transitions
-"""
+
 whynot_transitions = {
     'state':'whynot_no_q',
     '`So bro, what\'s keeping you from hittin the gym or exercising as much as you want?`':{
@@ -285,13 +283,14 @@ whynot_transitions = {
             'going to the gym.\nI know we don\'t know each other like that so I won\'t push you to discuss it more, '
             'but if you want I can give you some advice.`': {
                 '#VIBECHECK': {
-                    '#IF($VIBE=positive)`Okay, bro, for sure. It\’s good to start small. Just go and do a short workout.\n If the vibe is`'
+                    '#IF($VIBE=positive)`Okay, bro, for sure. It\'s good to start small. Just go and do a short workout.\n If the vibe is`'
                     '`right, you can keep going for longer sets as you get more comfortable.\n Like bro, think about it this`'
-                    '`way.\nWhen you start lifting you don\’t max out the weight immediately, right?\nWe have to start with`'
+                    '`way.\nWhen you start lifting you don\'t max out the weight immediately, right?\nWe have to start with`'
                     '`five or ten pounds and as we get more comfortable we keep adding on. You following me, dude?`': {
                         'state': 'judgefirst',
                         '#VIBECHECK': {
                             '#IF($VIBE=positive)`Great! Does that sound like something you could do bro?`': {
+                                'state': 'judgesecond',
                                 '#VIBECHECK': {
                                     '#IF($VIBE=positive)`I\'m glad I could help bro. I have some more ideas if you\'d like me to drop these '
                                     'knowledge bombs on you.`': {
@@ -379,22 +378,26 @@ whynot_transitions = {
                                 }
                             },
                             '#IF($VIBE=negative)`Maybe the metaphor was too much, bro. The point is it\'s totally fine to start off small. You don\'t have to start off squatin\n`'
-                            '` 200lbs. And honestly, bro, you shouldn\'t for your health.`': 'judgefirst',
-                            '#IF($VIBE=neutral)`Maybe the metaphor was too much, bro. The point is it\'s totally fine to start off small. You don\'t have to start off squatin\n`'
-                            '` 200lbs. And honestly, bro, you shouldn\'t for your health.`': 'judgefirst',
-                            '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
-                            '`Really not sure what this means, bro, but ok. \nIs there any other reason why you haven\'t been hitting the gym?`': {'state': 'whynot', 'score': 0.1}
+                            '` 200lbs. And honestly, bro, you shouldn\'t for your health.`':{
+                                'state': 'reroute',
+                                '#VIBECHECK': {
+                                    '#IF($VIBE=positive)`Glad we\'re on the same page again! Does that sound like something you could do bro?`': 'judgesecond',
+                                    '#IF($VIBE=nuetral)`Well... I was hoping for a little bit more enthusiasm, but we can work on that bro.\nDo you think you\'ll be able to take my advice, maybe start off a lil easier than you expected?`': 'judgesecond',
+                                    '#IF($VIBE=negative)`Okay... really bringin down the vibe right now, but what do you think, bro?\n Do you think you\'ll be able to take my advice and maybe start off a lil easier than you expected?`': 'judgesecond'
+                                }
+                            },
+                            '#GATE #IF($VIBE=neutral)`Maybe the metaphor was too much, bro. The point is it\'s totally fine to start off small. You don\'t have to start off squatin\n`'
+                            '` 200lbs. And honestly, bro, you shouldn\'t for your health.`': 'reroute',
+                            '#GATE #IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                            '`Really not sure what this means, bro, but ok. \nIs there any other reason why you haven\'t been hitting the gym?`': {'state': 'whynot', 'score': 0.1},
                         }
                     },
-
                     '#IF($VIBE=negative)`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`': 'topicshift',
                     '#IF($VIBE=neutral)`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`': 'topicshift',
                     '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
                     '`Really not sure what this means, bro, but ok. \nIs there any other reason why you haven\'t been hitting the gym?`': {'state': 'whynot', 'score': 0.1}
-
                 }
             },
-
             '#IF($WHYNOT=safety)`I see, bro... I know we don\'t know each other super well, but bro, is this something I can help you \n'
                 'with? Like are you afraid of getting hurt while workin out or is someone threatening you?`': {
                     '[{working, out, lifting, weights, heavy, weak, strength}]': {
@@ -1233,7 +1236,7 @@ macros = {
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
     'VIBECHECK': MacroGPTJSON(
          'Is this user positive, negative, neutral, or asking a question? If they are agreeing with something, '
-         'they are positive.',
+         'they are positive. Do not explain yourself',
          {"VIBE": "positive"}, {"VIBE": "N/A"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
@@ -1259,12 +1262,12 @@ df.load_global_nlu(global_transitions)
 df.add_macros(macros)
 
 if __name__ == '__main__':
-     PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+     #PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+     PATH_API_KEY = 'C:\\Users\\sarah\\PycharmProjects\\GymBrOT\\resources\\openai_key.txt'
      openai.api_key_path = PATH_API_KEY
      df.run()
     #PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
     #PATH_API_KEY = 'resources/openai_key.txt'
-
 
     # save(df, 'resources/gymbrot.pkl')
 
