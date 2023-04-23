@@ -12,7 +12,7 @@ import numpy as np
 
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
-# os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
+os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 #os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 
@@ -1259,7 +1259,7 @@ df.load_global_nlu(global_transitions)
 df.add_macros(macros)
 
 if __name__ == '__main__':
-     #PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+     PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
      #PATH_API_KEY = 'C:\\Users\\sarah\\PycharmProjects\GymBrOT\\resources\\openai_key.txt'
      openai.api_key_path = PATH_API_KEY
      df.run()
