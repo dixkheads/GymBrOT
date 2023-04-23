@@ -957,10 +957,6 @@ class MacroWeather(Macro):
         return output
 
 
-#def get_ACTIVITYLEVEL(vars: Dict[str, Any]):
- #   vars['ACTIVITYLEVEL'] = vars[V.ACTIVITYLEVEL.name][random.randrange(len(vars[V.ACTIVITYLEVEL.name]))]
-  #  print(vars['ACTIVITYLEVEL'])
-   #I unde return
 
 
 def get_FITNESSLEVEL(vars: Dict[str, Any]):
