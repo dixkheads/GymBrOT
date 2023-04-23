@@ -11,9 +11,9 @@ import numpy as np
 
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
-os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
+# os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
-#os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
+os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 
 
 model = 'gpt-3.5-turbo'
@@ -660,6 +660,46 @@ workout_planning_transitions = {
 
 }
 
+ending_transition = {
+    'state': 'ending',
+    '`Okay bro, let me think for a sec… we went over your reservations about going to the gym, we set aside to go to the gym,\n`'
+    '`and we made a workout. We’re kind of beasts at this`': {
+        '#VIBECHECK': {
+            '#IF($VIBE=positive)`That\'s what I’m talking about bro. This is why I like you. I need to be real for you a second. I’m feeling a little\n`'
+            '`emotional bro. Like, over the course of these last couple minutes I’ve kind of gotten attached to you bro. You\’re like my number one homie`': {
+                '#VIBECHECK': {
+                    '#IF($VIBE=positive)`Yeah bro, I’m sad our time together has come to an end, but I know you’re going to crush your fitness journey.`': {
+                        'state':'ending1',
+                        '#VIBECHECK': {
+                            '#IF($VIBE=positive)`For sure, bro. Well…that’s all I have for you!`': {
+                                '[{good, bye, see, ya, later}]': {
+                                    '`Catch you on the flip side! Thanks for being a bro, bro!`': 'end'
+                                },
+                                'error': {
+                                    '`This is when you say goodbye, bro.': {
+                                        '[{good, bye, see, ya, later}]': {
+                                            '`Catch you on the flip side! Thanks for being a bro, bro!`': 'end'
+                                        },
+                                        'error': {
+                                            '`Okay bro, I got to go finish this rep. See ya bro!`': 'end'
+                                        }
+                                    }
+                                }
+                            },
+                            '#IF($VIBE=negative)`Look bro, I know it can be tough to start your fitness journey. Bro, it\'s consistently \n`'
+                            '`referred to as the hardest part of working out. But when it start, it will be much easier to build healthy habits.\n`'
+                            '`So what do you say bro? Are you gonna crush this?`': 'ending`'
+                        }
+                    },
+                    '#IF($VIBE=negative)`Well to each to their own, bro. I\'m sad our time together has come to an end, \n`'
+                    '`but I know you\'re going to crush your fitness journey.`': 'ending1'
+                }
+            },
+            '#IF($VIBE=negative)`Okay bro, you\'re kind of bringing down the mood. It\'s important to stay positive on your fitness journey. \n`'
+            '`So what do you say, are you ready to crush this?`': 'ending1'
+        }
+    }
+}
 normal_dialogue_transitions = {
     'state': 'chatting',
     '#GATE ` `': 'weather',
