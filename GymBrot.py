@@ -14,7 +14,6 @@ import numpy as np
 # This is a test to see if it has pushed
 os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
-#os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 
 
