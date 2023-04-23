@@ -711,35 +711,34 @@ ending_transition = {
                             },
                             '#IF($VIBE=negative)`Look bro, I know it can be tough to start your fitness journey. Bro, it\'s consistently \n`'
                             '`referred to as the hardest part of working out. But when it start, it will be much easier to build healthy habits.\n`'
-                            '`So what do you say bro? Are you gonna crush this?`': 'ending`'
+                            '`So what do you say bro? Are you gonna crush this?`': 'ending1`'
+                            '``'
                         }
                     },
                     '#IF($VIBE=negative)`Well to each to their own, bro. I\'m sad our time together has come to an end, \n`'
-                    '`but I know you\'re going to crush your fitness journey.`': 'ending1'
+                    '`but I know you\'re going to crush your fitness journey.`': 'ending1',
+                    '`Bro, Idk what that means, but you\'re going to crush your fitness journey.`':{'state':'ending1','score':0.1}
                 }
             },
             '#IF($VIBE=negative)`Okay bro, you\'re kind of bringing down the mood. It\'s important to stay positive on your fitness journey. \n`'
-            '`So what do you say, are you ready to crush this?`': 'ending1'
+            '`So what do you say, are you ready to crush this?`': 'ending1',
+            '`Bro, idk what that means, but are you ready to crush this??`':{'state':'ending1', 'score':0.1}
         }
     }
 }
 normal_dialogue_transitions = {
     'state': 'chatting',
-    '`Bro, fr, I love just chatting w you!`':{
-        'error':{
-            '#GATE ` `': 'weather',
-            '#GATE ` `': 'music',
-            '#GATE ` `': 'movie',
-            '#GATE ` `': 'sports',
-            '#GATE ` `': 'family',
-            '#GATE ` `': 'food',
-            '#GATE ` `': 'work',
-            '#GATE ` `': 'travel',
-            '#GATE ` `': 'hobbies',
-            '#GATE ` `': 'hometown',
-            '`tbh, I don\'t know what to talk about... let\'s talk about scheduling a workout`':'formulate_plan'
-        }
-    }
+        '#GATE ` `': 'weather',
+        '#GATE ` `': 'music',
+        '#GATE ` `': 'movie',
+        '#GATE ` `': 'sports',
+        '#GATE ` `': 'family',
+        '#GATE ` `': 'food',
+        '#GATE ` `': 'work',
+        '#GATE ` `': 'travel',
+        '#GATE ` `': 'hobbies',
+        '#GATE ` `': 'hometown',
+        '`tbh, I don\'t know what to talk about... let\'s talk about scheduling a workout`':'formulate_plan'
 }
 
 
@@ -888,7 +887,6 @@ global_transitions = {
         },
     }
 }
-
 
 
 class MacroGetName(Macro):
@@ -1346,7 +1344,7 @@ macros = {
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
     'VIBECHECK': MacroGPTVIBECHECK(
          'Is this user positive, negative, neutral, or asking a question? If they are agreeing with something, '
-         'they are positive. If you cannot make a judgement just put positive.',
+         'they are positive. If you cannot make a judgement just put positive. Do not explain yourself.',
          {"VIBE": "negative"}, {"VIBE": "positive"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
@@ -1361,7 +1359,6 @@ macros = {
         {"DAYS": ["0", "1"]},
         {"TIMES": ["10", "22"]}),
 }
-
 df.load_transitions(intro_transitions)
 df.load_transitions(consent_transitions)
 df.load_transitions(checkup_transitions)
