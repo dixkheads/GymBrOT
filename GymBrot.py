@@ -6,6 +6,8 @@ from emora_stdm import DialogueFlow, Macro, Ngrams
 import pickle, os, time, json, requests, re
 import regexutils
 
+from datetime import datetime, timedelta
+from Scheduler.cal_setup import get_calendar_service
 import pandas as pd
 import numpy as np
 
@@ -254,6 +256,11 @@ newuser_transitions = {
             '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`': 'new_user',
             '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`': 'new_user',
             '#IF($ACTIVITYFREQ=swole)`Bro. Do you sleep? Like respect, but what`': 'new_user',
+            '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. \nWhy aren\'t you hitting the gym?`#GIVEREC': 'whynot',
+            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`#GIVEREC ':'whynot_no_q',
+            '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`#GIVEREC': 'new_user',
+            '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`#GIVEREC': 'new_user',
+            '#IF($ACTIVITYFREQ=swole)`Bro. Do you sleep? Like respect, but what`#GIVEREC': 'new_user',
             '`I see bro. Idk what to say, other than... I respect it ig?`': {
                 'score': 0.1,
                 'state':'new_user'
@@ -262,6 +269,7 @@ newuser_transitions = {
         'error': {
             '`Whoa, bro, that\'s sick!`': 'new_user'
         },
+        },'score':2
     },
     '#GATE`\nBro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
         '#PREFACTIVITY': {
@@ -317,6 +325,7 @@ whynot_transitions = {
                                                                 'state': 'end_of_judgment',
                                                                 '#VIBECHECK': {
                                                                     '#IF($VIBE=positive)': 'formulate_plan',
+                                                                    '#IF($VIBE=positive)`Ok let\'s do this!`': {'state':'formulate_plan'},
                                                                     '#IF($VIBE=negative)`You\'re the boss, bro. We can come back to that`'
                                                                     '`later, but for now is there any other reason you`'
                                                                     '`aren\'t hittin the gym?`': 'whynot',
@@ -657,8 +666,18 @@ whynot_transitions = {
 
 workout_planning_transitions = {
     'state': 'formulate_plan'
+    'state': 'formulate_plan',
+    '`So what days and times would work for you to go to the gym for an hour?`':{
+        '#DAYS #CREATECALENDAR': {
+            'Ok I see, now what times work. Let me find something that works.'
+        },
+            'error': {
 
 }
+            }
+        }
+
+    }
 
 normal_dialogue_transitions = {
     'state': 'chatting',
@@ -1005,14 +1024,60 @@ class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Wo
 
                 # Add the exercise name and steps to the workout dictionary
                 workout_dict[exercise['exercise_name'].values[0]] = exercise['steps'].values[0]
+                workout_dict[exercise['exercise_name'].values[0]] = "".join(exercise['steps'].values[0])
 
                 # Add the set of exercises to the workout list
             workout_list.append(workout_dict)
 
 
+        # Mondays at 5 am, Tuesdays at 3 am, Fridays at 4 pm, and Saturdays at 7 am
+       # print("This is the type", len(workout_list))
+        #print("This is three random values",random.sample(workout_list, 3))
+        #print("This is three random values of three random values", random.sample(random.sample(random.sample(workout_list,3),3), 3))
         vars['WORKOUTLIST'] = workout_list
         return True
 
+class MacroCreateCalendar(Macro):
+    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+        service = get_calendar_service()
+        calendar_body = {
+            'summary': 'GymBrOT Workout Schedule'
+        }
+        #workout_list = [{"1":"a"},{"2":"b"},{"3":"c"},{"4":"d"},{"5":"e"},{"6":"f"},{"7":"g"},{"8":"h"},{"9":"i"}]
+        service.calendars().insert(body=calendar_body).execute()
+        descriptions = []
+        workout_list =vars['WORKOUTLIST']
+        for i in range(1,len(workout_list)):
+            popped = workout_list.pop()
+            for key, value in popped.items():
+                description = str(key)+":\n"
+                description += str(value)+"\n"
+                descriptions.append(description)
+
+
+        d = datetime.now().date()
+
+        for i in range(1,min(len(vars['TIMES']),len(vars['DAYS']))):
+            recc = []
+            day = vars['DAYS'].pop()
+            hour = vars['TIMES'].pop()
+            print(descriptions)
+            print(day, hour)
+            for j in range(1,4):
+                recc.append(descriptions.pop())
+            tomorrow = datetime(d.year, 5, 7+int(day), int(hour))
+            start = tomorrow.isoformat()
+            end = (tomorrow + timedelta(hours=1)).isoformat()
+            event_result = service.events().insert(calendarId='primary',
+                                                body={
+                                                    "summary": "GymBrOT Recommended Workout",
+                                                    "description": '\n'.join(recc),
+                                                    "start": {"dateTime": start, "timeZone": 'America/New_York'},
+                                                    "end": {"dateTime": end, "timeZone": 'America/New_York'},
+                                                    "guestsCanModify": True
+                                                }
+                                                ).execute()
+        return True
 
 
 class MacroSaveUser(Macro):
@@ -1146,6 +1211,12 @@ macros = {
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
     'WEATHER': MacroWeather(),
+    'GIVEREC': MacroGIVEREC(),
+    'CREATECALENDAR': MacroCreateCalendar(),
+    'DAYS': MacroGPTJSON(
+        'What days of the week did this person suggest? Return 0 for Sunday, 1 for Monday, 2 for Tuesday, 3 for Wednesday and so on, 4 for Thursday, 5 for Friday, and 6 for Saturday. Also return the time using 24 hour times.',
+        {"DAYS": ["0", "1"]},
+        {"TIMES": ["10", "22"]}),
 }
 
 df.load_transitions(intro_transitions)
@@ -1155,6 +1226,7 @@ df.load_transitions(name_transitions)
 df.load_transitions(newuser_transitions)
 df.load_transitions(whynot_transitions)
 df.load_transitions(normal_dialogue_transitions)
+df.load_transitions(workout_planning_transitions)
 df.load_transitions(weather_transitions)
 df.load_global_nlu(global_transitions)
 df.add_macros(macros)
