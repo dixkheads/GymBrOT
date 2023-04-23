@@ -997,14 +997,10 @@ class MacroWeather(Macro):
         return output
 
 
-#def get_ACTIVITYLEVEL(vars: Dict[str, Any]):
- #   vars['ACTIVITYLEVEL'] = vars[V.ACTIVITYLEVEL.name][random.randrange(len(vars[V.ACTIVITYLEVEL.name]))]
-  #  print(vars['ACTIVITYLEVEL'])
-   #I unde return
 
 
 def get_FITNESSLEVEL(vars: Dict[str, Any]):
-    level = int(vars[V.FITNESSLEVEL.name])
+    level = int(vars["FITNESSLEVEL"])
 
     if level == 0:
         vars['FITNESSLEVEL'] = "zero"
@@ -1185,7 +1181,7 @@ macros = {
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
     'VIBECHECK': MacroGPTJSON(
          'Is this user positive, negative, neutral, or asking a question? If they are agreeing with something, '
-         'they are positive. Respond ONLY with positive, negative, neutral, question, or N/A.',
+         'they are positive.',
          {"VIBE": "positive"}, {"VIBE": "N/A"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
