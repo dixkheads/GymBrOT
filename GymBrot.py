@@ -82,11 +82,11 @@ intro_transitions = {
                 '#VIBECHECK':{
                     '#IF($VIBE=positive)`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`':'name',
                     '#IF($VIBE=negative)`Bro.. you got to get on that, but don’t worry bro I can help with that!\n`':'name',
-                    '`Bro... tbh, I can\'t understand you, but that\'s ok. Gains r life`':'name'
+                    '`Bro... tbh, I can\'t understand you, but that\'s ok. Gains r life`':{'state':'name', 'score':0.1}
                 },
                 '`Hold up bro, I couldn\'t catch your vibe. Can you say that again?`':'offer',
-               
-               
+
+
             },
             '#IF($VIBE=negative)`That’s tough bro. Hopefully it\'s not because of your finals... \nI\'m sorry if I started off too strong bro.`': {
                 '[{okay, fine, [no, worries], [dont, worry], sorry, ok, alright, just, enough}]': {  # supposed to be forgiveness
@@ -294,7 +294,7 @@ whynot_transitions = {
     '`So bro, what\'s keeping you from hittin the gym or exercising as much as you want?`':{
         'state': 'whynot',
         '#WHYNOT':{
-            '#IF($WHYNOT=judgement)`Yo, bro I hear you. Can I be real with you for a sec?\nIt is completely normal to have some anxiety about '
+            '#GATE #IF($WHYNOT=judgement)`Yo, bro I hear you. Can I be real with you for a sec?\nIt is completely normal to have some anxiety about '
             'going to the gym.\nI know we don\'t know each other like that so I won\'t push you to discuss it more, '
             'but if you want I can give you some advice.`': {
                 '#VIBECHECK': {
@@ -408,7 +408,7 @@ whynot_transitions = {
                 }
             },
 
-            '#IF($WHYNOT=safety)`I see, bro... I know we don\'t know each other super well, but bro, is this something I can help you \n'
+            '#GATE #IF($WHYNOT=safety)`I see, bro... I know we don\'t know each other super well, but bro, is this something I can help you \n'
                 'with? Like are you afraid of getting hurt while workin out or is someone threatening you?`': {
                     '[{working, out, lifting, weights, heavy, weak, strength}]': {
                         '`Oh yeah, I see. I won\'t lie to you bro, you can get hurt while workin out, but most people '
@@ -526,27 +526,25 @@ whynot_transitions = {
                     },
                     'error': 'unaware'
             },
-            '#IF($WHYNOT=busy)`I get it bro, sometimes life gets in the way. Especially right now bro, I\'m sure you\'re swamped '
+            '#GATE #IF($WHYNOT=busy)`I get it bro, sometimes life gets in the way. Especially right now bro, I\'m sure you\'re swamped '
                 'with work because the semester is ending.`': {
-                    '[{yeah, am, swamped, totally, [!-not, swamped], definitely, overwhelmed, [too, much], terrible, '
-                    'overloaded, busy, exams, nervous, anxious}]': {
-                        '`Tell me about it bro... but seriously when I first started going the gym, it was pretty low '
+                #VIBECHECK NEEDED
+                '#VIBECHECK':{
+                    '#IF($VIBE=positive)`Tell me about it bro... but seriously when I first started going the gym, it was pretty low '
                         'on my priority list, so when things got busy,\n and life got in the way, it was always the '
                         'first thing in my schedule to go. But bro, being totally real with you, workin out just '
                         'makes me \n feel so much better, so I have to make time for it! If you want I can help you '
                         'manage your time better so you can make it to the gym, but before \n that I gotta know, '
-                        'is there any other reason you\'re not going to the gym?`': 'whynot'
-                    },
-                    '[{no, not, relaxed, always, nothing, special, bored, tedious, [not, {especially, now}]}]': {
-                        '`Really? Lucky you, bro. But seriously, when I first started going the gym, it was pretty '
+                        'is there any other reason you\'re not going to the gym?`':'whynot',
+                    '`Really? Lucky you, bro. But seriously, when I first started going the gym, it was pretty '
                         'low on my priority list, so when things got busy, \n and life got in the way, it was always '
                         'the first thing in my schedule to go. But bro, being totally real with you, workin out just '
                         'makes me feel \n so much better, so I have to make time for it! If you want I can help you '
                         'manage your time better so you can make it to the gym, but before that I \n gotta know, '
-                        'is there any other reason you\'re not going to the gym?`': 'whynot'
-                    }
+                        'is there any other reason you\'re not going to the gym?`':{'state':'whynot', 'score':0.1}
+                    },
             },
-            '#IF($WHYNOT=disability)`Hey bro, thanks for feeling comfortable enough to share this with me. '
+            '#GATE #IF($WHYNOT=disability)`Hey bro, thanks for feeling comfortable enough to share this with me. '
             'Everyones\' bodies are different with different needs,\n and that will never be something a true homie, '
             'like me, will judge you for. If you\'re interested we can find other options\n that can still get you '
             'swole and help you achieve your fitness goals.`': {
@@ -587,7 +585,7 @@ whynot_transitions = {
                     'reason why you haven\'t been hitting the gym?`':{'state':'whynot','score':0.1}
                 }
             },
-            '#IF($WHYNOT=cost)`That\'s real bro. I understand times can be tough. Depending on where you live, some colleges, '
+            '#GATE #IF($WHYNOT=cost)`That\'s real bro. I understand times can be tough. Depending on where you live, some colleges, '
             'universities, apartment complexes, and even some offices have gyms that you can use for free!`': {
                 '[{[{dont, not},know], unsure, [how, find]}]': {
                     '`Hey bro, no shame in that. Do you think you might have access to something like that?`': {
@@ -673,7 +671,7 @@ whynot_transitions = {
 
 workout_planning_transitions = {
     'state': 'formulate_plan',
-    '`\nSo what days and times would work for you to go to the gym for an hour? Please give both TIMES and DAYS`':{
+    '`\nSo what days and times on those days would work for you to go to the gym for an hour?`':{
         '#GIVEREC #DAYS #CREATECALENDAR': {
             '`Ok I attached an example schedule with workout recommendations for the week of May 7th 2023.\nYou should check it out.`':'ending'
         },
@@ -739,7 +737,7 @@ normal_dialogue_transitions = {
         '#GATE ` `': 'travel',
         '#GATE ` `': 'hobbies',
         '#GATE ` `': 'hometown',
-        '`tbh, I don\'t know what to talk about... let\'s talk about scheduling a workout`':'formulate_plan'
+        '`tbh, I don\'t know what to talk about... let\'s talk about scheduling a workout`':{'state':'formulate_plan', 'score':0.1}
 }
 
 
@@ -846,9 +844,11 @@ checkup_transitions = {
 
 global_transitions = {
     '[{birthday, birth, day, annual, celebration}]': {
+        'score':10,
         '`whoa dude. like. congrats!!!!`': 'chatting'
     },
     '[quit, gymbrot]': {
+        'score':10,
         '`Cya later bro!`': 'end'
     },
     '[{emergency, [immediate, danger]}]': {
@@ -864,7 +864,7 @@ global_transitions = {
     },
     '[[help, make, workout, plan], [help, workout, {plan, planning}]]': 'end',
     '[{[something, else], [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
-        'score':0.1,
+        'score':10,
         'state':'topicshift_no_q',
         '`what did you wanna talk about?`':{
             'state':'topicshift',
@@ -888,6 +888,7 @@ global_transitions = {
         },
     }
 }
+
 
 class MacroGetName(Macro):
    # def load_user(self, firstname, lastname):
