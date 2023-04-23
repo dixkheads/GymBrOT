@@ -1270,7 +1270,33 @@ class MacroGPTJSON(Macro):
            print(output)
        return True
 
+class MacroGPTVIBECHECK(Macro):
+    def __init__(self, request: str, full_ex: Dict[str, Any], empty_ex: Dict[str, Any] = None,
+                 set_variables: Callable[[Dict[str, Any], Dict[str, Any]], None] = None):
+        self.request = request
+        self.full_ex = json.dumps(full_ex)
+        self.empty_ex = '' if empty_ex is None else json.dumps(empty_ex)
+        self.check = re.compile(regexutils.generate(full_ex))
+        self.set_variables = set_variables
 
+    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+        examples = f'{self.full_ex} or {self.empty_ex} if unavailable' if self.empty_ex else self.full_ex
+        prompt = f'The question is {vars["__selected_response__"]}.{self.request} Respond in the JSON schema such as {examples}: {ngrams.raw_text().strip()}'
+        output = gpt_completion(prompt)
+        if not output: return False
+
+        try:
+            d = json.loads(output)
+        except JSONDecodeError:
+            print(f'Invalid: {output}')
+            return False
+
+        if self.set_variables:
+            self.set_variables(vars, d)
+        else:
+            vars.update(d)
+            print(output)
+        return True
 
 
 class MacroNLG(Macro):
@@ -1332,9 +1358,9 @@ macros = {
         {"NAME": "James Smith"}, {"NAME": "N/A"}),
 
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
-    'VIBECHECK': MacroGPTJSON(
+    'VIBECHECK': MacroGPTVIBECHECK(
          'Is this user positive, negative, neutral, or asking a question? If they are agreeing with something, '
-         'they are positive. If you need more context or cannot make a judgement just put positive.',
+         'they are positive. If you cannot make a judgement just put positive.',
          {"VIBE": "negative"}, {"VIBE": "positive"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
