@@ -15,6 +15,7 @@ import numpy as np
 os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 #os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
+os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 
 
 model = 'gpt-3.5-turbo'
@@ -1260,7 +1261,10 @@ df.add_macros(macros)
 
 if __name__ == '__main__':
      PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+<<<<<<< HEAD
      #PATH_API_KEY = 'C:\\Users\\sarah\\PycharmProjects\GymBrOT\\resources\\openai_key.txt'
+=======
+>>>>>>> parent of 9935d27 (fixing flow)
      openai.api_key_path = PATH_API_KEY
      df.run()
     #PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
