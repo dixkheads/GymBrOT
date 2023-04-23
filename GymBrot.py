@@ -658,7 +658,7 @@ whynot_transitions = {
 
 workout_planning_transitions = {
     'state': 'formulate_plan',
-    '`So what days and times would work for you to go to the gym for an hour?`':{
+    '`\nSo what days and times would work for you to go to the gym for an hour?`':{
         '#GIVEREC #DAYS #CREATECALENDAR': {
             '`Ok I attached an example schedule with workout recommendations for the week of May 7th 2023.\nYou should check it out.`':'ending'
         },
@@ -685,7 +685,7 @@ ending_transition = {
                                     '`Catch you on the flip side! Thanks for being a bro, bro!`': 'end'
                                 },
                                 'error': {
-                                    '`This is when you say goodbye, bro.': {
+                                    '`This is when you say goodbye, bro.`': {
                                         '[{good, bye, see, ya, later}]': {
                                             '`Catch you on the flip side! Thanks for being a bro, bro!`': 'end'
                                         },
@@ -1256,6 +1256,7 @@ df.load_transitions(normal_dialogue_transitions)
 df.load_transitions(workout_planning_transitions)
 df.load_transitions(weather_transitions)
 df.load_global_nlu(global_transitions)
+df.load_transitions(ending_transition)
 df.add_macros(macros)
 
 if __name__ == '__main__':
