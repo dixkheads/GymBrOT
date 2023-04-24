@@ -1610,7 +1610,7 @@ macros = {
 
 df.load_transitions(intro_transitions)
 df.load_transitions(consent_transitions)
-df.load_transitions(checkup_transitions)
+df.load_transitions(babel_transitions)
 df.load_transitions(name_transitions)
 df.load_transitions(newuser_transitions)
 df.load_transitions(whynot_transitions)
