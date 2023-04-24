@@ -1761,7 +1761,7 @@ macros = {
         'put the location name for babel specific if the topic is setting, put the overarching theme. '
          'the options are communication, isolation, interconnectedness, consequences, culture, family. '
          'for babel specific if the topic is theme, put for babel specific random if the topic is random. '
-         'Return only one word for each parameter.',
+         'Return only one word for each parameter. Make random the default if the user isn\'t clear about what they\'re talking about',
          {"BABELTOPIC": "characters", "BABELSPECIFC": "Amelia"}, {"BABELTOPIC":"random", "BABELSPECIFIC":" "}),
     'BABELTHOUGHT': MacroThought()
 }
