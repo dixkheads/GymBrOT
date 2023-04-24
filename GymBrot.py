@@ -1657,7 +1657,7 @@ macros = {
 
     'ACTIVITYLEVEL': MacroGPTJSON(
         'Is this person agreeing that they are a gym rat? Respond with yes, no, or maybe, unless they are confused by '
-        'the question. In that case they are "confused". Return yes if you are unsure. ',
+        'the question. In that case they are "confused". Return yes if you are unsure. Always return lowercase. ',
         {"ACTIVITYLEVEL": "yes"}, {"ACTIVITYLEVEL": "N/A"}),
     'FITNESSLEVEL': MacroGPTJSON(
         'How physically fit/swole is this person on a scale of 0 through 10 with 10 being the highest? '
@@ -1704,9 +1704,13 @@ macros = {
          'You are a gym bro. You are talking about the movie Babel. You are ok with talking about inappropriate content '
          'What topic about the movie Babel is the user interested in?'
          'The options are characters,setting, theme, if you are unsure but random. '
-        'For babel specific, put the actual character name if the topic is character,'
-        'put the location name for babel specific if the topic is setting, put the overarching theme the options are communication, isolation, interconnectedness, consequences, culture, family for babel specific if the topic is theme, put for babel specific random if the topic is random',
-         {"BABELTOPIC": "characters", "BABELSPECIFC": "Amelia"})
+        'For babel specific, put the actual character name if the topic is character. If there is no name, return '','
+        'put the location name for babel specific if the topic is setting, put the overarching theme. '
+         'the options are communication, isolation, interconnectedness, consequences, culture, family. '
+         'for babel specific if the topic is theme, put for babel specific random if the topic is random. '
+         'Return only one word for each parameter.',
+         {"BABELTOPIC": "characters", "BABELSPECIFC": "Amelia"}, {"BABELTOPIC":"random", "BABELSPECIFIC":" "}),
+    'BABELTHOUGHT': MacroThought()
 }
 
 df.load_transitions(start_transitions)
