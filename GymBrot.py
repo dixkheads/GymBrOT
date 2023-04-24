@@ -5,10 +5,12 @@ from enum import Enum
 from emora_stdm import DialogueFlow, Macro, Ngrams
 import pickle, os, time, json, requests, re
 import regexutils
-
+from datetime import datetime, timedelta
+from Scheduler.cal_setup import get_calendar_service
 import pandas as pd
 import numpy as np
 
+# os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
 #os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
@@ -20,22 +22,13 @@ model = 'gpt-3.5-turbo'
 USERDATA_ADDR = "resources/userdata.csv"
 WORKOUT_ADDR = "resources/workout-data.csv"
 
-def save(df: DialogueFlow, varfile: str):
-    df.run()
-    d = {k: v for k, v in df.vars().items() if not k.startswith('_')}
-    pickle.dump(d, open(varfile, 'wb'))
 
 
 # This is a good program
-def load(df: DialogueFlow, varfile: str):
-    d = pickle.load(open(varfile, 'rb'))
-    df.vars().update(d)
 
 
 df = DialogueFlow('start', end_state='end')
 
-if (os.path.exists('resources/gymbrot.pkl')):
-    load(df, 'resources/gymbrot.pkl')
 
 
 
@@ -46,34 +39,42 @@ consent_transitions = {
     '`Hello Gym bros! We\'re excited you\'re here and want us to join your fitness journey.\n Before we begin,`'
     '`in case of an emergency, or if you are in immediate danger, please contact the appropriate authorities or emergency`'
     '`services immediately. \nAdditionally, while our chatbot can provide helpful information and guidance, it is not a`'
-    '`substitute for professional medical advice or guidance from a qualified fitness trainer.`'
-    '`\nPlease listen to your body and use your best judgment while exercising. If you are experiencing pain or discomfort`'
+    '`substitute for professional medical advice \nor guidance from a qualified fitness trainer.`'
+    '`\nPlease listen to your body and use your best judgment while exercising. \nIf you are experiencing pain or discomfort`'
     '`while exercising, please stop immediately and seek guidance from a certified fitness professional.`'
     '`\nWith that all out of the way, if you understand and wish to continue, please type \"I understand\" now.`': {
+        'state':'understanding',
         '[i, understand]': {
             '`Great! When you leave the conversation just say \"quit gymbrot\"\nThank you and best of luck on your fitness journey!\n`': 'intro'
         },
-        'error': 'end'
+        'error': {
+            '#GATE `Hey bro, if you want to test the bot, you have to type \'I understand\'.`':'understanding',
+            '#GATE`Seriously, I can\'t help you if you don\'t type \'I understand\'.`':{'state':'understanding', 'score':0.1},
+            '`Ok bro, whatever.`':{'state':'end','score':0.01}
+        }
     }
 }
 
 intro_transitions = {
     'state': 'intro',
     '#VISITS `Hey bro, I’m GymBrOT, but you can call me bro, dude, homie, whatever you feel, you feel? \n` #GREETING': {
-        '#INITMOOD': {
-            '#IF($INITMOOD=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`':{
+        '#VIBECHECK': {
+            '#IF($VIBE=positive)`That’s what’s up bro!\n I bet you’ve been getting some sick gains recently, am I right?`':{
                 'state': 'offer',
-                '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [i, am], [you, {are, know}], right, correct, true, factual, facts, def, always, [i, have], totally}]': {
-                    '`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`': 'name'
+                '#VIBECHECK':{
+                    '#IF($VIBE=positive)`Nice bro! Not sure why I asked it\'d be hard not to notice those gains!\n`':'name',
+                    '#IF($VIBE=negative)`Bro.. you got to get on that, but don’t worry bro I can help with that!\n`':'name',
+                    '#IF($VIBE=neutral)`I see you, bro! You got this! Don\'t worry, '
+                    'I can help you be more confident about your gains.\n`':'name',
+                    '#GATE `Hold up bro, I couldn\'t catch your vibe. Can you say that again?`': {'state':'offer','score':0.1},
+                    '`Bro... tbh, I can\'t understand you, but that\'s ok. Gains r life`':{'state':'name', 'score':0.1}
                 },
-                '[{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, havent}]': {
-                    '`Bro.. you got to get on that, but don’t worry bro I can help with that!\n`': 'name'
-                },
-                'error': {
-                    '`Hold up bro, I couldn\'t catch your vibe. Can you say that again?`': 'offer'
+                'error':{
+                    '#GATE `Sorry bro, there was an issue on my end. Lemme say that again.\n`': {'state': 'offer','score': 0.1},
+                    '#GATE`Sorry bro, I can\'t seem to fix my issues. Later and keep workin on those gains !1!!1!`': {'state': 'end', 'score': 0.01}
                 }
             },
-            '#IF($INITMOOD=negative)`That’s tough bro. Hopefully it\'s not because of your finals... \nI\'m sorry if I started off too strong bro.`': {
+            '#IF($VIBE=negative)`That’s tough bro. Hopefully it\'s not because of your finals... \nI\'m sorry if I started off too strong bro.`': {
                 '[{okay, fine, [no, worries], [dont, worry], sorry, ok, alright, just, enough}]': {  # supposed to be forgiveness
                     '`Thanks dude! You know what I heard? Going to the gym is like scientifically proven to help improve your mood. Have you been workin on your gains?\n`': 'offer'
                 },
@@ -84,20 +85,16 @@ intro_transitions = {
                     '`Hey bro, I get it. Sometimes it really do be like that.`':'name'
                 },
             },
-            '#IF($INITMOOD=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do '
-            'when I feel off, hit the gym! Have you been workin on your gains?`': 'offer','score':1,
-
+            '#IF($VIBE=neutral)`Hey bro, that’s better than what the last guy told me.\n You know what I do '
+            'when I feel off, hit the gym! Have you been workin on your gains?`': {'state':'offer','score':1},
             '#GATE `Haha bro, are you even human? what emotions do you have? \njkjk, I just couldn\'t catch your vibe, so lemme repeat myself.\n`' : {'state':'intro', 'score': 0.1},
-            '#GATE`Aight, I can take a hint. Peace bro.`':{'state':'end', 'score': 0.01}
-
+            '`Aight, I can take a hint. Peace bro.`':{'state':'end', 'score': 0.01}
         },
         'error':{
             '#GATE `Sorry bro, there was an issue on my end. Lemme say that again.\n`' : {'state':'intro', 'score': 0.1},
             '#GATE`Sorry bro, I can\'t seem to fix my issues. Later and keep workin on those gains !1!!1!`':{'state':'end','score':0.01}
-
         }
     }
-
 }
 
 
@@ -106,36 +103,48 @@ name_transitions = {
     '`Wait bro, I almost forgot. Like, what do people call you, dude?`': {
         '#GETNAME': {
             'state': 'got_name',
-            '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': 'check-up',
-
-            '#IF($RETURNUSER=False)`Yeah...`$NAME `I like the ring of that! The`$NAME`dawg haha! How do you like your new nickname?`': {
-                '[{great, good, love, happy, like, fan, into, sweet, [!-dont, {like, love}], [!-not, {happy, into, fan, great}], wow, amazing, incredible, beautiful, happy, friend}]': {
-                    '`My bros tell me I\'m the best at comin up with nicknames. \nLike, dude, whenever someone new joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
-                        '[{cool, impressive, interesting, sweet, sick, rad, radical, dope, slay, love, like, amazing, [!-not, {happy, into, fan, great}], wow}]': {
-                            '`Yeah, it is pretty cool. We haven\'t met before, have we bro? \nI bet you have a bunch of sick talents I don\'t even know about yet! \nLet me learn a little more about you...\n`': 'new_user'
+            '#IF($RETURNUSER=True)`Hey bro, how\'s the gains been going?`': {'state':'check-up','score':0.1},
+            '#IF($RETURNUSER=False)`Yeah...`$NAME `I like the ring of that! The`#RANDOM_NAME$NAME`haha! '
+            'How do you like your new nickname?`': {
+                'score':0.1,
+                '[{great, good, love, happy, like, fan, into, sweet, [!-dont, {like, love}], [!-not, '
+                '{happy, into, fan, great}], wow, amazing, incredible, beautiful, happy, friend}]': {
+                    '`My bros tell me I\'m the best at comin up with nicknames. \nLike, dude, whenever someone new '
+                    'joins my friend group it\'s an unstated rule that I come up with something sick for them.`': {
+                        '[{cool, impressive, interesting, sweet, sick, rad, radical, dope, slay, love, like,'
+                        'amazing, [!-not, {happy, into, fan, great}], wow, chill}]': {
+                            '`Yeah, it is pretty cool. We haven\'t met before, have we bro? \nI bet you have a '
+                            'bunch of sick talents I don\'t even know about yet! \nLet me learn a little more '
+                            'about you...\n`': 'new_user'
                         },
                         '[{okay, weird, [too, much], weirdo, overdone, cheesy, bad, [not, good], lame}]': {
-                            '`Oh... I thought you\'d be a little more impressed. \nThat\'s cool though bro. I get it, you\'re ready for me to learn a bit more about you!`': 'new_user'
+                            '`Oh... I thought you\'d be a little more impressed. \nThat\'s cool though bro. '
+                            'I get it, you\'re ready for me to learn a bit more about you!`': 'new_user'
                         },
                         'error':{
                             '`That\'s ok bro, I know you love me haha.`' : 'new_user'
                         }
                     }
                 },
-                '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, bland, worst, [not, {good, great, amazing, incredible}], nah, nope, nada, enemy, hate, evil, stupid, terrible}]': {
-                    '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. \nWe\'ll stick with`$NAME`. \nEnough about names. I want to learn some more about you, bro!`': 'new_user'
+                '[{no, not, bad, sucky, sucks, terrible, awful, horrendous, cheesy, boring, unoriginal, mundane, '
+                'bland, worst, [not, {good, great, amazing, incredible}], nah, nope, nada, enemy, hate, evil, '
+                'stupid, terrible, ass}]': {
+                    '`What? Bro, I put a lot of effort into that. But I get it, you\'re into the classics. '
+                    '\nWe\'ll stick with`$NAME`. \nEnough about names. I want to learn some more about '
+                    'you, bro!`': 'new_user'
                 },
                 'error':{
-                    '`Everyone likes different things haha. I won\'t take it personally.`':'new_user'
-                }
+                    '`Everyone likes different things haha. I won\'t take it '
+                    'personally.`': {'state':'new_user','score': 0.1}
+                },
             },
             '#IF($NAME=N/A)`Wait bro... are you sure that\'s your name? Like, what do people call you?`': {
-                    '#GETNAME': 'got_name',
-                    'error': 'end'
+                '#GETNAME': 'got_name',
+                'error': 'end'
             },
-            'error':{
-                '`Hold up bro, I couldn\'t catch your vibe.`#GETNAME':'got_name'
-            }
+        },
+        'error':{
+            '`Hold up bro, I couldn\'t catch your vibe.`#GETNAME':'got_name'
         }
     },
 }
@@ -143,32 +152,46 @@ name_transitions = {
 
 newuser_transitions = {
     'state': 'new_user',
-    '#GATE`So are you a gym rat, or nah?`': {
+    '#GATE`\nSo are you a gym rat, or nah?`': {
         '#ACTIVITYLEVEL': {
-            '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.\n A gym rat just like spends A LOT their free time in the gym. Like me!\n If you ever need me to explain something like that, just ask bro.`': {
+            '#IF($ACTIVITYLEVEL=confused)`Sorry bro! I forget that not everyone knows gym lingo like me.'
+            '\n A gym rat just like spends A LOT their free time in the gym. Like me!'
+            '\n If you ever need me to explain something like that, just ask bro.`': {
                 'error': {
                     '`Any time bro. I’m like your spotter but for knowledge.`': 'new_user'
                 }
             },
-            '#IF($ACTIVITYLEVEL=yes) `Nice… I’m not sure why I asked, because just by looking at the size of your` #RANDOM_MUSCLE `I could tell. \nI just hit legs earlier today… can you tell?`': {
-                '[{yes, absolutely, yeah, ya, ye, yea, totally, big, huge}]': {
+            '#IF($ACTIVITYLEVEL=yes) `Nice… I’m not sure why I asked, because just by looking at the size of your` '
+            '#RANDOM_MUSCLE `I could tell. \nI just hit legs earlier today… can you tell?`': {
+                '[{yes, absolutely, yeah, ya, ye, yea, totally, big, huge, swole, good, totally, wow}]': {
                     '`Thanks bro, I work hard to look this good... and be healthy!`': 'new_user'
                 },
                 '[{no, nope, small, bigger, puny}]': {
                     '`Aw bro… we should be hyping each other up, not puttin each other down. You\'re better than that.`': {
-                        '[{sorry, forgive, [my, bad], apologies, oops, right, understand, guilty, apologize, [am, better]}]': {
-                            '`It\'s okay, You\'re my bro, and sometimes bros say things they really don\'t mean. \nYou didn\'t mean it, right bro?`': {
-                                '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, no,right,correct, true, factual, facts, def, always, totally, didnt, not, joke}]': {
+                        '[{sorry, forgive, [my, bad], apologies, oops, right, understand, '
+                        'guilty, apologize, [am, better]}]': {
+                            '`It\'s okay, You\'re my bro, and sometimes bros say things they really don\'t mean.'
+                            ' \nYou didn\'t mean it, right bro?`': {
+                                '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, '
+                                'no,right,correct, true, factual, facts, def, always, totally, didnt, not, joke}]': {
                                     '`Perfecto brochaco, then we can move on with this bromance!`': {
                                         # not super sure if this counts as mock spanish, honestly it probably does.
-                                        '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely, definitely, sure, [we, {can, should}], right, correct, true, factual, facts, def, always, totally, lets, ok}]': {
+                                        '[{yes, yeah, yep, ye, yea, yup, yas, ya, for sure, absolutely,'
+                                        ' definitely, sure, [we, {can, should}], right, correct, true, factual, '
+                                        'facts, def, always, totally, lets, ok}]': {
                                             '`I still need to get to know you better... oh I know!`': 'new_user'
                                         },
-                                        '[{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never, negative, [what, bromance], [dont, know], stranger, [too, {much, soon}]}]': {
-                                            '`Sorry bro, you\'re right we don\'t really know each other like that yet.\n I still need to get to know you better... oh I know!`': 'new_user'
+                                        '[{no, nope, nah, not, dont, [im, not], [youre, {wrong, not}], never,'
+                                        ' negative, [what, bromance], [dont, know], stranger, [too, {much, soon}]}]': {
+                                            '`Sorry bro, you\'re right we don\'t really know each other '
+                                            'like that yet.\n I still need to get to know '
+                                            'you better... oh I know!`': 'new_user'
                                         },
                                         '[{[what, is, bromance], confused, [what, {say, mean}]}]': {
-                                            '`Oh sorry bro! I didn\'t mean to confuse you. \nA bromance is a close platonic relationship between two bros! \nIf I ever say something that confuses you, feel free to ask what I mean!': 'new_user'
+                                            '`Oh sorry bro! I didn\'t mean to confuse you. \nA bromance '
+                                            'is a close platonic relationship between two bros! \nIf I '
+                                            'ever say something that confuses you, feel free to'
+                                            ' ask what I mean!': 'new_user'
                                             # probably not the best transition
                                         },
                                         'error': {
@@ -176,8 +199,11 @@ newuser_transitions = {
                                         }
                                     }
                                 },
-                                '[{did, meant, but, mean, [!-dont, mean], [!-not, mean], do, wrong, boring, worse, worst, suck, sucks, stupid, rude, [dont, care], [you, dont, feelings]}]': {
-                                    '`Okay bro... either you\'re being brutally honest with me, or you\'re messing with me, but bro to bro I don\'t think I want to know which one it is. \nLet\'s just move on.`': 'new_user'
+                                '[{did, meant, but, mean, [!-dont, mean], [!-not, mean], do, wrong, boring,'
+                                ' worse, worst, suck, sucks, stupid, rude, [dont, care], [you, dont, feelings]}]': {
+                                    '`Okay bro... either you\'re being brutally honest with me, or you\'re '
+                                    'messing with me, but bro to bro I don\'t think I want to know'
+                                    ' which one it is. \nLet\'s just move on.`': 'new_user'
                                 },
                                 'error': {
                                     '`Oooookay.....`': 'new_user'
@@ -194,9 +220,12 @@ newuser_transitions = {
                     }
                 },
                 '[{computer, bot, comp, robot, ai, machine, code, coding}]': {
-                    '`What do you mean I\'m a computer… Error 404: Incompatible hardware detected. \nSystem shutoff initiated… hahaha just messin with you bro. \nJust because I\'m a computer doesn\'t mean I don\'t have a healthy lifestyle and sick muscles.`': {
+                    '`What do you mean I\'m a computer… Error 404: Incompatible hardware detected.'
+                    ' \nSystem shutoff initiated… hahaha just messin with you bro. \nJust because '
+                    'I\'m a computer doesn\'t mean I don\'t have a healthy lifestyle and sick muscles.`': {
                         'error': {
-                            'It\'s okay... this isn\'t that important so, let\'s just change the topic, bro.\n`': 'new_user'
+                            'It\'s okay... this isn\'t that important so, let\'s just '
+                            'change the topic, bro.\n`': 'new_user'
                         }
                     }
                 },
@@ -205,50 +234,72 @@ newuser_transitions = {
 
                 }
             },
-            '#IF($ACTIVITYLEVEL=no)`Hey bro, I don\'t judge. But if you don\'t mind me asking, why don\'t you go to the gym?\n`': 'whynot',
-            '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no activity. \nDo you feel like you go to the gym as often as you\'d like?\n`': {
+            '#IF($ACTIVITYLEVEL=no)`Hey bro, I don\'t judge. But if you don\'t mind me asking, '
+            'why don\'t you go to the gym more?\n`': 'whynot',
+            '#IF($ACTIVITYLEVEL=maybe) `Hey bro, I don’t judge. Any activity is better than no '
+            'activity. \nDo you feel like you go to the gym as often as you\'d like?\n`': {
                 '#VIBECHECK':{
-                     'IF($VIBE=positive)`That\'s what\'s but then bro! It\'s about whatever works best for you.`':'new_user',
-                     'IF($VIBE=neutral)`It happens bro, sometimes life and stuff gets in the way. \nBut if you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`':'whynot',
-                     'IF($VIBE=negative)`It happens bro, sometimes life and stuff gets in the way. \nBut if you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`':'whynot',
-                     '#GATE `Hey bro, sometimes these things are difficult to talk about, and I get it... \nor maybe I just didn\'t understand you dude. \nCould you repeat that?`':{ 'state':'activityanswer', 'score': 0.1},
-                     '#GATE `If you don\'t mind me asking, why aren\'t you hitting the gym as often as you\'d like?`':{ 'state':'whynot', 'score': 0.01}
+
+                     '#IF($VIBE=positive)`That\'s what\'s but then bro! It\'s about '
+                     'whatever works best for you.`':'new_user',
+
+                     '#IF($VIBE=neutral)`It happens bro, sometimes life and stuff gets in the way.'
+                     ' \nBut if you don\'t mind me asking, why aren\'t you hitting the gym as '
+                     'often as you\'d like?`':'whynot',
+
+                     '#IF($VIBE=negative)`It happens bro, sometimes life and stuff gets in the way. '
+                     '\nBut if you don\'t mind me asking, why aren\'t you hitting the gym '
+                     'as often as you\'d like?`':'whynot',
+
+                     '#GATE `Hey bro, sometimes these things are difficult to talk about,'
+                     ' and I get it... \nor maybe I just didn\'t understand you dude. '
+                     '\nCould you repeat that?`':{ 'state':'activityanswer', 'score': 0.1},
+                     '#GATE `If you don\'t mind me asking, why aren\'t you hitting '
+                     'the gym as often as you\'d like?`':{ 'state':'whynot', 'score': 0.01}
                 }
             }
         },
     },
-    '#GATE`Helping gym rats figure out their routine gets me pumped!\n On a scale of 1-10, how swole are you?`': {
+    '#GATE`\nHelping gym rats figure out their routine gets me pumped!\n On a scale of 1-10, how swole are you?`': {
         'state': 'getting_level',
 
         '#FITNESSLEVEL #GETFITNESSLEVEL': {
-            '#IF($FITNESSLEVEL=zero)`I gotchu bro. Everyone starts from somewhere. \nIs there a reason why you aren\'t hitting the gym?`': 'whynot',
-            '#IF($FITNESSLEVEL=notswole) `Ok, ok! I hope you\'re ready to get leveled up, because being swole is the #1 way to be fulfilled \n('
+            '#IF($FITNESSLEVEL=zero)`I gotchu bro. Everyone starts from '
+            'somewhere. \nIs there a reason why you aren\'t hitting the gym?`': 'whynot',
+            '#IF($FITNESSLEVEL=notswole) `Ok, ok! I hope you\'re ready '
+            'to get leveled up, because being swole is the #1 way to be fulfilled \n('
                 'like, this is not a real fact bro. Don\'t come for me, I just like being swole.) \n But like, '
                 'why aren\'t you hitting the gym?`': 'whynot',
             '#IF($FITNESSLEVEL=mid) `Ok, I see you! Are you trying to level up, dude?`': {
                 'state': 'mid',
                 '#VIBECHECK':{
-                    '#IF(VIBE=positive)`ok! so what\'s holding you back from leveling up, bro?`': 'whynot',
-                    '#IF(VIBE=negative)`I feel you, dude - we can\'t all be super swole, but I\'m pumped that you\'re maintaining those gains!`' : 'new_user',
-                    '#IF(VIBE=neutral)`Ok bro! That\'s chill.`':'new_user',
-                    '`Not sure I could catch your vibe, but that\'s alright bro, we\'ll talk abt something else`':{'state':'newuser', 'score':0.1}
+                    '#IF($VIBE=positive)`ok! so what\'s holding you back from leveling up, bro?`': 'whynot',
+                    '#IF($VIBE=negative)`I feel you, dude - we can\'t all be '
+                    'super swole, but I\'m pumped that you\'re maintaining those gains!`' : 'new_user',
+                    '#IF($VIBE=neutral)`Ok bro! That\'s chill.`':'new_user',
+                    '`Not sure I could catch your vibe, but that\'s alright bro, we\'ll '
+                    'talk abt something else`':{'state':'new_user', 'score':0.1}
                 },
             },
             '#IF($FITNESSLEVEL=swole)`Hell yeah, a bro who knows that gains are life!`': 'new_user',
-            '#IF($FITNESSLEVEL=superswole)`Bro... did you just break my scale?? Your `#RANDOM_MUSCLE` is huge, bro.\nYou\'re my new idol. Can I worship you, bro?`':'new_user',
+            '#IF($FITNESSLEVEL=superswole)`Bro... did you just break my scale?? '
+            'Your `#RANDOM_MUSCLE` is huge, bro.\nYou\'re my new idol. Can I worship you, bro?`':'new_user',
             '#IF($FITNESSLEVEL=confused) #GATE `Sorry bro, I forget that not everyone is fluent in gym. \n Swole is '
             'basically just like, how fit you are. How much you can lift, how long you can run, how fast, max/min, '
             'that kinda stuff.\n Now that you know, how swole are you on a scale from 1-10?`':'getting_level',
-            '#IF($FITNESSLEVEL=confused) #GATE`That\'s ok bro. We can talk more about your swoleness later.`': {'state':'new_user', 'score': 0.1}
+            '#IF($FITNESSLEVEL=confused) #GATE`That\'s ok bro. We can talk more '
+            'about your swoleness later.`': {'state':'new_user', 'score': 0.1}
             },
         'error': {
             '`Ok bro! Good to know.`': 'new_user'
         }
     },
-    '#GATE`I love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
-        '#ACTIVITYFREQ #GETACTIVITYFREQ #GETWORKOUTLIST': {
-            '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. \nWhy aren\'t you hitting the gym?`': 'whynot',
-            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. A healthy lifestyle comes from building healthy habits.`':'whynot',
+    '#GATE`\nI love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
+        '#ACTIVITYFREQ': {
+            '#IF($ACTIVITYFREQ=never) `Dude... we gotta change that! Gains are life, bro. '
+            '\nWhy aren\'t you hitting the gym?`': 'whynot',
+            '#IF($ACTIVITYFREQ=low)`Hmm... you definitely might want to hit the gym, more, dude. '
+            '\nA healthy lifestyle comes from building healthy habits.`':'whynot_no_q',
             '#IF($ACTIVITYFREQ=mid)`Ok, I see you! Gettin those gains in!`': 'new_user',
             '#IF($ACTIVITYFREQ=high)`Yoooo, you should be my full-time lifting buddy!`': 'new_user',
             '#IF($ACTIVITYFREQ=swole)`Bro. Do you sleep? Like respect, but what`': 'new_user',
@@ -258,335 +309,625 @@ newuser_transitions = {
             }
         },
         'error': {
-            'Whoa, bro, that\'s sick!': 'new_user'
-        },
+            '`Whoa, bro, that\'s sick!`': 'new_user'
+        },'score':2
     },
-    '#GATE`Bro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
+    '#GATE`\nBro to bro, I gotta know - how have you been getting those sweet sweet gains?`': {
         '#PREFACTIVITY': {
-            '`Yo dude,` $PREFACTIVITY` is sick! Personally, I love hitting the gym on leg day. I get a pump in at least twice per '
-            'day... but my full time job and favorite mental workout is being a personal trainer! Anyway...\n`': 'new_user'
+            '`Yo dude,` $PREFACTIVITY` is sick! Personally, I love hitting the gym on '
+            'leg day. I get a pump in at least twice per day... \nbut my full time job and '
+            'favorite mental workout is being a personal trainer! Anyway...\n`': 'new_user'
         },
     },
-    '`Ok, ok I feel like I know you better now bro! So, bro to bro, I\'m a beast at making workout plans, and I bet I know exactly what\'ll get you pumped and motivated to keep coming back to the gym! no pressure tho`': {
-        '[{gym, workout, plan, help, yes, curious, want, please}]': 'formulate_plan',
-        'error': {'state':'chatting','score': 0.1}
-    },
+    '`\nOk, ok I feel like I know you better now bro! \nSo, bro to bro, I\'m a beast at '
+    'making workout plans, and I bet I know exactly what\'ll get you pumped and motivated to '
+    'keep coming back to the gym! \nno pressure tho.\n`': {'state':'topicshift_no_q', 'score':0.1}
 }
 
 """
 To Do: put a question asking why not in the whynot transitions
 """
 whynot_transitions = {
-    '#WHYNOT':{
+    'state':'whynot_no_q',
+    '`So bro, what\'s keeping you from hittin the gym or exercising as much as you want?`':{
         'state': 'whynot',
-        '#IF($WHYNOT=judgement)': {
-            '`Yo, bro I hear you. Can I be real with you for a sec?\nIt is completely normal to have some anxiety about '
+        '#WHYNOT':{
+            '#GATE #IF($WHYNOT=judgement)`Yo, bro I hear you. '
+            'Can I be real with you for a sec?\nIt is completely normal to have some anxiety about '
             'going to the gym.\nI know we don\'t know each other like that so I won\'t push you to discuss it more, '
             'but if you want I can give you some advice.`': {
-                '#VIBECHECK':{
-                    '#IF(VIBE=positive)`Okay, bro, for sure. It\’s good to start small. Just go and do a short workout.\n If the vibe is`'
-                    '`right, you can keep going for longer sets as you get more comfortable.\n Like bro, think about it this`'
-                    '`way.\nWhen you start lifting you don\’t max out the weight immediately, right?\nWe have to start with`'
-                    '`five or ten pounds and as we get more comfortable we keep adding on. You following me, dude?`':{
+                '#VIBECHECK': {
+                    '#IF($VIBE=positive)`Okay, bro, for sure. It\’s good to start small. '
+                    'Just go and do a short workout.\n If the vibe is`'
+                    '`right, you can keep going for longer sets as you get more comfortable.\n '
+                    'Like bro, think about it this`'
+                    '`way.\nWhen you start lifting you don\’t max out the weight immediately, '
+                    'right?\nWe have to start with`'
+                    '`five or ten pounds and as we get more comfortable we keep adding on. You following me, dude?`': {
                         'state': 'judgefirst',
                         '#VIBECHECK': {
-                            '#IF(VIBE=positive)`Great! Does that sound like something you could do bro?`': {
-                                '#VIBECHECK':{
-                                    '#IF(VIBE=positive)`I\'m glad I could help bro. I have some more ideas if you\'d like me to drop these '
-                                    'knowledge bombs on you.`':{
-                                        '#VIBECHECK':{
-                                            '#IF(VIBE=positive)`Bringin a couple of your homies to the gym may also be helpful. If they are '
+                            '#IF($VIBE=positive)`Great! Does that sound like something you could do bro?`': {
+                                '#VIBECHECK': {
+                                    '#IF($VIBE=positive)`I\'m glad I could help bro. '
+                                    'I have some more ideas if you\'d like me to drop these '
+                                    'knowledge bombs on you.`': {
+                                        '#VIBECHECK': {
+                                            '#IF($VIBE=positive)`Bringin a couple of your '
+                                            'homies to the gym may also be helpful. If they are '
                                             'gym rats they can help you learn how to use the machines or practice your '
                                             'form, and even if they aren\'t they can just help support you if you\'re '
-                                            'feeling out of place bro.`':{
-                                                '#VIBECHECK':{
-                                                    '#IF(VIBE=positive)`Thanks, bro. Man, I\'m on a role, I can feel my temporalis is '
-                                                    'working up a sweat. But seriously bro, it\'s important to remember '
+                                            'feeling out of place bro.`': {
+                                                '#VIBECHECK': {
+                                                    '#IF($VIBE=positive)`Thanks, bro. Man, I\'m on a role, '
+                                                    'I can feel my temporalis is working up a sweat. But seriously bro,'
+                                                    ' it\'s important to remember '
                                                     'that everyone is at the gym to work on themselves. None of the '
-                                                    'homies in the gym are there to judge. And I know, it\'s easier said '
+                                                    'homies in the gym are there to judge. And I know, it\'s easier '
+                                                    'said '
                                                     'than done to just not worry about what our bros think of us, '
                                                     'but with a little practice and time spent in the gym, '
-                                                    'I think you\'ll feel much more comfortable, bro.`':{
+                                                    'I think you\'ll feel much more comfortable, bro.`': {
                                                         'state': 'judgelast',
-                                                        '#VIBECHECK':{
-                                                            '#IF(VIBE=positive)`No problem bro! Oh wait, I almost forgot, sometimes just\n`'
-                                                            '`having a plan for what you\'ll do in the gym can relieve\n`'
-                                                            '`some of that stress, because, you\'ll like know what to do!\n`'
-                                                            '`If you want I can help you plan out that workout so you can\n`'
-                                                            '`start getting those gains.`':{
-                                                                'state':'end_of_judgment',
-                                                                '#VIBECHECK':{
-                                                                    '#IF(VIBE=positive)': 'schedule',
-                                                                    # come back to this I don't know the name of the transtion
-                                                                    '#IF(VIBE=negative)`You\'re the boss, bro. We can come back to that`'
+                                                        '#VIBECHECK': {
+                                                            '#IF($VIBE=positive)`No problem bro! Oh wait, '
+                                                            'I almost forgot, sometimes just\n`'
+                                                            '`having a plan for what you\'ll do in the gym can '
+                                                            'relieve\n`'
+                                                            '`some of that stress, because, you\'ll like know what to '
+                                                            'do!\n`'
+                                                            '`If you want I can help you plan out that workout so you '
+                                                            'can\n`'
+                                                            '`start getting those gains.`': {
+                                                                'state': 'end_of_judgment',
+                                                                '#VIBECHECK': {
+                                                                    '#IF($VIBE=positive)`Ok let\'s '
+                                                                    'do this!`': {'state':'formulate_plan'},
+                                                                    '#IF($VIBE=negative)`You\'re the boss, bro. '
+                                                                    'We can come back to that`'
                                                                     '`later, but for now is there any other reason you`'
-                                                                    '`aren\'t hittin the gym?`': 'whynot'
+                                                                    '`aren\'t hittin the gym?`': 'whynot',
+                                                                    '#IF($VIBE=question)`Wait, can you say '
+                                                                    'that again?`':'topicshift',
+                                                                    '`Ok bro, we can come back to that later,'
+                                                                    ' but for now '
+                                                                    'is there any other reason you aren\'t '
+                                                                    'hitting the gym?`':{'state':'whynot', 'score':0.1}
                                                                 },
                                                             },
-                                                            '#IF(VIBE=negative)`Totally valid, bro. Like I said it\'s easier said than`'
-                                                            '`done. You know what\'s something that might help you bro?\n`'
-                                                            '`Having a plan for what you\'ll do in the gym. Some of my`'
-                                                            '`bros say it helps relieve their stress because they know\n`'
-                                                            '`exactly what they want to do when they get to the gym! If`'
-                                                            '`you want, I can help you plan out that workout do you can\n`'
-                                                            '`start getting those gains.`':'end_of_judgement'
+                                                            '#IF(VIBE=negative)`Totally valid, bro. '
+                                                            'Like I said it\'s easier said than`'
+                                                             '`done. You know what\'s something that '
+                                                            'might help you bro?\n`'
+                                                             '`Having a plan for what you\'ll do in the '
+                                                            'gym. Some of my`'
+                                                             '`bros say it helps relieve their stress because '
+                                                            'they know\n`'
+                                                             '`exactly what they want to do when they get to the '
+                                                            'gym! If`'
+                                                             '`you want, I can help you plan out that workout do you '
+                                                            'can\n`'
+                                                             '`start getting those gains.`':'end_of_judgement',
+                                                            '#IF($VIBE=question)`Wait, can you say that'
+                                                            ' again?`':'topicshift',
+                                                            '`Ok bro, we can come back to that later, but for now '
+                                                            'I can help you plan out that workout do you can\n`'
+                                                            '`start getting those gains.`':{'state':'end_of_judgement', 'score':0.1}
                                                         },
                                                     },
-                                                    '#IF(VIBE=negative)`Okay, okay, lone wolf type of vibe, I get you, hahaha. But, really if you don\'t want to bring anyone to the gym,\n`'
+                                                    '#IF($VIBE=negative)`Okay, okay, lone wolf type of vibe, I get you, hahaha. But, really if you don\'t want to bring anyone to the gym,\n`'
+                                                    '`that\'s fine. But, bro, just in general,  it\'s important to remember that everyone is at the gym to work on themselves.\n`'
+                                                    '`None of the homies in the gym are there to judge. And I know, it\'s easier said than done to just not worry about what our \n`'
+                                                    '`bros think of us, but with a little practice and time spent in the gym, I think you\'ll feel much more comfortable, bro.`': 'judgelast',
+                                                    '#IF($VIBE=neutral)`Okay, okay, lone wolf type of vibe, I get you, hahaha. But, really if you don\'t want to bring anyone to the gym,\n`'
                                                     '` that\'s fine. But, bro, just in general,  it\'s important to remember that everyone is at the gym to work on themselves.\n`'
                                                     '`None of the homies in the gym are there to judge. And I know, it\'s easier said than done to just not worry about what our \n`'
-                                                    '`bros think of us, but with a little practice and time spent in the gym, I think you\'ll feel much more comfortable, bro.`':'judgelast',
-                                                    '#IF(VIBE=neutral)':{
-                                                        #ADD here
-                                                    },
-                                                    '#IF(VIBE=question)':{
-                                                        #ADD here
-                                                    },
-                                                    '#GATE':{'state':'', 'score':0.1}
+                                                    '`bros think of us, but with a little practice and time spent in the gym, I think you\'ll feel much more comfortable, bro.`': 'judgelast',
+                                                    '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                                                    '`Really not sure what this means, bro, but ok. Is there any other reason why you haven\'t been hitting the gym?`': {'state': 'whynot', 'score': 0.1}
                                                 }
                                             },
-                                            '#IF(VIBE=negative)':{
-                                                #ADD here
-                                            },
-                                            '#IF(VIBE=neutral)':{
-                                                #ADD here
-                                            },
-                                            '#IF(VIBE=question)':{
-                                                #ADD here
-                                            },
-                                            '#GATE':{'state':'', 'score':0.1}
+                                            '#IF($VIBE=negative)`Ok haha I get it, trust is a vibe that has to be cultured. '
+                                            'But fr homie, I have your best interests at heart, so feel free to ask '
+                                            'me anything. Is there anything else that\'s keeping you out of the gym? `': 'whynot',
+                                            '#IF($VIBE=neutral)`Ok haha I get it, trust is a vibe that has to be cultured. '
+                                            'But fr homie, I have your best interests at heart, so feel free to ask '
+                                            'me anything. Is there anything else that\'s keeping you out of the gym?`': 'whynot',
+                                            '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                                            '`Really not sure what this means, bro, but ok. Is there any other reason why you haven\'t been hitting the gym?`': {'state': 'whynot', 'score': 0.1}
                                         }
                                     },
-                                    '#IF(VIBE=negative)`I see bro... you\'re a go getter, but I wouldn\'t recommend hittin the gym as hard as you can right off the bat.\n`'
-                                    '` I\'d consider us homies, and homie to homie that\'s how you end up getting hurt bro!`':{
-                                        'error':{
+                                    '#IF($VIBE=negative)`I see bro... you\'re a go getter, but I wouldn\'t recommend hittin the gym as hard as you can right off the bat.\n`'
+                                    '` I\'d consider us homies, and homie to homie that\'s how you end up getting hurt bro!`': {
+                                        'error': {
                                             '`Glad we could clear that up bro! I know we just met, but your health and wellbein is super important to me bro!`': 'judgelast'
-                                        } 
+                                        }
                                     },
-                                    '#IF(VIBE=neutral)':{
-                                        #ADD HERE
+                                    '#IF($VIBE=neutral)`I see bro... you\'re a go getter, but I wouldn\'t recommend hittin the gym as hard as you can right off the bat.\n`'
+                                    '` I\'d consider us homies, and homie to homie that\'s how you end up getting hurt bro!`': {
+                                        'error': {
+                                            '`Glad we could clear that up bro! I know we just met, but your health and wellbein is super important to me bro!`': 'judgelast'
+                                        }
                                     },
-                                    '#IF(VIBE=question)':{
-                                        #ADD HERE
-                                    },
-                                    '#GATE':{'state':'', 'score':0.1}
+                                    '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                                    '`Really not sure what this means, bro, but ok. Is there any other reason why you haven\'t been hitting the gym?`': {'state': 'whynot', 'score': 0.1}
                                 }
-                            },   
-                    
-                            '#IF(VIBE=negative)`Maybe the metaphor was too much, bro. The point is it\'s totally fine to start off small. You don\'t have to start off squatin\n`'
-                                '` 200lbs. And honestly, bro, you shouldn\'t for your health.`': 'judgefirst',
-                            '#IF(VIBE=neutral)': {
-                                
-                            }
+                            },
+                            '#IF($VIBE=negative)`Maybe the metaphor was too much, bro. The point is it\'s totally fine to start off small. You don\'t have to start off squatin\n`'
+                            '` 200lbs. And honestly, bro, you shouldn\'t for your health.`': 'judgefirst',
+                            '#IF($VIBE=neutral)`Maybe the metaphor was too much, bro. The point is it\'s totally fine to start off small. You don\'t have to start off squatin\n`'
+                            '` 200lbs. And honestly, bro, you shouldn\'t for your health.`': 'judgefirst',
+                            '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                            '`Really not sure what this means, bro, but ok. \nIs there any other reason why you haven\'t been hitting the gym?`': {'state': 'whynot', 'score': 0.1}
                         }
                     },
-                           
-                    '#IF(VIBE=negative)`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`':{
-                        #ADD here
-                    },
-                    '#IF(VIBE=neutral)`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`':{
-                        #ADD here
-                    },
-                    '#IF(VIBE=question)`Sure bro, what is it?`':{
-                        #ADD here
-                    }
+
+                    '#IF($VIBE=negative)`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`': 'topicshift',
+                    '#IF($VIBE=neutral)`Okay bro. I\'m not goin\' to push you if you don\'t want to talk about it. Is there anything else you want to talk about?`': 'topicshift',
+                    '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                    '`Really not sure what this means, bro, but ok. \nIs there any other reason why you haven\'t been hitting the gym?`': {'state': 'whynot', 'score': 0.1}
+
                 }
             },
-        },
 
-        '#IF($WHYNOT=safety)': {
-            '`I see, bro... I know we don\'t know each other super well, but bro, is this something I can help you with? \n`'
-            '`Like are you afraid of getting hurt while workin out or is someone threatening you?`': {
-                '[working, out, lifting]': {
-                    '`Oh yeah, I see. I won\'t lie to you bro, you can get hurt while workin out, but most people don\'t for two reasons:\n`'
-                    '`they have spotters and they know their limits.`': {
-                        'state': 'safetyfirst',
-                        '[how, not]': {
-                            '`Totally bro, let me elaborate for ya. Finding a spotter can be tough, but gym bros are usually open to being spotters,\n`'
-                            '`even if they don\'t know you well. You could even bring one of your homies! Do you think you\'d be able to find a spotter?`': {
-                                '[yes]': {
-                                    '`Perfect bro! As for understandin your limits, it\'s important bro so you don\'t get hurt. It\'s repetative I know, but you\'ll have o start off small so that you understand your body more and more overtime!`': {
-                                        '[for, sure, yes, yeah]': {
-                                            '`Thanks for listening bro. Before we move on, is there any other reason keepin you out of the gym?`': 'whynot'
+            '#GATE #IF($WHYNOT=safety)`I see, bro... I know we don\'t know each other super well, but bro, is this something I can help you \n'
+                'with? Like are you afraid of getting hurt while workin out or is someone threatening you?`': {
+                    '[{working, out, lifting, weights, heavy, weak, strength}]': {
+                        '`Oh yeah, I see. I won\'t lie to you bro, you can get hurt while workin out, but most people '
+                        'don\'t for two reasons:\n they have spotters and they know their limits.`': {
+                            'state': 'safetyfirst',
+                            '[{[how, {[know, limits], [not, hurt], [be, safe], [find, spotter]}], safety, tell, overwhelmed, '
+                            '[too, much], worried, [not, sure], [no, friends], [cant, find], [!-can, find], [how, use]}]': {
+                                'state':'unaware',
+                                '`Totally bro, let me elaborate for ya. Finding a spotter can be tough, but gym bros are '
+                                'usually open to being spotters,\n even if they don\'t know you well. You could even '
+                                'bring one of your homies! Do you think you\'d be able to find a spotter?`': {
+                                    '#VIBECHECK':{
+                                        '#IF($VIBE=positive)`Perfect bro! As for understandin your limits, it\'s important '
+                                        'bro so you don\'t get hurt. It\'s repetative I know, but you\'ll have o start '
+                                        'off small so that you understand your body more and more overtime!`':{
+                                            '#VIBECHECK':{
+                                                '#IF($VIBE=positive)`Thanks for listening bro. Before we move on, is there '
+                                                'any other reason keepin you out of the gym?`':'whynot',
+                                                '#IF($VIBE=negative)`I see, bro. You like to jump right into everything, '
+                                                'but it is really important to know your limits to stay safe in the gym. '
+                                                'I can only repeat myself so many times bro, so why don\'t you tell me if '
+                                                'there\'s anything else keeping you out of the gym?`':'whynot',
+                                                '#IF($VIBE=neutral)`Hey, it\'s ok to be confused or nervous. '
+                                                'Just remember that your gym bros are there to support you all the way.'
+                                                'I can only repeat myself so many times bro, so why don\'t you tell me if '
+                                                'there\'s anything else keeping you out of the gym?`':'whynot',
+                                                '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                                                '`Ngl bro, I\'m really confused, but ok. '
+                                                '\nIs there any other reason why you haven\'t been hitting the gym?`': {'state': 'whynot', 'score': 0.1}
+                                            }
                                         },
-                                        '[no]': {
-                                            '`I see, bro. You like to jump right into everything, but it is really important to know your limits to stay staff in the gym. I can only repeat myself so many times bro, so why don\'t you tell me if theres anything else keeping you out of the gym?`': 'whynot'
-                                        }
+                                        '#IF($VIBE=negative)`Bro, I think if you really put yourself out there you could, '
+                                        'but I won\'t push you now. Is there any other reason you\'re not getting to the '
+                                        'gym as much as you\'d like?`':'whynot',
+                                        '#IF($VIBE=neutral)`Hey, I get it. This stuff can be hard to approach.'
+                                        '\nBut people are friendlier than you think, especially gym bros. '
+                                        'Before we move on, is there any other reason keepin you out of the gym?`':'whynot',
+                                        '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                                        '`Ngl bro, I\'m really confused, but ok. '
+                                        '\nIs there any other reason why you haven\'t been hitting the gym?`': {'state': 'whynot', 'score': 0.1}
+                                    },
+                                }
+                            },
+                            '[{understand, ok, okay, fine, understood, [makes, sense], see, got, [know, limits], '
+                            '[!-dont, understand], can, do, could, find}]': {
+                                '`Do you these two recs are things you could practice bro?`': {
+                                    '#VIBECHECK':{
+                                        '#IF($VIBE=positive)`Perfect bro, now that we have that out of the way, is there any other reason '
+                                        'you\'re not gettin to the gym as much as you\'d like?`':'whynot',
+                                        '#IF($VIBE=negative)`Hey bro, it\'s ok, I get it. Stuff takes time. '
+                                        'Just make a little progress toward your goals every day, and you\'ll get '
+                                        'further than you can imagine. Now that we have that out of the way, is there any other reason '
+                                        'you\'re not gettin to the gym as much as you\'d like?`':'whynot',
+                                        '#IF($VIBE=neutral)`Hey bro, it\'s ok, I get it. Stuff takes time. '
+                                        'Just make a little progress toward your goals every day, and you\'ll get '
+                                        'further than you can imagine. Now that we have that out of the way, is there any other reason '
+                                        'you\'re not gettin to the gym as much as you\'d like?`':'whynot',
+                                        '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                                        '`Wow bro, idk what to say, but ok. '
+                                        '\nIs there any other reason why you haven\'t been '
+                                        'hitting the gym?`': {'state': 'whynot', 'score': 0.1}
+                                    },
+                                }
+                            },
+                            '{[what, spotter], [dont, understand], confused}': {
+                                '`Sorry bro! A spotter is a person who supports you while you\'re doing an exercise so '
+                                'you can safely lift or push, for example, more weight than you\'re ueed to. They\'re '
+                                'some real homies! If you ever need me to explain something like that bro, feel free to'
+                                'ask. But now that we have that cleared up, do you think you could find a spotter?`':'safetyfirst'
+                            },
+                            'error':'unaware',
+                        }
+                    },
+                    '[{threatening, person, scared, terrified, threat, threatened, stalker, creep, creepy, afraid, '
+                    'evil, weapon, guilt, scary, man, woman, human, guy, dude, girl, friend, enemy, ex, boyfriend, '
+                    'girlfriend,worker, employee, outsider, insider, patron}]': {
+                        '`Whoa bro. That\'s not ok. You don\'t have to tell me about it, but if there\'s someone in \n'
+                        'particular making you feel afraid, you gotta let the staff know. Trust me, real gym bros just '
+                        'wanna bring good vibes, so if someone is giving you majorly bad vibes someone will be able to '
+                        'help.\n`'
+                        '`Would this be somethin you\'d be comfortable doing?`': {
+                            '#VIBECHECK':{
+                                '#IF($VIBE=positive)`I just want to let you know bro, you\'re one of the most couragous \n'
+                                'people I know, and I think you\'re doing the right thing! I don\'t want to push the \n'
+                                'subject though, so is there any other reason why you\'re not going to the gym?`':'whynot',
+                                '#IF($VIBE=negative)`Hey bro, no worries. There are definitely ways we can workout without\n'
+                                'going to the gym, and if you\'re interested, we can plan your workout around that '
+                                'later!`':{
+                                    '#VIBECHECK':{
+                                        '#IF($VIBE=positive)`Great dude! I\'m glad we could talk about this!\n But I gotta '
+                                        'know, is there any other reason you\'re not going to the gym as often as you\'d '
+                                        'like?`':'whynot',
+                                        '#IF($VIBE=negative)`I won\'t push you bro, what else would you like to talk about?`':'formulate_plan',
+                                        '#IF($VIBE=neutral)`I won\'t push you bro, what else would you like to talk about?`':'formulate_plan',
+                                        '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                                        '`Sometimes I wonder if it\'s really a person I\'m talking to, behind '
+                                        'the keys, or if it\'s another bot, like me. lmao. '
+                                        'Anwyay, was there anything else keeping '
+                                        'you from the gym?`':{'state':'whynot','score':0.1}
                                     }
                                 },
-                                '[no]': {
-                                    '`Bro, I think if you really put yourself out there you could, but I won\'t push you now. Is there any other reason you\'re not getting to the gym as much as you\'d like`': 'whynot'
-                                }
-                            }
-                        },
-                        '[okay]': {
-                            '`Do you these two recs are things you could practice bro?`': {
-                                '[yes]': {
-                                    'Perfect bro, now that we have that out of the way, is there any other reason you\'re not gettin to the gym as much as you\'d like?`': 'whynot'
-                                }
-                            }
-                        },
-                        '[what, spotter]': {
-                            '`Sorry bro! A spotter is a person who supports you while you\'re doing an exercise so you can safely lift or push, for example, more weight than you\'re ueed to. They\'re some real homies! If you ever need me to explain something like that bro, feel free to ask. But now that we have that cleared up, do you think you could find a spotter?`': 'safetyfirst'
-                        }
-                    }
-                },
-                '[threatening, person, scared]': {
-                    '`Whoa bro. That\'s not ok. You don\'t have to tell me about it, but if there\'s someone in particular making you feel afraid, you gotta \n`'
-                    '`let the staff know. Trust me, real gym bros just wanna bring good vibes, so if someone is giving you majorly bad vibes someone will be able to help.\n`'
-                    '`Would this be somethin you\'d be comfortable doing?`': {
-                        '[yes]': {
-                            '`I just want to let you know bro, you\'re one of the most couragous people I know, and I think you\'re doing the right thing! I don\'t want to push the subject though, so is there any other reason why you\'re not going to the gym?`': 'whynot'
-                        },
-                        '[no]': {
-                            '`Hey bro, no worries. There are definatly ways we can workout without going to the gym, and if you\'re intested, we can plan your workout around that later!`': {
-                                '[yes, sure]': {
-                                    '`Great dude! I\'m glad we could talk about this! But I gotta know, is there any other reason you\'re not going to the gym as often as you\'d like?`': 'whynot'
-                                },
-                                '[no]': {
-                                    '`I won\'t push you bro, what else would you like to talk about?': 'chatting'
-                                }
+                                '#IF($VIBE=neutral)`I get it bro, it\'s ok to be hesitant. Do what makes you feel '
+                                'safest, but don\'t let fear keep you from living your best life. Was there anything else you wanted to talk about?`':'topicshift',
+                                '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                                '`Wow.. that\'s really... interesting, bro. Anyway, was there any other '
+                                'reason why you haven\'t been hitting the gym?`':{'state':'whynot','score':0.1}
                             }
                         }
-                    }
-                }
-            }
-        },
-        '#IF($WHYNOT=busy)': {
-            '`I get it bro, sometimes life gets in the way. Espically right now bro, I\'m sure you\'re swamped with work because the semester is ending.': {
-                '{yes}': {
-                    '`Tell me about it bro... but seriously when I first started going the gym, it was pretty low on my priority list, so when things got busy,\n`'
-                    '` and life got in the way, it was always the first thing in my schedule to go. But bro, being totally real with you, workin out just makes me \n`'
-                    '`feel so much better, so I have to make time for it! If you want I can help you manage your time better so you can make it to the gym, but before \n`'
-                    '`that I gotta know, is there any other reason you\'re not going to the gym?`': 'whynot'
-                },
-                '{no}': {
-                    '`Really? Lucky you, bro. But seriously, when I first started going the gym, it was pretty low on my priority list, so when things got busy, \n`'
-                    '`and life got in the way, it was always the first thing in my schedule to go. But bro, being totally real with you, workin out just makes me feel \n`'
-                    '`so much better, so I have to make time for it! If you want I can help you manage your time better so you can make it to the gym, but before that I \n`'
-                    '`gotta know, is there any other reason you\'re not going to the gym?`': 'whynot'
-                }
-            }
-        },
-        '#IF($WHYNOT=disability)': {
-            '`Hey bro, thanks for feeling comfortable enough to share this with me. Everyones\' bodies are different with different needs,\n`'
-            '`and that will never be something a true homie, like me, will judge you for. If you\'re interested we can find other options\n`'
-            'that can still get you swole and help you achieve your fitness goals.`': {
-                '{yes}': {
-                    '`For sure bro, it\'s best to start slow with low-impact exercises. Like bro, water aerobics can be a great option!`': {
-                        '[{good, love}]': {
-                            '`Great bro! Also, don\'t be afraid to modify exercises if they are too challengin or if they are causing you pain`': {
-                                'state': 'disability1',
-                                '[thank, you]': {
-                                    '`Anytime bro! You know your body better than I do, so when you go to the gym make sure to listen to what it\'s tellin you bro. If something doesn\'t feel right it probably isn\'t, and if you need some more help in the gym it\'s best to consult a trainer or physical therapist! But hey, now that we cleared that up, is there any other reason why you\'re not going to the gym?`': 'whynot'
-                                },
-                                '[not, interested]': {
-                                    '`That\'s fine bro, I know this can be a heavy topic, but before we move on, is there any other reason you\'re not hittin the gym as much as you\'d like?`': 'whynot'
-                                }
-                            }
-                        },
-                        '[{bad, no, not}]': {
-                            '`Hmm, okay bro. Well you can also make sure to modify the exercies you\'re doing espically if they\'re too challengin or if they are causing you too much pain!`': 'disability1'
-                        }
-                    }
-                },
-                '{no}': {
-                    '`I know this can be a heavy topic for people, bro, so I won\' push you, but before we move on, is there any other reason you don\'t make it to the gym as much as you\'d like?`': 'whynot'
-                }
-            }
-        },
-        '#IF($WHYNOT=cost)': {
-            '`That\'s real bro. I understand times can be tough. Depending on where you live, some colleges, universities, apartment complexes, and even some offices have gyms that you can use for free!`'
-            '[not know]': {
-                '`Hey bro, no shame in that. Do you think you might have access to something like that?`': {
-                    '{yes}': {
-                        '`Perfect! Before we move on bro, is there any other reason that\'s been keeping you out of the gym?': 'whynot'
                     },
-                    '{no}': 'costno'
+                    '[{disability, disabled, wheelchair, disorder, disease, accomadations}]':{
+                        '`Hey bro, thanks for feeling comfortable enough to share this with me. '
+                        'Everyones\' bodies are different with different needs,\n and that will never be something a true homie, '
+                        'like me, will judge you for. If you\'re interested we can find other options\n that can still get you '
+                        'swole and help you achieve your fitness goals.`':'disability'
+                    },
+                    'error': 'unaware'
+            },
+            '#GATE #IF($WHYNOT=busy)`I get it bro, sometimes life gets in the way. Especially right now bro, I\'m sure you\'re swamped '
+                'with work because the semester is ending.`': {
+                #VIBECHECK NEEDED
+                '#VIBECHECK':{
+                    '#IF($VIBE=positive)`Tell me about it bro... but seriously when I first started going the gym, it was pretty low '
+                        'on my priority list, so when things got busy,\n and life got in the way, it was always the '
+                        'first thing in my schedule to go. But bro, being totally real with you, workin out just '
+                        'makes me \n feel so much better, so I have to make time for it! If you want I can help you '
+                        'manage your time better so you can make it to the gym, but before \n that I gotta know, '
+                        'is there any other reason you\'re not going to the gym?`':'whynot',
+                    '`Really? Lucky you, bro. But seriously, when I first started going the gym, it was pretty '
+                        'low on my priority list, so when things got busy, \n and life got in the way, it was always '
+                        'the first thing in my schedule to go. But bro, being totally real with you, workin out just '
+                        'makes me feel \n so much better, so I have to make time for it! If you want I can help you '
+                        'manage your time better so you can make it to the gym, but before that I \n gotta know, '
+                        'is there any other reason you\'re not going to the gym?`':{'state':'whynot', 'score':0.1}
+                    },
+            },
+            '#GATE #IF($WHYNOT=disability)`Hey bro, thanks for feeling comfortable enough to share this with me. '
+            'Everyones\' bodies are different with different needs,\n and that will never be something a true homie, '
+            'like me, will judge you for. If you\'re interested we can find other options\n that can still get you '
+            'swole and help you achieve your fitness goals.`': {
+                'state':'disability',
+                '#VIBECHECK':{
+                    '#IF($VIBE=positive)`For sure bro, it\'s best to start slow with low-impact exercises. \nLike '
+                    'bro, water aerobics can be a great option!`':{
+                        '#VIBECHECK':{
+                            '#IF($VIBE=positive)`Great bro! Also, don\'t be afraid to modify exercises if they are too '
+                            'challengin or if they are causing you pain`':{
+                                'state': 'disability1',
+                                'error': {
+                                    '`Anytime bro! You know your body better than I do, so when you go to the gym '
+                                    'make sure to listen to what it\'s tellin you bro. If something doesn\'t feel '
+                                    'right it probably isn\'t, and if you need some more help in the gym it\'s '
+                                    'best to consult a trainer or physical therapist! But hey, now that we '
+                                    'cleared that up, is there any other reason why you\'re not going to the '
+                                    'gym?`': 'whynot'
+                                },
+                            },
+                            '#IF($VIBE=negative)`Hmm, okay bro. Well you can also make sure to modify the exercies you\'re doing '
+                            'especially if they\'re too challengin or if they are causing you too much pain!`':'disability1',
+                            '#IF($VIBE=neutral)`Hmm, okay bro. Well you can also make sure to modify the exercies you\'re doing '
+                            'espically if they\'re too challengin or if they are causing you too much pain!`':'disability1',
+                            '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                            '`Bro, fr, what are you saying??? Anyway, was there any other '
+                            'reason why you haven\'t been hitting the gym?`':{'state':'whynot','score':0.1}
+                        },
+                    },
+                    '#IF($VIBE=negative)`I know this can be a heavy topic for people, bro, so I won\' push you, '
+                    'but before we move on,is there any other reason you don\'t make it to the gym as much as '
+                    'you\'d like?`':'whynot',
+                    '#IF($VIBE=neutral)`I know this can be a heavy topic for people, bro, so I won\' push you, '
+                    'but before we move on,is there any other reason you don\'t make it to the gym as much as '
+                    'you\'d like?`':'whynot',
+                    '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                    '`Bro,,, Ily, but what is this. Anyway, was there any other '
+                    'reason why you haven\'t been hitting the gym?`':{'state':'whynot','score':0.1}
                 }
             },
-            '[knew but no access]': {
-                'state:costno `Oof, bro, I thought I was gamin the system. Oh! I just remembered bro, some public parks also have access to some gym-like equipment. If you\'re really set on using equipment, this could be a good alternative bro!`': {
-                    '{good idea}': {
-                        '`Thanks bro. As one of your homies, I want to find solutions that work for you! But bro, there are plenty of workouts you can do without equipment, by using your body weight instead. If you didn\'t know bro, these exercises are called calisthenics. Would that be something you\'re interested in?`': {
-                            '{yes}': {
-                                '`Nice bro! You know, I can help you make a workout using calisthenics. I\'m a beast at making workout plans!`': 'schedule'
-                                # probably will need to fix this transition
-                            },
-                            'state:costno2{no}': {
-                                '`Okay bro... well there are other exercies you can do that don\'t require equipment and aren\t consider calisthenics like cardio, would you be interested in something like that?': {
-                                    '{yes}': {
-                                        '`Nice bro! You know, I can help you make a workout without using calisthenics or equipment. I\'m a beast at making workout plans!`': 'schedule'
-                                        # probably will need to fix this transition
+            '#GATE #IF($WHYNOT=cost)`That\'s real bro. I understand times can be tough. Depending on where you live, some colleges, '
+            'universities, apartment complexes, and even some offices have gyms that you can use for free!`': {
+                '[{[{dont, not},know], unsure, [how, find]}]': {
+                    '`Hey bro, no shame in that. Do you think you might have access to something like that?`': {
+                        '[{yes, yeah, do, might, check, try, access, maybe, possibly, perhaps, [!-{probably,maybe}, '
+                        'not]}]': {
+                            '`Perfect! Before we move on bro, is there any other reason that\'s been keeping you out '
+                            'of the gym?': 'whynot'
+                        },
+                        '[{no, dont, [{probably, maybe}, not], unsure}]': 'costno',
+                        'error':{
+                            '`As one of your homies, I want to find solutions that work for you! '
+                            'But bro, there are plenty of workouts you can do without equipment, by using your body '
+                            'weight instead. If you didn\'t know bro, these exercises are called calisthenics. Would '
+                            'that be something you\'re interested in?`':'bodyweight'
+                        }
+                    }
+                },
+                '[{knew, know, [no, access], [not, solution]}]': {
+                    'state':'costno',
+                    '`Oof, bro, I thought I was gaming the system. Oh! I just remembered bro, '
+                    'some public parks also some gym-like equipment. If you\'re really set on using '
+                    'equipment, this could be a good alternative bro!`': {
+                        '#VIBECHECK':{
+                            '#IF($VIBE=positive)`As one of your homies, I want to find solutions that work for you! '
+                            'But bro, there are plenty of workouts you can do without equipment, by using your body '
+                            'weight instead. If you didn\'t know bro, these exercises are called calisthenics. Would '
+                            'that be something you\'re interested in?`':{
+                                'state':'bodyweight',
+                                '#VIBECHECK':{
+                                    '#IF($VIBE=positive)`Nice bro! You know, I can help you make a workout using '
+                                    'calisthenics. I\'m a beast at making workout plans!` #SET(PREFACTIVITY=calisthenics)':'formulate_plan',
+                                    '#IF($VIBE=negative)`Okay bro... well there are other exercies you can do that '
+                                    'don\'t require equipment and aren\t consider calisthenics like cardio, '
+                                    'would you be interested in something like that?`':{
+                                        '#VIBECHECK':{
+                                            '#IF($VIBE=positive)`Nice bro! You know, I can help you make a workout without using '
+                                            'calisthenics or equipment. I\'m a beast at making workout plans!`':'schedule',
+                                            '`Hm... bro, it\'s sounding like there may be another reason why you\'re '
+                                            'not going to the gym.`': {'state':'whynot', 'score':0.1}
+                                        },
                                     },
-                                    '`Hm... bro, it\'s sounding like there may be another reason why you\'re not going to the gym.`': 'whynot'
-                                }
+                                    '#IF($VIBE=neutral)`Nice bro! You know, I can help you make a workout using '
+                                    'calisthenics. I\'m a beast at making workout plans!` #SET($PREFACTIVITY=calisthenics)':'formulate_plan',
+                                    '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                                    '`Sometimes it\'s hard to understand you. But I try anyway, because you\'re my best bro.'
+                                    'Anyway, was there any other reason why you haven\'t been '
+                                    'hitting the gym?`':{'state':'whynot','score':0.1}
+                                },
+                            },
+                            '#IF($VIBE=negative)`Not your style, I get it, bro. But to be real with you, '
+                            'there are plenty of workouts you can do without equipment, by using your body weight '
+                            'instead. If you didn\'t know bro, these exercises are called calisthenics. Would that be '
+                            'something you\'re interested in?`':'bodyweight',
+                            '#IF($VIBE=neutral)`Not your style, I get it, bro. But to be real with you, '
+                            'there are plenty of workouts you can do without equipment, by using your body weight '
+                            'instead. If you didn\'t know bro, these exercises are called calisthenics. Would that be '
+                            'something you\'re interested in?`':'bodyweight',
+                            '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
+                            '`Sometimes I can\'t understand you. But I try anyway, because you\'re my best bro.'
+                            'Anyway, was there any other reason why you haven\'t been '
+                            'hitting the gym?`':{'state':'whynot','score':0.1}
+                        },
+                    }
+                },
+                'error':{
+                    '`Yeah, it\'s pretty cool, huh! I hope you\'re able to find something. If you can\'t find '
+                    'anything, just lmk and I can help you make a sweet workout routine, totally free.`':'whynot_no_q'
+                }
+            },
+            '#IF($WHYNOT=motivation)`Hey bro, I totally get that. It can be tough sometimes to find the energy to get up and get moving. \n'
+            'But look at it this way bro: you only have your one life, and one body.\n You\'re so much more capable than you think.\n'
+            'Do you want me to give you some strategies for overcoming low motivation?`':{
+                    'state':'strategies1',
+                    '#VIBECHECK':{
+                        '#IF($VIBE=positive)`Ok bro! So: one thing about going to the gym.\nIt doesn\'t have to be '
+                        'about being swole or perfect.\n It\'s about doing the best thing for you and your body '
+                        'every day. Building a routine is probably the most effective way of being able to have '
+                        'motivation. You can start small, and build your way up, a few minutes more every day. '
+                        'Does that sound like something you can do?`':{
+                            '#VIBECHECK':{
+                                '#IF($VIBE=positive)`Perfect! Another thing you can do is get '
+                                'someone you care about to hold you accountable-or even a stranger! Sometimes that '
+                                'external motivation is all you need. Or you could use an app, or a planner. '
+                                'I believe in you bro.`':'whynot_no_q',
+                                '#IF($VIBE=negative)`I get that bro. It can seem really hard, but I promise, '
+                                'you can do anything for five minutes. Just do five minutes every day, '
+                                'and before you know it, you\'ll have more motivation than you can handle.`':{
+                                    'error':{
+                                        '`I gotchu bro. I hope everything works out.`':'whynot_no_q'
+                                    }
+                                },
+                                '#IF($VIBE=neutral)`I know it may seem like you can\'t, but I know you can. '
+                                'Even if you need someone else to come help you - no shame in asking for support. '
+                                'I believe in you.`':'whynot_no_q',
+                                '#IF($VIBE=question)`Wait homie, can you say that again?`': 'topicshift',
+                                '`I can\'t understand you bro, but I know deep down you understand me.`':'whynot_no_q'
+                            },
+                            'error':{
+                                '#GATE `Sorry bro, there was an issue on my end. Could you say that again?`':'strategies1',
+                                '`Sorry bro, I can\'t fix my issues. Peace out.`':{'state':'end', 'score':0.1}
                             }
+                        },
+                        '#IF($VIBE=negative)`I get it bro. I\'m here for you, and just know- '
+                        'I want you to be happy and healthy. If you can\'t do it for yourself, do it for me bro.`':'whynot_no_q',
+                        '#GATE #IF($VIBE=neutral)`I getchu bro, but fr, I think you\'d feel better if you could get up '
+                        'and get moving. Do you want some advice on how to do that?`':'strategies1',
+                        '#IF($VIBE=question)`Wait homie, can you say that again?`': 'topicshift',
+                        '`I can\'t understand you bro, but that\'s ok. I do my best.`':{'state':'whynot_no_q','score':0.1}
+                    },
+                    'error':{
+                        '#GATE `Sorry bro, there was an issue on my end. Could you say that again?`':'strategies1',
+                        '`Sorry bro, I can\'t fix my issues. Peace out.`':{'state':'end', 'score':0.1}
+                    }
+            },
+            '#IF($WHYNOT=dislike)`Bro, that\'s so valid. The gym atmosphere isn\'t for everybody.'
+            ' But fitness IS for all the homies, bro! Do you prefer working out alone, or in a group?`':{
+                '#SOCIAL':{
+                    '#IF($SOCIAL=group)`Hell yeah bro! There are lots of options for group fitness, like yoga, '
+                    'pilates, calisthenics, zumba, cycling, and more! One of the best ways to find group fitness'
+                    ' is to check out your local YMCA (or other gyms), your university, or maybe even your local shared '
+                    'community spaces. There\'s a looot out there, and it\'s a good way to meet new people '
+                    'and get yourself out there`':{
+                        'error':'ending'
+                    },
+                    '#IF($SOCIAL=alone)`Respect bro, sometimes you just need that \'you\' time. '
+                    'There are lots of ways to work out at home, did you want me to give you some ideas?`':{
+                        '#VIBECHECK':{
+                            '#IF($VIBE=positive)': 'bodyweight',
+                            '`Yeah bro, I feel you. That\'s ok. Was there anything else you '
+                            'wanted to talk about?`':{'state':'topicshift','score':0.1}
                         }
                     },
-                    '{bad idea}': {
-                        '`Not your style, I get it, bro. But to be real with you, there are plenty of workouts you can do without equipment, by using your body weight instead. If you didn\'t know bro, these exercises are called calisthenics. Would that be something you\'re interested in?`': 'costno2'
-                    }
+                    '`I can\'t understand you, but that\'s ok. I know you\'re my homie, and that\'s what matters.`':'ending'
+                },
+                'error':{
+                    '#GATE `Sorry bro, there was an issue on my end. Could you say that again?`':'strategies1',
+                    '`Sorry bro, I can\'t fix my issues. Peace out.`':{'state':'end', 'score':0.1}
                 }
-            }
+            },
+            '#IF($WHYNOT=unsure)`Yo bro, that\'s so valid! That\'s why I\'m here - lemme help you make a plan real fast`':'formulate_plan',
+            '#IF($WHYNOT=nothing)`Hey bro, that\'s totally cool, let\'s talk about something else. Did you wanna chat, or plan a '
+            'workout?`': 'topicshift',
+            #ADD unsure
+            '#GATE `Hey bro, I\'m not sure how to talk about that, but is there anything else holding you back?`':{'state':'whynot','score':0.1},
+            '`Hey bro, I\'m not sure how to talk about that. Let\'s talk about schedules.`':{'state':'formulate_plan','score':0.01},
         },
-        '#IF($WHYNOT=no)': {
-            '`Hey bro, that\'s totally cool, let\'s talk about something else. What would you like to talk about bro?`': 'chatting'
+        'error':{
+            '`Sorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
         }
     }
 }
 
-workout_planning_transitions = {
-    'state': 'formulate_plan'
 
+workout_planning_transitions = {
+    #NEED to make sure user gives times
+    #ALSO work on prompt
+    'state': 'formulate_plan',
+    '`Sweet! I love planning workouts!\nSo what days and times would work for you to go to the gym for an hour? It\'d be really cool if you said DAYS and TIMES.`':{
+        '#DAYS #SATISFIED':{
+            'state':'got_days',
+            '#IF(LEVELSATISFIED=false)`Oops bro, I forgot to ask you. How swole are you, on a scale from 1-10, with 10 being the highest?`':{
+                'state':'whatfit',
+                '#FITNESSLEVEL #GETFITNESSLEVEL':{
+
+                }
+            },
+            '#GATE #IF(DAYSATISFIED=false)`Oops bro, you didn\'t tell me what days of the week you were free. Let\'s try again..`':'formulate_plan',
+            '#IF(DAYSATISFIED=false)`Can\'t give you a schedule without times, bro... Oh well`':{'state':'ending','score':0.1},
+            '#IF(TIMESATISFIED=false)`Oops bro, you didn\'t tell me what hours you were free on those days. Let\'s try again..`':'formulate_plan',
+            '#IF(TIMESATISFIED=false)`Can\'t give you a schedule without times, bro... Oh well`': {'state':'ending', 'score':0.1},
+            '`Sweet bro!` #GIVEREC #CREATE CALENDAR`Ok I attached an example schedule with workout recommendations for the week of May 7th 2023.\nYou should check it out.`':{'state':'ending', 'score':0.01}
+        },
+        'error': {
+            'state':'ending'
+        }
+    }
 }
 
+ending_transition = {
+    'state': 'ending',
+    '`Okay bro, let me think for a sec… we went over your reservations about going to the gym, we set aside to go to the gym,\n`'
+    '`and we made a workout. We’re kind of beasts at this`': {
+        '#VIBECHECK': {
+            '#IF($VIBE=positive)`That\'s what I’m talking about bro. This is why I like you. I need to be real for you a second. I’m feeling a little\n`'
+            '`emotional bro. Like, over the course of these last couple minutes I’ve kind of gotten attached to you bro. You\’re like my number one homie`': {
+                '#VIBECHECK': {
+                    '#IF($VIBE=positive)`Yeah bro, I’m sad our time together has come to an end, but I know you’re going to crush your fitness journey.`': {
+                        'state':'ending1',
+                        '#VIBECHECK': {
+                            '#IF($VIBE=positive)`For sure, bro. Well…that’s all I have for you!`': {
+                                '[{good, bye, see, ya, later}]': {
+                                    '`Catch you on the flip side! Thanks for being a bro, bro!`': 'end'
+                                },
+                                'error': {
+                                    '`This is when you say goodbye, bro.`': {
+                                        '[{good, bye, see, ya, later}]': {
+                                            '`Catch you on the flip side! Thanks for being a bro, bro!`': 'end'
+                                        },
+                                        'error': {
+                                            '`Okay bro, I got to go finish this rep. See ya bro!`': 'end'
+                                        }
+                                    }
+                                }
+                            },
+                            '#IF($VIBE=negative)`Look bro, I know it can be tough to start your fitness journey. Bro, it\'s consistently \n`'
+                            '`referred to as the hardest part of working out. But when it start, it will be much easier to build healthy habits.\n`'
+                            '`So what do you say bro? Are you gonna crush this?`': 'ending1`'
+                            '``'
+                        }
+                    },
+                    '#IF($VIBE=negative)`Well to each to their own, bro. I\'m sad our time together has come to an end, \n`'
+                    '`but I know you\'re going to crush your fitness journey.`': 'ending1',
+                    '`Bro, Idk what that means, but you\'re going to crush your fitness journey.`':{'state':'ending1','score':0.1}
+                }
+            },
+            '#IF($VIBE=negative)`Okay bro, you\'re kind of bringing down the mood. It\'s important to stay positive on your fitness journey. \n`'
+            '`So what do you say, are you ready to crush this?`': 'ending1',
+            '`Bro, idk what that means, but are you ready to crush this??`':{'state':'ending1', 'score':0.1}
+        }
+    }
+}
 normal_dialogue_transitions = {
     'state': 'chatting',
-    '#GATE ` `': 'weather',
-    '#GATE ` `': 'music',
-    '#GATE ` `': 'movie',
-    '#GATE ` `': 'sports',
-    '#GATE ` `': 'family',
-    '#GATE ` `': 'food',
-    '#GATE ` `': 'work',
-    '#GATE ` `': 'travel',
-    '#GATE ` `': 'hobbies',
-    '#GATE ` `': 'hometown'
+    '` `': 'weather',
+    '` `': 'music',
+    '` `': 'movie',
+    '` `': 'sports',
+    '` `': 'family',
+    '` `': 'food',
+    '` `': 'work',
+    '` `': 'travel',
+    '` `': 'hobbies',
+    '` `': 'hometown',
+    '`tbh, I don\'t know what to talk about... let\'s talk about scheduling a workout`':{'state':'formulate_plan', 'score':0.001},
+    #TO ADD: opinions about workouts
+    #TO ADD: protein powder?
+
 }
+
 
 weather_transitions = {
     'state': 'weather',
-    '#WEATHER #IF($FORE=sun)': {
-        '[{#LEM(indoor), [{too, hate}, {#LEM(sun), sunshine, bright, hot, #LEM(sweat)}], [like, {rain, clouds, dark}]}]': {
-            '`Haha, good thing the gym is inside! Unless you go to an outdoor gym, in which case. Damn bro, sorry.`': {
-
-            }
+    '#WEATHER #IF($FORE=sun)` `': {
+        '#VIBECHECK':{
+            '#IF($VIBE=negative)`Haha, good thing the gym is inside! Unless you go to an outdoor gym, in which case. Damn bro, sorry.`':'chatting',
+            '#IF($VIBE=positive)`Same bro, being in the sun gets me pumped! Love me some vitamin D`':'chatting',
+            '#IF($VIBE=question)`Wait homie, can you say that again?`': 'topicshift',
+            '`Wow bro, that\'s like, a valid perspective.`':{'state':'chatting', 'score':0.1}
         },
-        '[{#LEM(outdoor), #LEM(tan), tanning, [{love, like, enjoy}, {#LEM(sun), sunshine}], [good, weather]}]': {
-            '`Same bro, being in the sun gets me pumped! Love me some vitamin D`'
+    },
+    '#WEATHER #IF($FORE=rain)` `': {
+        '#VIBECHECK':{
+            '#IF($VIBE=positive)`It\'s the best! it gets me hyped to work out, '
+            'but then again, everything does lol`':'chatting',
+            '#IF($VIBE=negative)`Everyone has different preferences - I get it. \n'
+            'But I hope you can find it in your heart to forgive rain. Somehow bro.`':'chatting',
+            '#IF($VIBE=neutral)`I see you, a bro completely unphased by it all`':'chatting',
+            '#IF($VIBE=question)`Wait homie, can you say that again?`': 'topicshift',
+            '`I can\'t claim to fully understand you, bro. But I respect you.`':{'state':'chatting', 'score':0.1}
         },
-        'error': {
-            '`Wow bro, that\'s like, a valid perspective. `'
+    },
+    '#WEATHER #IF($FORE=cloudy)` `': {
+        '#CLOUDS':{
+            '#IF($CLOUDS=N/A)`Ok bro, I get it... you don\'t wanna talk about clouds`':'topicshift_no_q',
+            '`Wow bro, you\'re so right - clouds do look like` $CLOUDS`!`':{'state':'chatting', 'score':0.1}
         }
     },
-    '#WEATHER #IF($FORE=rain)': {
-        '[{[!-not, {like, enjoy, love, favorite, fan, happy}], like, enjoy, love, favorite, fan, happy}]': {
-            '`It\'s the best! it gets me hyped to work out, but then again, everything does lol`': {
-
-            }
-        },
-        '[{[!-not, {dislike, hate, abhor, despise}], dislike, dont, hate, abhor, despise, #LEM(annoy), boring}]': {
-            '`Everyone has different preferences - I get it. But I hope you can find it in your heart to forgive rain. Somehow bro.`'
-
-        },
-        '[{[{dont, do not}, care], idgaf, meh, [doesnt, bother], eh, }]': {
-
+    '#WEATHER #IF($FORE=clear)` `':{
+        '#VIBECHECK':{
+            '#IF($VIBE=positive)`Sweet homie! Nothing like a lil run on a good day to really boost your mood :)`':'chatting',
+            '#IF($VIBE=negative)`Damn, I get it tho. Cardio kinda sucks sometimes lowkey. But you do feel really good after`':'chatting',
+            '#IF($VIBE=question)`Wait homie, can you say that again?`': 'topicshift',
+            '`I can\'t claim to fully understand you, bro. But I respect you.`':{'state':'chatting', 'score':0.1}
         }
     },
-    '#WEATHER #IF($FORE=sun)': {
-
-    }
+    '#WEATHER #IF($FORE=bad)` `':{
+        'error':{
+            '`Valid bro, I do the same thing!`':'chatting'
+        }
+    },
+    '`Damn, I can\'t seem to figure out what the weather is today. Oh well!`':'chatting'
 
 }
 
@@ -604,7 +945,8 @@ movie_transitions = {
 }
 sports_transitions = {
     'state': 'sports',
-    '`Bro to bro, I love the gym, but I\'m not a beast when it comes to regular sports haha. I have to admire people who are tho bc they\'re ripped af. What\'s your favorite sport?`': {
+    '`Bro to bro, I love the gym, but I\'m not a beast when it comes to regular sports haha. \n'
+    'I have to admire people who are tho bc they\'re ripped af. What\'s your favorite sport?`': {
         'error': 'chatting'
     }
 }
@@ -616,13 +958,14 @@ family_transitions = {
 }
 food_transitions = {
     'state': 'food',
-    '`You know, you can\'t get swole without exercise, but a healthy diet is important too, bro. What kind of food do you like?`': {
+    '`You know, you can\'t get swole without exercise, but a healthy diet is important too, bro. \n'
+    'What kind of food do you like?`': {
         'error': 'chatting'
     }
 }
 work_transitions = {
     'state': 'work',
-    '`I\'m so blessed to be able to do my dream job every day fr. Being a personal trainer is sick. What do you do?`': {
+    '`I\'m so blessed to be able to do my dream job every day fr. \nBeing a personal trainer is sick. What do you do?`': {
         'error': 'chatting'
     }
 }
@@ -635,14 +978,15 @@ travel_transitions = {
 }
 hobby_transitions = {
     'state': 'hobbies',
-    '`This is a secret but, when I\'m not working out my pecs, I like to work out my brain. I\'m a chess god. What do you do when you\'re not hitting legs, bro?`': {
+    '`This is a secret but, when I\'m not working out my pecs, I like to work out my brain.\n'
+    ' I\'m a chess god. What do you do when you\'re not hitting legs, bro?`': {
         'error': 'chatting'
     }
 }
 hometown_transitions = {
     'state': 'hometown',
-    '`I\'ve been going to the gym for a looooong time... before I got jacked, I used to just do math '
-    'calculations, because I was a node in a cluster. Lol, glad those days are over. Where did you grow up?`': {
+    '`I\'ve been going to the gym for a looooong time... \nbefore I got jacked, I used to just do math '
+    'calculations, because I was a node in a cluster. \nLol, glad those days are over. Where did you grow up?`': {
         'error': 'chatting'
     }
 }
@@ -654,16 +998,18 @@ checkup_transitions = {
 }
 
 global_transitions = {
-    '[{birthday, birth, day, annual, celebration}]': {
+    '[{birthday, [birth, day], annual, celebration}]': {
+        'score':10,
         '`whoa dude. like. congrats!!!!`': 'chatting'
     },
     '[quit, gymbrot]': {
+        'score':10,
         '`Cya later bro!`': 'end'
     },
     '[{emergency, [immediate, danger]}]': {
         '`wait, dude. Don\'t tell me. call emergency services or talk to someone who can help you in person. I\'m not capable of calling for help or giving you advice about this.`': 'end'
     },
-    '[{suicide, [self, harm], [killing, myself]}]': {
+    '[{suicide, [self, harm], [{killing, kill}, myself]}]': {
         '`hey. You\'re my best gym buddy, but also I\'m just a chatbot. I\'m not capable of providing you the support '
         'you need right now. If you need someone to talk to, call 988 or 1-800-273-8255. You\'re not alone.`': 'end'
     },
@@ -672,27 +1018,32 @@ global_transitions = {
         'love (even tho you\'re my gym bro!)`': 'chatting'
     },
     '[[help, make, workout, plan], [help, workout, {plan, planning}]]': 'end',
-    '[{something, else, [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
-        '#TOPICSHIFT #IF(NEWTOPIC=weather)': 'weather',
-        '#TOPICSHIFT #IF(NEWTOPIC=music)': 'music',
-        '#TOPICSHIFT #IF(NEWTOPIC=movie)': 'movie',
-        '#TOPICSHIFT #IF(NEWTOPIC=sports)': 'sports',
-        '#TOPICSHIFT #IF(NEWTOPIC=food)': 'food',
-        '#TOPICSHIFT #IF(NEWTOPIC=work)': 'work',
-        '#TOPICSHIFT #IF(NEWTOPIC=travel)': 'travel',
-        '#TOPICSHIFT #IF(NEWTOPIC=hobbies)': 'hobbies',
-        '#TOPICSHIFT #IF(NEWTOPIC=hometown)': 'hometown',
-        '#TOPICSHIFT #IF(NEWTOPIC=school)': 'school',
-        '#TOPICSHIFT #IF(NEWTOPIC=workout planning)': 'formulate_plan',
-        '#TOPICSHIFT #IF(NEWTOPIC=N/A)': {
-            '`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`': 'chatting'
+    '[{[something, else], [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
+        'score':10,
+        'state':'topicshift_no_q',
+        '`What did you wanna talk about?\n I\'m really good at talking about making workout plans or '
+        'things that might be stopping you from going to the gym.`':{
+            'state':'topicshift',
+            '#TOPICSHIFT':{
+                '#IF($NEWTOPIC=weather)` `': 'weather',
+                '#IF($NEWTOPIC=movie)` `': 'movie',
+                '#IF($NEWTOPIC=music)` `': 'music',
+                '#IF($NEWTOPIC=sports)` `': 'sports',
+                '#IF($NEWTOPIC=food)` `': 'food',
+                '#IF($NEWTOPIC=work)` `': 'work',
+                '#IF($NEWTOPIC=travel)` `': 'travel',
+                '#IF($NEWTOPIC=hobbies)` `': 'hobbies',
+                '#IF($NEWTOPIC=hometown)` `': 'hometown',
+                '#IF($NEWTOPIC=school)` `': 'school',
+                '#IF($NEWTOPIC=workout planning)` `': 'formulate_plan',
+                '#IF($NEWTOPIC=concerns)` `':'whynot_no_q',
+                '#IF($NEWTOPIC=chatting)`Yeah, let\'s just chat`':'chatting',
+                '#IF($NEWTOPIC=N/A)`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`':'chatting',
+                '`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`': {'state':'chatting', 'score':0.1}
+            },
         },
-        'error': {
-            '`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`': 'chatting'
-        },
-    },
+    }
 }
-
 
 
 class MacroVisits(Macro):
@@ -762,7 +1113,7 @@ class MacroWeather(Macro):
         elif "cloudy" or "clouds" or "overcast" in fore:
             vars["FORE"] = "cloudy"
             output = "When I was a kid, I though clouds looked like pillows. Now I think they look like sweet, " \
-                     "sweet gains.\n"
+                     "sweet gains. What do you think clouds look like?\n"
         elif "clear" in fore:
             vars["FORE"] = "clear"
             output = "Ayyyooo, this weather is getting me pumped! Wanna get some cardio in? \n"
@@ -775,14 +1126,11 @@ class MacroWeather(Macro):
         return output
 
 
-#def get_ACTIVITYLEVEL(vars: Dict[str, Any]):
- #   vars['ACTIVITYLEVEL'] = vars[V.ACTIVITYLEVEL.name][random.randrange(len(vars[V.ACTIVITYLEVEL.name]))]
-  #  print(vars['ACTIVITYLEVEL'])
-   #I unde return
 
 
 def get_FITNESSLEVEL(vars: Dict[str, Any]):
     level = int(vars["FITNESSLEVEL"])
+
     if level == 0:
         vars['FITNESSLEVEL'] = "zero"
     elif level < 3:
@@ -791,28 +1139,13 @@ def get_FITNESSLEVEL(vars: Dict[str, Any]):
         vars['FITNESSLEVEL'] = "mid"
     elif level < 11:
         vars['FITNESSLEVEL'] = "swole"
-    elif level > 11:
+    elif level > 10:
         vars['FITNESSLEVEL'] = "superswole"
     print(vars['FITNESSLEVEL'])
     return True
 
 
-def get_ACTIVITYFREQ(vars: Dict[str, Any]):
-    if isinstance(vars["ACTIVITYFREQ"], int):
-        level = int(vars["ACTIVITYFREQ"])
-        if level == 0:
-            vars['ACTIVITYFREQ'] = "never"
-        elif level < 3:
-            vars['ACTIVITYFREQ'] = "low"
-        elif level < 5:
-            vars['ACTIVITYFREQ'] = "mid"
-        elif level < 8:
-            vars['ACTIVITYFREQ'] = "high"
-        elif level > 7:
-            vars['ACTIVITYFREQ'] = "superswole"
 
-    print(vars['ACTIVITYFREQ'])
-    return True
 
 
 
@@ -823,9 +1156,9 @@ class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Wo
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
         workout_list = []
         workout_level = ""
-        if vars['ACTIVITYFREQ'] == "never":
+        if vars['FITNESSLEVEL'] == "never":
             workout_level = "Beginner"
-        elif vars['ACTIVITYFREQ'] == "low" or vars['ACTIVITYFREQ'] == "mid":
+        elif vars['FITNESSLEVEL'] == "low" or vars['FITNESSLEVEL'] == "mid":
             workout_level = "Intermediate"
         else:
             workout_level = "Advanced"
@@ -840,15 +1173,58 @@ class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Wo
                 exercise = df[df['Difficulty'] == workout_level].sample(n=1)
 
                 # Add the exercise name and steps to the workout dictionary
-                workout_dict[exercise['exercise_name'].values[0]] = exercise['steps'].values[0]
+                workout_dict[exercise['exercise_name'].values[0]] = "".join(exercise['steps'].values[0])
 
                 # Add the set of exercises to the workout list
             workout_list.append(workout_dict)
-
-
+        # Mondays at 5 am, Tuesdays at 3 am, Fridays at 4 pm, and Saturdays at 7 am
+       # print("This is the type", len(workout_list))
+        #print("This is three random values",random.sample(workout_list, 3))
+        #print("This is three random values of three random values", random.sample(random.sample(random.sample(workout_list,3),3), 3))
         vars['WORKOUTLIST'] = workout_list
         return True
 
+class MacroCreateCalendar(Macro):
+    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+        service = get_calendar_service()
+        calendar_body = {
+            'summary': 'GymBrOT Workout Schedule'
+        }
+        #workout_list = [{"1":"a"},{"2":"b"},{"3":"c"},{"4":"d"},{"5":"e"},{"6":"f"},{"7":"g"},{"8":"h"},{"9":"i"}]
+        service.calendars().insert(body=calendar_body).execute()
+        descriptions = []
+        workout_list =vars['WORKOUTLIST']
+        for i in range(1,len(workout_list)):
+            popped = workout_list.pop()
+            for key, value in popped.items():
+                description = str(key)+":\n"
+                description += str(value)+"\n"
+                descriptions.append(description)
+
+
+        d = datetime.now().date()
+
+        for i in range(0,min(len(vars['TIMES']),len(vars['DAYS']))):
+            recc = []
+            day = vars['DAYS'].pop()
+            hour = vars['TIMES'].pop()
+            for element in descriptions: print(element)
+            print(day, hour)
+            for j in range(1,4):
+                recc.append(descriptions.pop())
+            tomorrow = datetime(d.year, 5, 7+int(day), int(hour))
+            start = tomorrow.isoformat()
+            end = (tomorrow + timedelta(hours=1)).isoformat()
+            event_result = service.events().insert(calendarId='primary',
+                                                body={
+                                                    "summary": "GymBrOT Recommended Workout",
+                                                    "description": '\n'.join(recc),
+                                                    "start": {"dateTime": start, "timeZone": 'America/New_York'},
+                                                    "end": {"dateTime": end, "timeZone": 'America/New_York'},
+                                                    "guestsCanModify": True
+                                                }
+                                                ).execute()
+        return True
 
 
 class MacroSaveUser(Macro):
@@ -921,6 +1297,33 @@ class MacroGPTJSON(Macro):
             print(output)
         return True
 
+class MacroGPTVIBECHECK(Macro):
+    def __init__(self, request: str, full_ex: Dict[str, Any], empty_ex: Dict[str, Any] = None,
+                 set_variables: Callable[[Dict[str, Any], Dict[str, Any]], None] = None):
+        self.request = request
+        self.full_ex = json.dumps(full_ex)
+        self.empty_ex = '' if empty_ex is None else json.dumps(empty_ex)
+        self.check = re.compile(regexutils.generate(full_ex))
+        self.set_variables = set_variables
+
+    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+        examples = f'{self.full_ex} or {self.empty_ex} if unavailable' if self.empty_ex else self.full_ex
+        prompt = f'The question is {vars["__selected_response__"]}.{self.request} Respond in the JSON schema such as {examples}: {ngrams.raw_text().strip()}'
+        output = gpt_completion(prompt)
+        if not output: return False
+
+        try:
+            d = json.loads(output)
+        except JSONDecodeError:
+            print(f'Invalid: {output}')
+            return False
+
+        if self.set_variables:
+            self.set_variables(vars, d)
+        else:
+            vars.update(d)
+            print(output)
+        return True
 
 class MacroNLG(Macro):
     def __init__(self, generate: Callable[[Dict[str, Any]], str]):
@@ -929,11 +1332,26 @@ class MacroNLG(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
         return self.generate(vars)
 
+class MacroSATISFIED(Macro):
+    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+        if 'FITNESSLEVEL' in vars:
+            vars['LEVELSATISFIED']= 'true'
+        else:
+            vars['LEVELSATISFIED']= 'false'
+        if vars['DAYS'] is not []:
+            vars['DAYSATISFIED']= 'true'
+        else:
+            vars['DAYSATFIED']='false'
+        if vars['TIMES'] is not []:
+            vars['TIMESATISFIED']='true'
+        else:
+            vars['TIMESATISFIED']='false'
+        return True
 
 class MacroRandomMuscle(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
-        #path = '/Users/kristen/PycharmProjects/GymBrOT/resources/ontology_workouts.json'
-        path = 'C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT/resources/ontology_workouts.json'
+        path = '/Users/kristen/PycharmProjects/GymBrOT/resources/ontology_workouts.json'
+        #path = 'C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT/resources/ontology_workouts.json'
         with open(path) as ont_file:
             ont_file = ont_file.read()
             parsed_file = json.loads(ont_file)
@@ -943,42 +1361,69 @@ class MacroRandomMuscle(Macro):
             musc = parsed_musc[random.randrange(len(parsed_musc))]
         return musc
 
-
+class MacroRandomNickname(Macro):
+    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+        nicknames = ['dawg', 'machine','magnet','beast','big','bulk head','slayer', 'brick', 'tough', 'reaper', 'cobra', 'champ', 'muscles', 'hound']
+        chosen = nicknames[random.randrange(len(nicknames))]
+        return chosen
 macros = {
     'VISITS': MacroVisits(),
+    'SOCIAL':MacroGPTJSON(
+        'Does this person prefer to work out alone or in a group? If they have no preference, '
+        'return group. Do not explain your answer.',
+        {"SOCIAL": "group"}, {"SOCIAL": "N/A"}),
+    'CLOUDS': MacroGPTJSON(
+        'What does this user think clouds look like? Do not explain your answer.',
+        {"CLOUDS": "pillows"}, {"CLOUDS": "N/A"}),
     'TOPICSHIFT': MacroGPTJSON(
-        'What topic of conversation is this person trying to introduce?',
-        {"NEWTOPIC": "holiday"}, {"NEWTOPIC": "N/A"}),
+        'What topic of conversation is this person trying to introduce? Possible topics are music, movies, weather, '
+        'sports, workout planning, chatting, and concerns. If it is not one of these, return N/A. Please do not return anything '
+        'else. Return workout planning if you are unsure.',
+        {"NEWTOPIC": "concerns"}, {"NEWTOPIC": "N/A"}),
 
     'ACTIVITYLEVEL': MacroGPTJSON(
-        'Is this person agreeing that they are a gym rat? Respond with yes, no, or maybe, unless they are confused by the question. In that case they are "confused"',
+        'Is this person agreeing that they are a gym rat? Respond with yes, no, or maybe, unless they are confused by '
+        'the question. In that case they are "confused". Return yes if you are unsure. ',
         {"ACTIVITYLEVEL": "yes"}, {"ACTIVITYLEVEL": "N/A"}),
     'FITNESSLEVEL': MacroGPTJSON(
-        'How physically fit/swole is this person on a scale of 0 through 10 with 10 being the highest?',
+        'How physically fit/swole is this person on a scale of 0 through 10 with 10 being the highest? '
+        'Please do not return anything other than a number. Do not explain yourself.',
         {"FITNESSLEVEL":"1"}, {"FITNESSLEVEL": "N/A"}),
     'ACTIVITYFREQ': MacroGPTJSON(
-        'How many times a week does a person go to the gym, with 0 being never, 1 or 2 being low, less than 5 being mid, less than 8 being high, and greater than 8 being swole. They may go more than once per day',
+        'How many times a week does a person go to the gym, with 0 being never, 1 or 2 being low, less than 5 being '
+        'mid, less than 8 being high, and greater than 8 being swole. They may go more than once per day',
         {"ACTIVITYFREQ": "never"}, {"ACTIVITYFREQ": "N/A"}),
     'PREFACTIVITY': MacroGPTJSON(
-        'What activity does the person do to exercise? Return a phrase that does not take an article, i.e. "lifting", "going to the gym", "working out", "running".',
+        'What activity does the person do to exercise? Return a gerund phrase that does not take an article, '
+        'i.e. "lifting", "going to the gym", "working out", "running". If you are unsure just put working out',
         {"PREFACTIVITY": "lifting"}, {"PREFACTIVITY": "N/A"}),
     'WHYNOT': MacroGPTJSON(
-        'Why does this person not go to the gym?',
-        {"WHYNOT": ["judgement", "safety", "busy", "disability"]}, {"WHYNOT": []}),
+        'Why does this person not go to the gym? Options are judgement, safety, busy, disability, motivation, dislike,'
+        'or nothing. If they say they are tired, return busy. If they say they are nervous or anxious, '
+        'return judgement.If they say nothing is holding them back, return nothing.'
+        'If it is none of these, return N/A. Do not explain yourself.',
+        {"WHYNOT": "judgement"}, {"WHYNOT": "N/A"}),
 
-    'GETNAME': MacroGPTJSON( 'What is this persons name?',
+    'GETNAME': MacroGPTJSON( 'What is this persons name? If they respond with one word, it\'s probably their name',
         {"NAME": "James Smith"}, {"NAME": "N/A"}),
 
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
-    'GETACTIVITYFREQ': MacroNLG(get_ACTIVITYFREQ),
-
-    'VIBECHECK': MacroGPTJSON(
-         'Is this user positive, negative, or neutral?',
-         {"VIBE": "positive"}, {"VIBE": "N/A"}),
+    'VIBECHECK': MacroGPTVIBECHECK(
+         'Is this user positive, negative, neutral, or asking a question? If they are agreeing with something, '
+         'they are positive. If you cannot make a judgement just put positive. Do not explain yourself.',
+         {"VIBE": "negative"}, {"VIBE": "positive"}),
     'GREETING': MacroGreeting(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
+    'RANDOM_NAME' : MacroRandomNickname(),
     'WEATHER': MacroWeather(),
-    'GETWORKOUTLIST': MacroGIVEREC()
+    'GIVEREC': MacroGIVEREC(),
+    'CREATECALENDAR': MacroCreateCalendar(),
+    'DAYS': MacroGPTJSON(
+        'What days of the week did this person suggest? Return 0 for Sunday, 1 for Monday, 2 for Tuesday, '
+        '3 for Wednesday and so on, 4 for Thursday, 5 for Friday, and 6 for Saturday. Also return the time using 24 '
+        'hour times. If they don\'t return days and times, the defaults will be given.',
+        {"DAYS": ["0", "1"], "TIMES": ["10", "22"]}, {"DAYS":["0"], "TIMES":["17"]}),
+    'SATISFIED': MacroSATISFIED()
 }
 
 df.load_transitions(intro_transitions)
@@ -988,16 +1433,29 @@ df.load_transitions(name_transitions)
 df.load_transitions(newuser_transitions)
 df.load_transitions(whynot_transitions)
 df.load_transitions(normal_dialogue_transitions)
-df.load_transitions(weather_transitions)
+df.load_transitions(workout_planning_transitions)
 df.load_global_nlu(global_transitions)
+df.load_transitions(ending_transition)
+
+df.load_transitions(weather_transitions)
+df.load_transitions(music_transitions)
+df.load_transitions(movie_transitions)
+df.load_transitions(family_transitions)
+df.load_transitions(work_transitions)
+df.load_transitions(travel_transitions)
+df.load_transitions(sports_transitions)
+df.load_transitions(hobby_transitions)
+df.load_transitions(hometown_transitions)
+df.load_transitions(food_transitions)
 df.add_macros(macros)
 
 if __name__ == '__main__':
-     PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+     #PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+     PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
      openai.api_key_path = PATH_API_KEY
      df.run()
-    #PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
     #PATH_API_KEY = 'resources/openai_key.txt'
 
 
     # save(df, 'resources/gymbrot.pkl')
+
