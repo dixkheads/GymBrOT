@@ -1014,8 +1014,22 @@ babel_transitions = {
             '#IF(VIBE=positive)`Huh, that\'s interesting. I guess it had its merits.\nLike the intricate and well thought-'
             'out web of character connections, or the treatment of the overall theme of miscommunication. '
             'Did you have anything else to say about the movie?`':{
+                'score':11,
                 'state':'babelbranches',
-                '[]',
+                '[{question, [what, mean], clarify}]':{
+
+                },
+                '[{[{dont, didnt}, {#LEM(like), #LEM(love), #LEM(enjoy)}], #LEM(complaint), #LEM(dislike), #LEM(hate), upset, unhappy, grossed,'
+                ' gross, weirded, weird, [not, fan], ugh, questionable, worst, worse, bad, awful, terrible, shit, ass}]':{
+
+                },
+                '[{#LEM(like), #LEM(love), #LEM(enjoy), #LEM(good),[!-{dont, didnt}, {#LEM(like), #LEM(love), #LEM(enjoy)}],'
+                'awesome, great, amazing, wonderful, stunning, thought-provoking, cool, deep, interconnected}]':{
+                    
+                },
+                '[{[didnt, {understand,get}], #LEM(confuse), }]':{
+                    
+                }
             },
             '#IF(VIBE=negative)`Yeah, I\'m kind of with you. I thought the directors made some questionable choices, '
             'especially in their depictions of non-American characters. '
