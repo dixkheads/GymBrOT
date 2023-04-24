@@ -4,7 +4,7 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-os.chdir('C:/Users/devin/PycharmProjects/conversational-ai')
+# os.chdir('C:/Users/devin/PycharmProjects/conversational-ai')
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 PATH = 'C:/Users/devin/PycharmProjects/conversational-ai/resources/credentials.json'
