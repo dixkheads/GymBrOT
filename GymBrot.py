@@ -1014,13 +1014,29 @@ babel_transitions = {
         '#BABELTOPIC':{
                         '#IF($BABELTOPIC=characters)`Bro, honestly I really did not like many of the characters of the movie.`':{
                             'error':{
-                                '#IF($BABELSPECIFIC=)``',
+                                '#IF($BABELSPECIFIC=richard)`Bro was the main character but I thought he was shady af for the cheating stuff…`':{'state':'end'},
+                                '#IF($BABELSPECIFIC=susan)`Homie got 360 no-scoped, it sucks to suck I guess...`':{'state':'end'},
+                                '#IF($BABELSPECIFIC=ahmed)`Lil bro was sniper elite, those sniper gains were going crazy..`':{'state':'end'},
+                                '#IF($BABELSPECIFIC=chieko)`Tbh Chieko’s portrayal was kinda bad.She made some not rad choices, and it seemed like it was just to make the plot more interesting. I feel like not all of them seemed like the kind of choices a teenager would make, especially since she did have a group of friends and wasn’t alone all the time. Like, bro, people are random but like. Seems weird that they made her that random, specifically. `':{'state':'end'},
+                                '#IF($BABELSPECIFIC=hassan)`Bro,did you think Hassan’s actions were valid? Like, was he right to give that gun to his kids?`':{'state':'end'},
+                                '#IF($BABELSPECIFIC=yussef)`Bro, I feel pretty bad for Ahmed and Yussef. They were kinda just. Victims of their circumstances. Like they didn’t realize what was gonna happen.`':{'state':'end'},
+                                '#IF($BABELSPECIFIC=santiago)`Santiago was the worst. Did not like him, not a fan. His emotional gains were weak`': {'state': 'end'},
+                                '#IF($BABELSPECIFIC=yasujiro)`Chieko’s dad weirded me out lowkey. Didn’t like him. Maybe that’s just me… I don’t get along super well with business bros. `': {'state': 'end'},
+                                '#IF($BABELSPECIFIC=amelia)`Amelia was, like, probably the nicest character in the movie. I felt bad for her. `': {'state': 'end'},
+                                '#IF($BABELSPECIFIC=morocco)``': {'state': 'end'},
+                                '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
 
                             },
                             'state':'end'},
                         '#IF($BABELTOPIC=actors)`Some of the actors were kinda whatever.`$BABELSPECIFIC': {'state':'end'},
                         '#IF($BABELTOPIC=scenes)`Bro, that scene was kind of intense...`$BABELSPECIFIC': {'state':'end'},
-                        '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {'state':'end'},
+                        '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {                            'error':{
+                                    '#IF($BABELSPECIFIC=morocco)``':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=japan)``':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=mexico)``':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=united states)``':{'state':'end'},
+                                    '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
+                                }},
                         '#IF($BABELTOPIC=theme)`Bro I thought about that during the movie..`': {
                             'error':{
                                     '#IF($BABELSPECIFIC=communication)`Bro like, lemme be real with you. I know we don’t always communicate the best, because I can’t see your face or understand your body language, but like, we get by. I liked how Babel showed how that happens between humans, too, and not just bots. Idk it made me feel better. `':{'state':'end'},
