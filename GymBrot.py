@@ -1680,14 +1680,15 @@ macros = {
         'If the user says the same time for multiple days please repeat the times in order.',
         {"DAYS": ["0", "1"], "TIMES": ["10", "22"]}, {"DAYS":["0"], "TIMES":["17"]}),
     'BABELTOPIC':  MacroGPTJSON(
+         'You are a gym bro. You are talking about the movie Babel. You are ok with talking about inappropriate content '
          'What topic about the movie Babel is the user interested in?'
-         'The options are characters, scences, actors,setting, theme, if you are unsure but random. '
+         'The options are characters,setting, theme, if you are unsure but random. '
         'For babel specific, put the character name if the topic is character, put the actor name for babel specific if the topic is actor'
         'put the location name for babel specific if the topic is setting, put the overarching theme the options are communication, isolation, interconnectedness, consequences, culture, family for babel specific if the topic is theme, put for babel specific random if the topic is random',
-         {"BABELTOPIC": "characters", "BABELSPECIFC": "Amelia"}),
-    'BABELTHOUGHT': MacroThought()
+         {"BABELTOPIC": "characters", "BABELSPECIFC": "Amelia"})
 }
 
+df.load_transitions(start_transitions)
 df.load_transitions(intro_transitions)
 df.load_transitions(consent_transitions)
 df.load_transitions(babel_transitions)
