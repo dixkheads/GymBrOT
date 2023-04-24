@@ -13,7 +13,7 @@ import numpy as np
 
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
-os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
+# os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 #os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 
@@ -906,7 +906,7 @@ normal_dialogue_transitions = {
 
 weather_transitions = {
     'state': 'weather',
-    '#WEATHER #IF($FORE=sun)': {
+    '#WEATHER #IF($FORE=sunny)': {
         '#VIBECHECK':{
             '#IF($VIBE=negative)`Haha, good thing the gym is inside! Unless you go to an outdoor gym, in which case. Damn bro, sorry.`':'chatting',
             '#IF($VIBE=positive)`Same bro, being in the sun gets me pumped! Love me some vitamin D`':'chatting',
@@ -914,7 +914,7 @@ weather_transitions = {
             '`Wow bro, that\'s like, a valid perspective.`':{'state':'chatting', 'score':0.1}
         },
     },
-    '#WEATHER #IF($FORE=rain)': {
+    '#WEATHER #IF($FORE=rainy)': {
         '#VIBECHECK':{
             '#IF($VIBE=positive)`It\'s the best! it gets me hyped to work out, '
             'but then again, everything does lol`':'chatting',
@@ -1185,6 +1185,7 @@ class MacroTime(Macro):
 
 class MacroWeather(Macro):
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+        # print("Entering weather macro")
         url = 'https://api.weather.gov/gridpoints/FFC/52,88/forecast'
         r = requests.get(url)
         d = json.loads(r.text)
@@ -1192,12 +1193,14 @@ class MacroWeather(Macro):
         today = periods[0]
         output = ""
         fore = today['shortForecast'].lower()
+        # print(fore)
         if "sunny" or "sun" or "sunshine" in fore:
+            # print("Entering sunny")
             vars["FORE"] = "sunny"
             output = "So bro, like, are you planning to get a sweet tan today? or are you more of an indoors kinda " \
                      "person?\n"
         elif "rain" or "showers" in fore:
-            vars["FORE"] = "rain"
+            vars["FORE"] = "rainy"
             output = "Damn bro, it\'s so wet outside. I\'m tryna get sweaty and then rinse off in nature hahah jk but " \
                      "like... maybe! Do you like rain or nah \n"
         elif "cloudy" or "clouds" or "overcast" in fore:
@@ -1587,8 +1590,8 @@ df.add_macros(macros)
 
 
 if __name__ == '__main__':
-    PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
-    #PATH_API_KEY = 'resources/openai_key.txt'
+    #PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+    PATH_API_KEY = 'resources/openai_key.txt'
     openai.api_key_path = PATH_API_KEY
     df.run()
    #PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
