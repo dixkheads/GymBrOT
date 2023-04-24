@@ -1769,7 +1769,7 @@ macros = {
          'the options are communication, isolation, interconnectedness, consequences, culture, family. '
          'for babel specific if the topic is theme, put for babel specific random if the topic is random. '
          'Return only one word for each parameter. Make random the default if the user isn\'t clear about what they\'re talking about',
-         {"BABELTOPIC": "characters", "BABELSPECIFC": "Amelia"}, {"BABELTOPIC":"random", "BABELSPECIFIC":" "}),
+         {"BABELTOPIC": "characters", "BABELSPECIFC": "amelia"}, {"BABELTOPIC":"random", "BABELSPECIFIC":" "}),
     'BABELTHOUGHT': MacroThought()
 }
 
