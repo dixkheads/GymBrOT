@@ -55,7 +55,8 @@ start_transitions = {
     'state':'start',
     '`Hey! are you here for Babel or Gymbrot? Either way when you are done with the conversation, say quit gymbrot!`':{
         '[{movie, watch, scene}]':'babel',
-        '[{gymbrot, gym}]':'consent'
+        '[{gymbrot, gym}]':'consent',
+        'error':'consent'
     }
 }
 
@@ -1198,7 +1199,7 @@ global_transitions = {
     },
    '[{babel}]':{'state':'babel','score':10},
     '[[help, make, workout, plan], [help, workout, {plan, planning}]]': 'end',
-    '[{[something, else], [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
+    '[{[something, else]}]': {
         'score':10,
         'state':'topicshift_no_q',
         '`what did you wanna talk about?`':{
