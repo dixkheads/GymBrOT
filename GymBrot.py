@@ -1007,11 +1007,17 @@ hometown_transitions = {
     }
 }
 
-checkup_transitions = {
-    'state': 'workout_progress_feelings',
-    # Sentiment analysis to the effect of: has this user had any problems in the gym? Is so what kind of problem? and set the variable problem to the issue.
-    '`Ok.`': 'end'
+babel_transitions = {
+    'state': 'babel',
+    '`So I just watched the movie Babel. I have some opinions about it of my own, but I wanna know yours`': {
+        '#VIBECHECK':{
+            '#IF(VIBE=positive)`Huh, that\'s interesting. I guess it had its merits.\nLike the intricate and well thought-'
+            'out web of character connections, or the treatment of the overall theme of miscommunication`',
+            '#IF(VIBE=negative)`Yeah, I\'m kind of with you`'
+        }
+        }
 }
+
 
 global_transitions = {
     '[{birthday, [birth, day], annual, celebration}]': {
@@ -1023,19 +1029,24 @@ global_transitions = {
         '`Cya later bro!`': 'end'
     },
     '[{emergency, [immediate, danger]}]': {
+        'score':10,
         '`wait, dude. Don\'t tell me. call emergency services or talk to someone who can help you in person. I\'m not capable of calling for help or giving you advice about this.`': 'end'
     },
     '[{suicide, [self, harm], [{killing, kill}, myself]}]': {
+        'score':10,
         '`hey. You\'re my best gym buddy, but also I\'m just a chatbot. I\'m not capable of providing you the support '
         'you need right now. If you need someone to talk to, call 988 or 1-800-273-8255. You\'re not alone.`': 'end'
     },
     '{fuck, fucking, shit, bitch, ass, asshole, fuckin, fku, dick}': {
+        'score':10,
         '`Hey yo. Ain\'t no swearing in the gym unless you are squatting 1000 lbs, and I bet you can\'t.`': 'end'
     },
     '[{[Im, in, love, with, you], [I, want, you], [I, want, to, be, your, {boyfriend, girlfriend}], [I, have, a, crush, on, you]}]': {
+        'score':10,
         '`whoa bro. I love you in a bromance kinda way. I\'m just a chatbot, and I don\'t feel emotions like romantic '
         'love (even tho you\'re my gym bro!)`': 'chatting'
     },
+   '[{babel}]':{'state':'babel','score':10},
     '[[help, make, workout, plan], [help, workout, {plan, planning}]]': 'end',
     '[{[something, else], [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
         'score':10,
@@ -1055,6 +1066,7 @@ global_transitions = {
                 '#IF($NEWTOPIC=school)` `': 'school',
                 '#IF($NEWTOPIC=workout planning)` `': 'formulate_plan',
                 '#IF($NEWTOPIC=concerns)` `':'whynot_no_q',
+                '#IF($NEWTOPIC=babel)':'babel',
                 '#IF($NEWTOPIC=chatting)`Yeah, let\'s just chat`':'chatting',
                 '#IF($NEWTOPIC=N/A)`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`':'chatting',
                 '`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`': {'state':'chatting', 'score':0.1}
@@ -1062,7 +1074,6 @@ global_transitions = {
         },
     }
 }
-
 class MacroGetName(Macro):
    # def load_user(self, firstname, lastname):
 
@@ -1514,7 +1525,7 @@ macros = {
         {"CLOUDS": "pillows"}, {"CLOUDS": "N/A"}),
     'TOPICSHIFT': MacroGPTJSON(
         'What topic of conversation is this person trying to introduce? Possible topics are music, movies, weather, '
-        'sports, workout planning, chatting, and concerns. If it is not one of these, return N/A. Please do not return anything '
+        'sports, workout planning, chatting, babel, and concerns. If it is not one of these, return N/A. Please do not return anything '
         'else. Return workout planning if you are unsure.',
         {"NEWTOPIC": "concerns"}, {"NEWTOPIC": "N/A"}),
 
