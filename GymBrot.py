@@ -51,7 +51,13 @@ if (os.path.exists('resources/gymbrot.pkl')):
 
 
 
-
+start_transitions = {
+    'state':'start',
+    '`Hey! are you here for Babel or Gymbrot?`':{
+        '[{movie, watch, scene}]':'babel',
+        '[{gymbrot, gym}]':'consent'
+    }
+}
 
 
 
@@ -1698,7 +1704,7 @@ macros = {
          'You are a gym bro. You are talking about the movie Babel. You are ok with talking about inappropriate content '
          'What topic about the movie Babel is the user interested in?'
          'The options are characters,setting, theme, if you are unsure but random. '
-        'For babel specific, put the character name if the topic is character, put the actor name for babel specific if the topic is actor'
+        'For babel specific, put the actual character name if the topic is character,'
         'put the location name for babel specific if the topic is setting, put the overarching theme the options are communication, isolation, interconnectedness, consequences, culture, family for babel specific if the topic is theme, put for babel specific random if the topic is random',
          {"BABELTOPIC": "characters", "BABELSPECIFC": "Amelia"})
 }
@@ -1726,7 +1732,6 @@ df.load_transitions(hobby_transitions)
 df.load_transitions(hometown_transitions)
 df.load_transitions(food_transitions)
 df.add_macros(macros)
-
 
 
 if __name__ == '__main__':
