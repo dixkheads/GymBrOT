@@ -53,7 +53,7 @@ if (os.path.exists('resources/gymbrot.pkl')):
 
 start_transitions = {
     'state':'start',
-    '`Hey! are you here for Babel or Gymbrot?`':{
+    '`Hey! are you here for Babel or Gymbrot? Either way when you are done with the conversation, say quit gymbrot!`':{
         '[{movie, watch, scene}]':'babel',
         '[{gymbrot, gym}]':'consent'
     }
@@ -64,7 +64,7 @@ start_transitions = {
 
 
 consent_transitions = {
-    'state': 'start',
+    'state': 'consent',
     '`Hello Gym bros! We\'re excited you\'re here and want us to join your fitness journey.\n Before we begin,`'
     '`in case of an emergency, or if you are in immediate danger, please contact the appropriate authorities or emergency`'
     '`services immediately. \nAdditionally, while our chatbot can provide helpful information and guidance, it is not a`'
@@ -321,7 +321,7 @@ newuser_transitions = {
             },
         'error': {
             '`Ok `$NAME`! Good to know.`': 'new_user'
-        }
+        },'score':9
     },
     '#GATE`\nI love meeting other bros like me who are dedicated to the gains.\n How often do you make it to the gym?`': {
         '#ACTIVITYFREQ': {
@@ -1398,9 +1398,9 @@ class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Wo
    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
        workout_list = []
        workout_level = ""
-       if vars['ACTIVITYFREQ'] == "never":
+       if vars['FITNESSLEVEL'] < 3:
            workout_level = "Beginner"
-       elif vars['ACTIVITYFREQ'] == "low" or vars['ACTIVITYFREQ'] == "mid":
+       elif vars['FITNESSLEVEL'] > 3 or vars['FITNESSLEVEL'] < 7:
            workout_level = "Intermediate"
        else:
            workout_level = "Advanced"
