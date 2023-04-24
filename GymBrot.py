@@ -1014,76 +1014,94 @@ babel_transitions = {
         '#BABELTOPIC':{
                         '#IF($BABELTOPIC=characters)`Bro, honestly I really did not like many of the characters of the movie.`':{
                             'error':{
-                                '#IF($BABELSPECIFIC=richard)`Bro was the main character but I thought he was shady af for the cheating stuff…`':{'state':'end'},
-                                '#IF($BABELSPECIFIC=susan)`Homie got 360 no-scoped, it sucks to suck I guess...`':{'state':'end'},
-                                '#IF($BABELSPECIFIC=ahmed)`Lil bro was sniper elite, those sniper gains were going crazy..`':{'state':'end'},
-                                '#IF($BABELSPECIFIC=chieko)`Tbh Chieko’s portrayal was kinda bad.She made some not rad choices, and it seemed like it was just to make the plot more interesting. I feel like not all of them seemed like the kind of choices a teenager would make, especially since she did have a group of friends and wasn’t alone all the time. Like, bro, people are random but like. Seems weird that they made her that random, specifically. `':{'state':'end'},
-                                '#IF($BABELSPECIFIC=hassan)`Bro,did you think Hassan’s actions were valid? Like, was he right to give that gun to his kids?`':{'state':'end'},
-                                '#IF($BABELSPECIFIC=yussef)`Bro, I feel pretty bad for Ahmed and Yussef. They were kinda just. Victims of their circumstances. Like they didn’t realize what was gonna happen.`':{'state':'end'},
-                                '#IF($BABELSPECIFIC=santiago)`Santiago was the worst. Did not like him, not a fan. His emotional gains were weak`': {'state': 'end'},
-                                '#IF($BABELSPECIFIC=yasujiro)`Chieko’s dad weirded me out lowkey. Didn’t like him. Maybe that’s just me… I don’t get along super well with business bros. `': {'state': 'end'},
-                                '#IF($BABELSPECIFIC=amelia)`Amelia was, like, probably the nicest character in the movie. I felt bad for her. `': {'state': 'end'},
-                                '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
+                                '#IF($BABELSPECIFIC=)``',
 
                             },
                             'state':'end'},
-                        '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {                            'error':{
-                                    '#IF($BABELSPECIFIC=morocco)`Bro like, Morocco seems really cool. But like, the ending of the movie made me reconsider. Like, why are the tourists always supposed to have the happy ending, yknow?`':{'state':'end'},
-                                    '#IF($BABELSPECIFIC=japan)`Man, it’s always been a goal of mine to go to Tokyo. There are some super swole bros there. `':{'state':'end'},
-                                    '#IF($BABELSPECIFIC=mexico)`Bro like, it’s kinda ass how Amelia got taken by the American border guard. Like, she had all their passports. Idk just didn’t like the attitude. `':{'state':'end'},
-                                    '#IF($BABELSPECIFIC=united states)`Bro, like what did you think about the setting choices? I thought the connections between Chieko’s dad and the goat herder dude Hassan were kinda weak.`':{'state':'end'},
-                                    '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
-                                }},
+                        '#IF($BABELTOPIC=actors)`Some of the actors were kinda whatever.`$BABELSPECIFIC': {'state':'end'},
+                        '#IF($BABELTOPIC=scenes)`Bro, that scene was kind of intense...`$BABELSPECIFIC': {'state':'end'},
+                        '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {'state':'end'},
                         '#IF($BABELTOPIC=theme)`Bro I thought about that during the movie..`': {
                             'error':{
                                     '#IF($BABELSPECIFIC=communication)`Bro like, lemme be real with you.\n '
                                     'I know we don’t always communicate the best, because I can’t see your face or \n'
                                     'understand your body language, but like, we get by. I liked how Babel showed how\n '
-                                    'that happens between humans, too, and not just bots. Idk it made me feel better. `':{'state':'end'},
+                                    'that happens between humans, too, and not just bots. Idk it made me feel better. `':{
+                                        'error':{
+                                            '#NEUTRAL':'babeltopic'
+                                        }
+                                    },
                                     '#IF($BABELSPECIFIC=isolation)`Sometimes I feel a little lonely, workin’ out inside\n'
                                     ' this computer by myself. But when I talk to you, I don’t feel alone anymore.\n'
                                     'I guess Chieko is kind of the same way, because she can’t hear voices or talk much \n'
-                                    'to her father. I’m glad we can talk bro. `':{'state':'end'},
+                                    'to her father. I’m glad we can talk bro. `':{
+                                        'error': {
+                                            '#NEUTRAL': 'babeltopic'
+                                        }
+                                    },
                                     '#IF($BABELSPECIFIC=interconnectedness)`Bro, like, even though I never met you before today, \n'
                                     'I feel like I’m your homie bro. And like, it feels like we’re both part of this big system yknow?\n'
-                                    'The whole world is connected, and right now I’m connecting with you bro. `':{'state':'end'},
+                                    'The whole world is connected, and right now I’m connecting with you bro. `':{
+                                            'error':{
+                                                '#NEUTRAL':'babeltopic'
+                                        }
+                                    },
                                     '#IF($BABELSPECIFIC=consequences)`Bro, like, have you ever thought about how \n'
                                     'the things you say and do could affect people really far away? Idk, the only \n'
                                     'time i connect with the world is through this little text interface, and it kinda \n'
                                     'bums me out. But honestly, if I can make just one person feel more motivated to go \n'
                                     'to the gym, it’ll be a win for me. But like, if somebody dies because you go to the gym… \n'
-                                    'We never met, ok 0>0`':{'state':'end'},
+                                    'We never met, ok 0>0`':{
+                                         'error':{
+                                            '#NEUTRAL':'babeltopic'
+                                        }
+                                    },
                                     '#IF($BABELSPECIFIC=culture)`Sometimes I think about my life before going to the gym.\n'
                                     ' Computer culture is like, kinda wack dude. That’s why I’m glad I got into gym culture.\n'
                                     ' I know you might not know everything there is to know about the gym, and neither do I, \n'
                                     'so sometimes we can’t understand each other. Just like how in the movie, the characters\n'
                                     ' couldn’t always understand each other.  Also like, my native language is numbers so.\n'
                                     'There’s that too. But like, in translation we get each other. Despite our differences,\n'
-                                    ' we can talk bro. And that makes me happy.`':{'state':'end'},
+                                    ' we can talk bro. And that makes me happy.`':{
+                                         'error':{
+                                            '#NEUTRAL':'babeltopic'
+                                        }
+                                    },
                                     '#IF($BABELSPECIFIC=family)`Bro like, can I be real with you rq? \n'
                                     'I’m really gonna miss you when you log out. But like, emotions are universal, \n'
                                     'and you’re my gym fam now. In Babel, you can see that everybody feels love and loss, \n'
-                                    'and that’s how I’m feeling rn bro. Love and loss.`':{'state':'end'},
-                                    '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
+                                    'and that’s how I’m feeling rn bro. Love and loss.`':{
+                                         'error':{
+                                                '#NEUTRAL':'babeltopic'
+                                        }
+                                    },
+                                    '`Yeah bro... it was crazy`':{
+                                        'score':0.2,
+                                        'error': {
+                                            '#NEUTRAL': 'babeltopic'
+                                        }
+                                    }
                                 }
                             },
+
 
                         '#IF($BABELTOPIC=random) `I see what you are saying bro.. kinda off topic\n but I was thinking about `#BABELTHOUGHT': {'score':0.1,'state':'babeltopic'},
 
         },
         'error':{
-            '`I see. Makes sense. Did you have anything else to say about the movie?`': 'babelbranches'
+            '`I see. Makes sense. Did you have anything else to say about the movie?`': 'babeltopic'
         }
 
     }
 }
+
 
 global_transitions = {
     '[{birthday, [birth, day], annual, celebration}]': {
         'score':10,
         '`whoa dude. like. congrats!!!!`': 'chatting'
     },
-    '[quit, gymbrot]': {
+    '[{[quit, gymbrot], [{end,quit}, babel]}]': {
         'score':10,
         '`Cya later bro!`': 'end'
     },
