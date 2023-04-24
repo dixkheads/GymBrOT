@@ -1012,11 +1012,25 @@ babel_transitions = {
     '`So I just watched the movie Babel. I have some opinions about it of my own, but I wanna know yours`': {
         '#VIBECHECK':{
             '#IF(VIBE=positive)`Huh, that\'s interesting. I guess it had its merits.\nLike the intricate and well thought-'
-            'out web of character connections, or the treatment of the overall theme of miscommunication`',
-            '#IF(VIBE=negative)`Yeah, I\'m kind of with you`'
+            'out web of character connections, or the treatment of the overall theme of miscommunication. '
+            'Did you have anything else to say about the movie?`':{
+                'state':'babelbranches',
+                '[]',
+            },
+            '#IF(VIBE=negative)`Yeah, I\'m kind of with you. I thought the directors made some questionable choices, '
+            'especially in their depictions of non-American characters. '
+            'Did you have anything else to say about the movie?`':'babelbranches',
+            '#IF(VIBE=neutral)`I get it. To be honest, yeah, there were definitely good and bad parts. I\'m not '
+            'sure I can claim I really loved it, but it definitely made me think.'
+            'Did you have anything else to say about the movie?`':'babelbranches',
+            '`I see. Makes sense. Did you have anything else to say about the movie?`':'babelbranches'
+        },
+        'error':{
+            '`I see. Makes sense. Did you have anything else to say about the movie?`': 'babelbranches'
         }
-        }
+    }
 }
+
 
 
 global_transitions = {
