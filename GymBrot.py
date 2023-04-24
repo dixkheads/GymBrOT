@@ -94,7 +94,7 @@ intro_transitions = {
                 },
                 'error':{
                     '#GATE `Sorry bro, there was an issue on my end. Lemme say that again.\n`': {'state': 'offer','score': 0.1},
-                    '#GATE`Sorry bro, I can\'t seem to fix my issues. Later and keep workin on those gains !1!!1!`': {'state': 'end', 'score': 0.01}
+                    '#GATE`Sorry bro, I can\'t seem to fix my issues. Later and keep workin on those gains !!!!!!`': {'state': 'end', 'score': 0.01}
                 }
             },
             '#IF($VIBE=negative)`That’s tough bro. Hopefully it\'s not because of your finals... \nI\'m sorry if I started off too strong bro.`': {
@@ -699,8 +699,9 @@ whynot_transitions = {
                             'that be something you\'re interested in?`':{
                                 'state':'bodyweight',
                                 '#VIBECHECK':{
+                                    'state':'bodyweight2',
                                     '#IF($VIBE=positive)`Nice bro! You know, I can help you make a workout using '
-                                    'calisthenics. I\'m a beast at making workout plans!` #SET(PREFACTIVITY=calisthenics)':'formulate_plan',
+                                    'calisthenics. I\'m a beast at making workout plans!` #SET($PREFACTIVITY=calisthenics)':'formulate_plan',
                                     '#IF($VIBE=negative)`Okay `$NAME`... well there are other exercies you can do that '
                                     'don\'t require equipment and aren\t consider calisthenics like cardio, '
                                     'would you be interested in something like that?`':{
@@ -798,12 +799,12 @@ whynot_transitions = {
                     '#IF($SOCIAL=alone)`Respect bro, sometimes you just need that \'you\' time. '
                     'There are lots of ways to work out at home, did you want me to give you some ideas?`':{
                         '#VIBECHECK':{
-                            '#IF($VIBE=positive)': 'bodyweight',
+                            '#IF($VIBE=positive)': 'bodyweight2',
                             '`Yeah bro, I feel you. That\'s ok. Was there anything else you '
                             'wanted to talk about?`':{'state':'topicshift','score':0.1}
                         }
                     },
-                    '`I can\'t understand you, but that\'s ok. I know you\'re my homie, and that\'s what matters.`':'ending'
+                    '`Hmm maybe we should move onto talking about schedules. I know you\'re my homie, and that\'s what matters.`':{'state':'ending','score':0.1}
                 },
                 'error':{
                     '#GATE `Sorry bro, there was an issue on my end. Could you say that again?`':'strategies1',
@@ -1297,10 +1298,20 @@ class MacroCreateCalendar(Macro):
        service.calendars().insert(body=calendar_body).execute()
        descriptions = []
        workout_list =vars['WORKOUTLIST']
+       order = ['First','Second','Third','Fourth','Fifth','Sixth','Seventh','Eighth','Ninth','Tenth',
+                'Eleventh','Twelfth','Thirteenth','Fourteenth','Fifteenth','Sixteenth','Seventeenth','Eighteenth',
+                'Nineteenth','Tweenteith','Tweenty-first']
        for i in range(1,len(workout_list)):
            popped = workout_list.pop()
+           #description = '\nDay' + str(i) + ':\n'
            for key, value in popped.items():
-               description = str(key)+":\n"
+               #if i > 21:
+               #    place = "Next"
+               #else:
+               #    place = order[i]
+               #description += place
+               #description += str(key)+":\n"
+               description = str(key) + ":\n"
                description += str(value)+"\n"
                descriptions.append(description)
 
@@ -1316,8 +1327,6 @@ class MacroCreateCalendar(Macro):
            recc = []
            day = vars['DAYS'].pop()
            hour = vars['TIMES'].pop()
-           print(descriptions)
-           print(day, hour)
            for j in range(1,4):
                recc.append(descriptions.pop())
            print('\n'.join(recc))
