@@ -817,7 +817,9 @@ whynot_transitions = {
             '`Hey bro, I\'m not sure how to talk about that. Let\'s talk about schedules.`':{'state':'formulate_plan','score':0.01},
         },
         'error':{
-            '`Sorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
+            '#GATE `Sorry bro, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
+            '#GATE `That stupid gym speaker pumpin too loud music and I can\'t hear ya. Could you repeat that?`':{'state':'whynot', 'score': 0.01},
+            '#GATE `I really gotta find where the loud gym speaker is and make it my new bell.`':{'state':'end', 'score': 0.001},
         }
     }
 }
