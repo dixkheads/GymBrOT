@@ -1014,13 +1014,25 @@ babel_transitions = {
         '#BABELTOPIC':{
                         '#IF($BABELTOPIC=characters)`Bro, honestly I really did not like many of the characters of the movie.`':{
                             'error':{
-                                '#IF($BABELSPECIFIC=)``',
-
+                                '#IF($BABELSPECIFIC=richard)`Bro was the main character but I thought he was shady af for the cheating stuff…`':{'state':'end'},
+                                '#IF($BABELSPECIFIC=susan)`Homie got 360 no-scoped, it sucks to suck I guess...`':{'state':'end'},
+                                '#IF($BABELSPECIFIC=ahmed)`Lil bro was sniper elite, those sniper gains were going crazy..`':{'state':'end'},
+                                '#IF($BABELSPECIFIC=chieko)`Tbh Chieko’s portrayal was kinda bad.She made some not rad choices, and it seemed like it was just to make the plot more interesting. I feel like not all of them seemed like the kind of choices a teenager would make, especially since she did have a group of friends and wasn’t alone all the time. Like, bro, people are random but like. Seems weird that they made her that random, specifically. `':{'state':'end'},
+                                '#IF($BABELSPECIFIC=hassan)`Bro,did you think Hassan’s actions were valid? Like, was he right to give that gun to his kids?`':{'state':'end'},
+                                '#IF($BABELSPECIFIC=yussef)`Bro, I feel pretty bad for Ahmed and Yussef. They were kinda just. Victims of their circumstances. Like they didn’t realize what was gonna happen.`':{'state':'end'},
+                                '#IF($BABELSPECIFIC=santiago)`Santiago was the worst. Did not like him, not a fan. His emotional gains were weak`': {'state': 'end'},
+                                '#IF($BABELSPECIFIC=yasujiro)`Chieko’s dad weirded me out lowkey. Didn’t like him. Maybe that’s just me… I don’t get along super well with business bros. `': {'state': 'end'},
+                                '#IF($BABELSPECIFIC=amelia)`Amelia was, like, probably the nicest character in the movie. I felt bad for her. `': {'state': 'end'},
+                                '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
                             },
                             'state':'end'},
-                        '#IF($BABELTOPIC=actors)`Some of the actors were kinda whatever.`$BABELSPECIFIC': {'state':'end'},
-                        '#IF($BABELTOPIC=scenes)`Bro, that scene was kind of intense...`$BABELSPECIFIC': {'state':'end'},
-                        '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {'state':'end'},
+                        '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {                            'error':{
+                                    '#IF($BABELSPECIFIC=morocco)`Bro like, Morocco seems really cool. But like, the ending of the movie made me reconsider. Like, why are the tourists always supposed to have the happy ending, yknow?`':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=japan)`Man, it’s always been a goal of mine to go to Tokyo. There are some super swole bros there. `':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=mexico)`Bro like, it’s kinda ass how Amelia got taken by the American border guard. Like, she had all their passports. Idk just didn’t like the attitude. `':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=united states)`Bro, like what did you think about the setting choices? I thought the connections between Chieko’s dad and the goat herder dude Hassan were kinda weak.`':{'state':'end'},
+                                    '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
+                                }},
                         '#IF($BABELTOPIC=theme)`Bro I thought about that during the movie..`': {
                             'error':{
                                     '#IF($BABELSPECIFIC=communication)`Bro like, lemme be real with you.\n '
@@ -1085,7 +1097,10 @@ babel_transitions = {
                             },
 
 
-                        '#IF($BABELTOPIC=random) `I see what you are saying bro.. kinda off topic\n but I was thinking about `#BABELTHOUGHT': {'score':0.1,'state':'babeltopic'},
+                        '#GATE #IF($BABELTOPIC=random) `I see what you are saying bro.. kinda off topic\n but I was thinking about`#BABELTHOUGHT': {'score':0.1,'state':'babeltopic'},
+                        '#GATE #IF($BABELTOPIC=random) `Valid bro, I was kinda thinking that`#BABELTHOUGHT': {'score':0.1,'state':'babeltopic'},
+                        '#GATE #IF($BABELTOPIC=random) `So real bro, talk to em, I was kinda thinking about`#BABELTHOUGHT': {'score':0.1,'state':'babeltopic'},
+                        '#IF($BABELTOPIC=random) `Based af bro, I was kinda thinking about`#BABELTHOUGHT': {'score':0.01,'state':'babeltopic'},
 
         },
         'error':{
