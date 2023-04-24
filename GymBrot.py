@@ -1398,9 +1398,9 @@ class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Wo
    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
        workout_list = []
        workout_level = ""
-       if vars['FITNESSLEVEL'] < 3:
+       if int(vars['FITNESSLEVEL']) < 3:
            workout_level = "Beginner"
-       elif vars['FITNESSLEVEL'] > 3 or vars['FITNESSLEVEL'] < 7:
+       elif int(vars['FITNESSLEVEL']) > 3 or int(vars['FITNESSLEVEL']) < 7:
            workout_level = "Intermediate"
        else:
            workout_level = "Advanced"
