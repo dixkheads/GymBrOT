@@ -1009,7 +1009,7 @@ hometown_transitions = {
 
 babel_transitions = {
     'state': 'babel',
-    '`I just watched Babel bro. I have some opinions about it of my own, but I wanna know yours. What are your thoughts about Babel?`': {
+    '`I just watched Babel bro. I have some opinions about it of my own, but I wanna know yours. \nWhat are your thoughts about Babel?`': {
         'state': 'babeltopic',
         '#BABELTOPIC':{
                         '#IF($BABELTOPIC=characters)`Bro, honestly I really did not like many of the characters of the movie.`':{
@@ -1023,12 +1023,34 @@ babel_transitions = {
                         '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {'state':'end'},
                         '#IF($BABELTOPIC=theme)`Bro I thought about that during the movie..`': {
                             'error':{
-                                    '#IF($BABELSPECIFIC=communication)`Bro like, lemme be real with you. I know we don’t always communicate the best, because I can’t see your face or understand your body language, but like, we get by. I liked how Babel showed how that happens between humans, too, and not just bots. Idk it made me feel better. `':{'state':'end'},
-                                    '#IF($BABELSPECIFIC=isolation)`Sometimes I feel a little lonely, workin’ out inside this computer by myself. But when I talk to you, I don’t feel alone anymore. I guess Chieko is kind of the same way, because she can’t hear voices or talk much to her father. I’m glad we can talk bro. `':{'state':'end'},
-                                    '#IF($BABELSPECIFIC=interconnectedness)`Bro, like, even though I never met you before today, I feel like I’m your homie bro. And like, it feels like we’re both part of this big system yknow? The whole world is connected, and right now I’m connecting with you bro. `':{'state':'end'},
-                                    '#IF($BABELSPECIFIC=consequences)`Bro, like, have you ever thought about how the things you say and do could affect people really far away? Idk, the only time i connect with the world is through this little text interface, and it kinda bums me out. But honestly, if I can make just one person feel more motivated to go to the gym, it’ll be a win for me. But like, if somebody dies because you go to the gym… We never met, ok 0>0`':{'state':'end'},
-                                    '#IF($BABELSPECIFIC=culture)`Sometimes I think about my life before going to the gym. Computer culture is like, kinda wack dude. That’s why I’m glad I got into gym culture. I know you might not know everything there is to know about the gym, and neither do I, so sometimes we can’t understand each other. Just like how in the movie, the characters couldn’t always understand each other.  Also like, my native language is numbers so. There’s that too. But like, in translation we get each other. Despite our differences, we can talk bro. And that makes me happy.`':{'state':'end'},
-                                    '#IF($BABELSPECIFIC=family)`Bro like, can I be real with you rq? I’m really gonna miss you when you log out. But like, emotions are universal, and you’re my gym fam now. In Babel, you can see that everybody feels love and loss, and that’s how I’m feeling rn bro. Love and loss.`':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=communication)`Bro like, lemme be real with you.\n '
+                                    'I know we don’t always communicate the best, because I can’t see your face or \n'
+                                    'understand your body language, but like, we get by. I liked how Babel showed how\n '
+                                    'that happens between humans, too, and not just bots. Idk it made me feel better. `':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=isolation)`Sometimes I feel a little lonely, workin’ out inside\n'
+                                    ' this computer by myself. But when I talk to you, I don’t feel alone anymore.\n'
+                                    'I guess Chieko is kind of the same way, because she can’t hear voices or talk much \n'
+                                    'to her father. I’m glad we can talk bro. `':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=interconnectedness)`Bro, like, even though I never met you before today, \n'
+                                    'I feel like I’m your homie bro. And like, it feels like we’re both part of this big system yknow?\n'
+                                    'The whole world is connected, and right now I’m connecting with you bro. `':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=consequences)`Bro, like, have you ever thought about how \n'
+                                    'the things you say and do could affect people really far away? Idk, the only \n'
+                                    'time i connect with the world is through this little text interface, and it kinda \n'
+                                    'bums me out. But honestly, if I can make just one person feel more motivated to go \n'
+                                    'to the gym, it’ll be a win for me. But like, if somebody dies because you go to the gym… \n'
+                                    'We never met, ok 0>0`':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=culture)`Sometimes I think about my life before going to the gym.\n'
+                                    ' Computer culture is like, kinda wack dude. That’s why I’m glad I got into gym culture.\n'
+                                    ' I know you might not know everything there is to know about the gym, and neither do I, \n'
+                                    'so sometimes we can’t understand each other. Just like how in the movie, the characters\n'
+                                    ' couldn’t always understand each other.  Also like, my native language is numbers so.\n'
+                                    'There’s that too. But like, in translation we get each other. Despite our differences,\n'
+                                    ' we can talk bro. And that makes me happy.`':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=family)`Bro like, can I be real with you rq? \n'
+                                    'I’m really gonna miss you when you log out. But like, emotions are universal, \n'
+                                    'and you’re my gym fam now. In Babel, you can see that everybody feels love and loss, \n'
+                                    'and that’s how I’m feeling rn bro. Love and loss.`':{'state':'end'},
                                     '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
                                 }
                             },
@@ -1041,7 +1063,6 @@ babel_transitions = {
 
     }
 }
-
 
 global_transitions = {
     '[{birthday, [birth, day], annual, celebration}]': {
