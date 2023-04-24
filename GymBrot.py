@@ -1025,6 +1025,9 @@ global_transitions = {
         '`hey. You\'re my best gym buddy, but also I\'m just a chatbot. I\'m not capable of providing you the support '
         'you need right now. If you need someone to talk to, call 988 or 1-800-273-8255. You\'re not alone.`': 'end'
     },
+    '{fuck, fucking, shit, bitch, ass, asshole, fuckin, fku, dick': {
+        '`Hey yo. Ain\'t no swearing in the gym unless you are squatting 1000 lbs, and I bet you can\'t.`': 'end'
+    },
     '[{[Im, in, love, with, you], [I, want, you], [I, want, to, be, your, {boyfriend, girlfriend}], [I, have, a, crush, on, you]}]': {
         '`whoa bro. I love you in a bromance kinda way. I\'m just a chatbot, and I don\'t feel emotions like romantic '
         'love (even tho you\'re my gym bro!)`': 'chatting'
