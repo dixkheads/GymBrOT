@@ -451,10 +451,10 @@ whynot_transitions = {
                                             },
                                             '#IF($VIBE=negative)`Ok haha I get it, trust is a vibe that has to be cultured. '
                                             'But fr homie, I have your best interests at heart, so feel free to ask '
-                                            'me anything. Is there anything else that\'s keeping you out of the gym? `': 'whynot',
+                                            'me anything. \nIs there anything else that\'s keeping you out of the gym? `': 'whynot',
                                             '#IF($VIBE=neutral)`Ok haha I get it, trust is a vibe that has to be cultured. '
                                             'But fr homie, I have your best interests at heart, so feel free to ask '
-                                            'me anything. Is there anything else that\'s keeping you out of the gym?`': 'whynot',
+                                            'me anything. \nIs there anything else that\'s keeping you out of the gym?`': 'whynot',
                                             '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
                                             '`Really not sure what this means, `$NAME`, but ok. Is there any other reason why you haven\'t been hitting the gym?`': {'state': 'whynot', 'score': 0.1}
                                         }
@@ -517,7 +517,7 @@ whynot_transitions = {
                                                 'there\'s anything else keeping you out of the gym?`':'whynot',
                                                 '#IF($VIBE=neutral)`Hey, it\'s ok to be confused or nervous. '
                                                 'Just remember that your gym bros are there to support you all the way.'
-                                                'I can only repeat myself so many times bro, so why don\'t you tell me if '
+                                                '\nI can only repeat myself so many times bro, so why don\'t you tell me if '
                                                 'there\'s anything else keeping you out of the gym?`':'whynot',
                                                 '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
                                                 '`Ngl bro, I\'m really confused, but ok. '
@@ -642,9 +642,9 @@ whynot_transitions = {
                                 'state': 'disability1',
                                 'error': {
                                     '`Anytime `$NAME`! You know your body better than I do, so when you go to the gym '
-                                    'make sure to listen to what it\'s tellin you `$NAME`. If something doesn\'t feel '
+                                    'make sure to listen to what it\'s tellin you `$NAME`. \nIf something doesn\'t feel '
                                     'right it probably isn\'t, and if you need some more help in the gym it\'s '
-                                    'best to consult a trainer or physical therapist! But hey, now that we '
+                                    'best to consult a trainer or physical therapist! \nBut hey, now that we '
                                     'cleared that up, is there any other reason why you\'re not going to the '
                                     'gym?`': 'whynot'
                                 },
@@ -665,7 +665,7 @@ whynot_transitions = {
                     'but before we move on,is there any other reason you don\'t make it to the gym as much as '
                     'you\'d like?`':'whynot',
                     '#IF($VIBE=question)`Wait homie, can you say that again?`':'topicshift',
-                    '`Bro,,, Ily, but what is this. Anyway, was there any other '
+                    '`Bro.. Ily, but what is this. Anyway, was there any other '
                     'reason why you haven\'t been hitting the gym?`':{'state':'whynot','score':0.1}
                 }
             },
@@ -747,16 +747,16 @@ whynot_transitions = {
                     '#VIBECHECK':{
                         '#IF($VIBE=positive)`Ok bro! So: one thing about going to the gym.\nIt doesn\'t have to be '
                         'about being swole or perfect.\n It\'s about doing the best thing for you and your body '
-                        'every day. Building a routine is probably the most effective way of being able to have '
-                        'motivation. You can start small, and build your way up, a few minutes more every day. '
+                        'every day. \nBuilding a routine is probably the most effective way of being able to have '
+                        'motivation. \nYou can start small, and build your way up, a few minutes more every day. '
                         'Does that sound like something you can do?`':{
                             '#VIBECHECK':{
                                 '#IF($VIBE=positive)`Perfect! Another thing you can do is get '
                                 'someone you care about to hold you accountable-or even a stranger! Sometimes that '
-                                'external motivation is all you need. Or you could use an app, or a planner. '
+                                'external motivation is all you need. \nOr you could use an app, or a planner. '
                                 'I believe in you `$NAME`.`':'whynot_no_q',
                                 '#IF($VIBE=negative)`I get that bro. It can seem really hard, but I promise, '
-                                'you can do anything for five minutes. Just do five minutes every day, '
+                                'you can do anything for five minutes. \nJust do five minutes every day, '
                                 'and before you know it, you\'ll have more motivation than you can handle.`':{
                                     'error':{
                                         '`I gotchu `$NAME`. I hope everything works out.`':'whynot_no_q'
@@ -776,7 +776,7 @@ whynot_transitions = {
                         '#IF($VIBE=negative)`I get it bro. I\'m here for you, and just know- '
                         'I want you to be happy and healthy. If you can\'t do it for yourself, do it for me bro.`':'whynot_no_q',
                         '#GATE #IF($VIBE=neutral)`I getchu `$NAME`, but fr, I think you\'d feel better if you could get up '
-                        'and get moving. Do you want some advice on how to do that?`':'strategies1',
+                        'and get moving. \nDo you want some advice on how to do that?`':'strategies1',
                         '#IF($VIBE=question)`Wait homie, can you say that again?`': 'topicshift',
                         '`I can\'t understand you `$NAME`, but that\'s ok. I do my best.`':{'state':'whynot_no_q','score':0.1}
                     },
@@ -790,9 +790,9 @@ whynot_transitions = {
             ' But fitness IS for all the homies, `$NAME`! Do you prefer working out alone, or in a group?`':{
                 '#SOCIAL':{
                     '#IF($SOCIAL=group)`Hell yeah `$NAME`! There are lots of options for group fitness, like yoga, '
-                    'pilates, calisthenics, zumba, cycling, and more! One of the best ways to find group fitness'
+                    'pilates, calisthenics, zumba, cycling, and more! \nOne of the best ways to find group fitness'
                     ' is to check out your local YMCA (or other gyms), your university, or maybe even your local shared '
-                    'community spaces. There\'s a looot out there, and it\'s a good way to meet new people '
+                    'community spaces. \nThere\'s a looot out there, and it\'s a good way to meet new people '
                     'and get yourself out there`':{
                         'error':'ending'
                     },
@@ -804,7 +804,7 @@ whynot_transitions = {
                             'wanted to talk about?`':{'state':'topicshift','score':0.1}
                         }
                     },
-                    '`Hmm maybe we should move onto talking about schedules. I know you\'re my homie, and that\'s what matters.`':{'state':'ending','score':0.1}
+                    '`Hmm maybe we should move onto talking about schedules. I know you\'re my homie, and that\'s what matters.`':{'state':'formulate_plan','score':0.1}
                 },
                 'error':{
                     '#GATE `Sorry bro, there was an issue on my end. Could you say that again?`':'strategies1',
@@ -869,7 +869,7 @@ ending_transition = {
                                 }
                             },
                             '#IF($VIBE=negative)`Look bro, I know it can be tough to start your fitness journey. Bro, it\'s consistently \n`'
-                            '`referred to as the hardest part of working out. But when it start, it will be much easier to build healthy habits.\n`'
+                            '`referred to as the hardest part of working out. \nBut when it start, it will be much easier to build healthy habits.\n`'
                             '`So what do you say bro? Are you gonna crush this?`': 'ending1`'
                             '``'
                         }
@@ -950,60 +950,60 @@ weather_transitions = {
 music_transitions = {
     'state': 'music',
     '`So bro, what kinda music gets you hyped?`': {
-        'error': 'chatting'
+        'error':{'`That\'s what\'s up bro. Let\'s work on a workout plan bro!`': {'state':'formulate_plan'}}
     }
 }
 movie_transitions = {
     'state': 'movie',
     '`Bro, do you spend a lot of time watching movies?`': {
-        'error': 'chatting'
+        'error': {'`That\'s what\'s up bro. Let\'s work on a workout plan bro!`': {'state':'formulate_plan'}}
     }
 }
 sports_transitions = {
     'state': 'sports',
     '`Bro to bro, I love the gym, but I\'m not a beast when it comes to regular sports haha. \n'
     'I have to admire people who are tho bc they\'re ripped af. What\'s your favorite sport?`': {
-        'error': 'chatting'
+        'error': {'`That\'s what\'s up bro. Let\'s work on a workout plan bro!`': {'state':'formulate_plan'}}
     }
 }
 family_transitions = {
     'state': 'family',
     '`Yo bro, I love the gym. Part of it is because it gives me the family I always wanted but could never have. What\'s your family like?`': {
-        'error': 'chatting'
+        'error': {'`That\'s what\'s up bro. Let\'s work on a workout plan bro!`': {'state':'formulate_plan'}}
     }
 }
 food_transitions = {
     'state': 'food',
     '`You know, you can\'t get swole without exercise, but a healthy diet is important too, bro. \n'
     'What kind of food do you like?`': {
-        'error': 'chatting'
+        'error': {'`That\'s what\'s up bro. Let\'s work on a workout plan bro!`': {'state':'formulate_plan'}}
     }
 }
 work_transitions = {
     'state': 'work',
     '`I\'m so blessed to be able to do my dream job every day fr. \nBeing a personal trainer is sick. What do you do?`': {
-        'error': 'chatting'
+        'error':{'`That\'s what\'s up bro. Let\'s work on a workout plan bro!`': {'state':'formulate_plan'}}
     }
 }
 travel_transitions = {
     'state': 'travel',
     '`Bro, recently I\'ve been feeling this itch. To go to the gym, except like, the gym is nature. You feel me '
     'bro? If you could travel anywhere, where would it be?`': {
-        'error': 'chatting'
+        'error': {'`That\'s what\'s up bro. Let\'s work on a workout plan bro!`': {'state':'formulate_plan'}}
     }
 }
 hobby_transitions = {
     'state': 'hobbies',
     '`This is a secret but, when I\'m not working out my pecs, I like to work out my brain.\n'
     ' I\'m a chess god. What do you do when you\'re not hitting legs, bro?`': {
-        'error': 'chatting'
+        'error': {'`That\'s what\'s up bro. Let\'s work on a workout plan bro!`': {'state':'formulate_plan'}}
     }
 }
 hometown_transitions = {
     'state': 'hometown',
     '`I\'ve been going to the gym for a looooong time... \nbefore I got jacked, I used to just do math '
     'calculations, because I was a node in a cluster. \nLol, glad those days are over. Where did you grow up?`': {
-        'error': 'chatting'
+        'error': {'`That\'s what\'s up bro. Let\'s work on a workout plan bro!`': {'state':'formulate_plan'}}
     }
 }
 
@@ -1594,10 +1594,6 @@ if __name__ == '__main__':
    #PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
    #PATH_API_KEY = 'resources/openai_key.txt'
 
-
-
-
-   # save(df, 'resources/gymbrot.pkl')
 
 
 
