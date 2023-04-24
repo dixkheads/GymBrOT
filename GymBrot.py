@@ -55,7 +55,8 @@ start_transitions = {
     'state':'start',
     '`Hey! are you here for Babel or Gymbrot? Either way when you are done with the conversation, say quit gymbrot!`':{
         '[{movie, watch, scene}]':'babel',
-        '[{gymbrot, gym}]':'consent'
+        '[{gymbrot, gym}]':'consent',
+        'error':'consent'
     }
 }
 
