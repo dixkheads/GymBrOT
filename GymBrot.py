@@ -1016,19 +1016,25 @@ babel_transitions = {
             'Did you have anything else to say about the movie?`':{
                 'score':11,
                 'state':'babelbranches',
-                '[{question, [what, mean], clarify}]':{
-
+                '[{question, [what, mean], clarify, how}]':{
+                    #Supposed to be questions
                 },
                 '[{[{dont, didnt}, {#LEM(like), #LEM(love), #LEM(enjoy)}], #LEM(complaint), #LEM(dislike), #LEM(hate), upset, unhappy, grossed,'
                 ' gross, weirded, weird, [not, fan], ugh, questionable, worst, worse, bad, awful, terrible, shit, ass}]':{
-
+                    #Supposed to be complaints
                 },
                 '[{#LEM(like), #LEM(love), #LEM(enjoy), #LEM(good),[!-{dont, didnt}, {#LEM(like), #LEM(love), #LEM(enjoy)}],'
                 'awesome, great, amazing, wonderful, stunning, thought-provoking, cool, deep, interconnected}]':{
-                    
+                    #Suppsoed to be enjoyment
                 },
-                '[{[didnt, {understand,get}], #LEM(confuse), }]':{
-                    
+                '[{[{didnt, dont}, {understand,get}], #LEM(confuse), confusion, confusing}]':{
+                    #Supposed to be confusion
+                },
+                '[{[I, {thought, think}], [it, {is, was}], [my, {opinion, thoughts}]}]':{
+                    #Supposed to be an opinion
+                },
+                '[{[{did,what}, you,], [your, {opinion, thoughts}]}]':{
+                    #Supposed to be the bot's opinion
                 }
             },
             '#IF(VIBE=negative)`Yeah, I\'m kind of with you. I thought the directors made some questionable choices, '
@@ -1037,14 +1043,13 @@ babel_transitions = {
             '#IF(VIBE=neutral)`I get it. To be honest, yeah, there were definitely good and bad parts. I\'m not '
             'sure I can claim I really loved it, but it definitely made me think.'
             'Did you have anything else to say about the movie?`':'babelbranches',
-            '`I see. Makes sense. Did you have anything else to say about the movie?`':'babelbranches'
+            '`I see. Makes sense. Did you have anything else to say about the movie?`':{'state':'babelbranches','score':0.1}
         },
         'error':{
             '`I see. Makes sense. Did you have anything else to say about the movie?`': 'babelbranches'
         }
     }
 }
-
 
 
 global_transitions = {
