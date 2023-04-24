@@ -67,7 +67,7 @@ consent_transitions = {
     '`while exercising, please stop immediately and seek guidance from a certified fitness professional.`'
     '`\nWith that all out of the way, if you understand and wish to continue, please type \"I understand\" now.`': {
         'state':'understanding',
-        '[i, understand]': {
+        '{i understand}': {
             '`Great! When you leave the conversation just say \"quit gymbrot\"\nThank you and best of luck on your fitness journey!\n`': 'intro'
         },
         'error': {
@@ -1541,7 +1541,7 @@ macros = {
         'If it is none of these, return nothing. Do not explain yourself. If they do go then return experienced.',
         {"WHYNOT": "judgement"}, {"WHYNOT": "nothing"}),
 
-    'GETNAME': MacroGPTJSON( 'What is this persons name? If they respond with one word, it\'s probably their name',
+    'GETNAME': MacroGPTJSON( 'If I asked a person what his or her name is and they answer like this, what is this persons name?',
         {"NAME": "James Smith"}, {"NAME": "N/A"}),
 
     'GETFITNESSLEVEL': MacroNLG(get_FITNESSLEVEL),
