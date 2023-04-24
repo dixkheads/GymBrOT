@@ -1067,7 +1067,8 @@ babel_transitions = {
                                     '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
                                 }
                             },
-                        '#IF($BABELTOPIC=random) `I noticed that as well.`': {'score':0.1,'state':'babeltopic'},
+
+                        '#IF($BABELTOPIC=random) `I see what you are saying bro.. kinda off topic\n but I was thinking about `#BABELTHOUGHT': {'score':0.1,'state':'babeltopic'},
 
         },
         'error':{
@@ -1241,6 +1242,20 @@ class MacroNeutral(Macro):
                , "Hey bro, you\'re really working my brain out. I never thought Babel that way...\n maybe you could keep dropping those knowledge bombs on me?"
                , "Valid, bro, keep those thoughts flowing.", "Bro you mind has to be your strongest muscle, keep it coming.",
                        "Bro... keep going","Your brain bro, Your brain."]
+           return vars[vn].pop()
+       elif len(vars[vn]) == 0:
+           return "Any other thoughts?"
+       else:
+           return vars[vn].pop()
+
+class MacroThought(Macro):
+   def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+       vn = 'BABELTHOUGHT'
+       if vn not in vars:
+           vars[vn] = ["like, did the movie make you aggro’d? It was a little offensive to me ngl"
+               , "like what did you think the movie was about?",
+               "like character did you like best?",
+               "like this movie was so wild bro, what do you think?"]
            return vars[vn].pop()
        elif len(vars[vn]) == 0:
            return "Any other thoughts?"
@@ -1651,7 +1666,8 @@ macros = {
          'The options are characters, scences, actors,setting, theme, if you are unsure but random. '
         'For babel specific, put the character name if the topic is character, put the actor name for babel specific if the topic is actor'
         'put the location name for babel specific if the topic is setting, put the overarching theme the options are communication, isolation, interconnectedness, consequences, culture, family for babel specific if the topic is theme, put for babel specific random if the topic is random',
-         {"BABELTOPIC": "characters", "BABELSPECIFC": "Amelia"})
+         {"BABELTOPIC": "characters", "BABELSPECIFC": "Amelia"}),
+    'BABELTHOUGHT': MacroThought()
 }
 
 df.load_transitions(intro_transitions)
