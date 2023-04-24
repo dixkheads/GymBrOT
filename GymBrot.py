@@ -1069,7 +1069,8 @@ babel_transitions = {
                                 '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
                             },
                         },
-                        '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {                            'error':{
+                        '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {                           
+                           'error':{
                                     '#IF($BABELSPECIFIC=morocco)`Bro like, Morocco seems really cool. But like, the ending of the movie made me reconsider.\n Like, why are the tourists always supposed to have the happy ending, yknow?`':{
                                         'error':{
                                             '#NEUTRAL':'babel'
@@ -1090,8 +1091,9 @@ babel_transitions = {
                                             '#NEUTRAL':'babel'
                                         }
                                     },
-                                    '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
-                                }},
+                                    '`Yeah bro... it was crazy`':{'state':'babel','score':0.2}
+                                }
+                        },
                         '#IF($BABELTOPIC=theme)`Bro I thought about that during the movie..`': {
                             'error':{
                                     '#IF($BABELSPECIFIC=communication)`Bro like, lemme be real with you.\n '
