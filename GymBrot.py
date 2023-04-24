@@ -13,7 +13,7 @@ import numpy as np
 
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 # This is a test to see if it has pushed
-# os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
+os.chdir('C:/Users/devin/OneDrive/Documents/GitHub/GymBrOT')
 # os.chdir('/Users/kristen/PycharmProjects/GymBrOT')
 #os.chdir('/Users/sarah/PycharmProjects/GymBrOT')
 
@@ -815,13 +815,13 @@ whynot_transitions = {
             '#IF($WHYNOT=nothing)`Hey `$NAME`, that\'s totally cool, let\'s talk about something else. Did you wanna chat, or plan a '
             'workout?`':{ 'state':'topicshift', 'score': 0.5},
             #ADD unsure
-            '#GATE `Hey bro, I\'m not sure how to talk about that, but is there anything else holding you back?`':{'state':'whynot','score':0.001},
-            '`Hey bro, I\'m not sure how to talk about that. Let\'s talk about schedules.`':{'state':'formulate_plan','score':0.01},
+            '#GATE `Hey bro, that\'s valid, but is there anything else holding you back?`':{'state':'whynot','score':0.001},
+            '`Hey bro, that\'s real. Let\'s talk about schedules.`':{'state':'formulate_plan','score':0.01},
         },
         'error':{
-            '#GATE `Sorry `$NAME`, that\'s an issue on my end. Can you say that again?`':{'state':'whynot', 'score': 0.1},
+            '#GATE `Sorry `$NAME`, I just dropped a dumbbell on my foot. Can you say that again?`':{'state':'whynot', 'score': 0.1},
             '#GATE `That stupid gym speaker pumpin too loud music and I can\'t hear ya. Could you repeat that?`':{'state':'whynot', 'score': 0.001},
-            '#GATE `I really gotta find where the loud gym speaker is and make it my new bell.`':{'state':'end', 'score': 0.0001},
+            '#GATE `Wait bro, something just came up, it was nice talking to you but I gotta dash.`':{'state':'end', 'score': 0.0001},
         }
     }
 }
@@ -1101,8 +1101,8 @@ global_transitions = {
                 '#IF($NEWTOPIC=concerns)` `':'whynot_no_q',
                 '#IF($NEWTOPIC=babel)':'babel',
                 '#IF($NEWTOPIC=chatting)`Yeah, let\'s just chat`':'chatting',
-                '#IF($NEWTOPIC=N/A)`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`':'chatting',
-                '`Sorry bro, I\'m not sure how to talk about that... Let\'s talk about something else`': {'state':'chatting', 'score':0.1}
+                '#IF($NEWTOPIC=N/A)`Sorry bro, that\'s kinda lit... Let\'s change things up and talk about something else`':'chatting',
+                '`Sorry bro, you are being so real... Let\'s talk about something else`': {'state':'chatting', 'score':0.1}
             },
         },
     }
@@ -1207,6 +1207,20 @@ class MacroGreeting(Macro):
        else:
            return vars[vn].pop()
 
+class MacroNeutral(Macro):
+   def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
+       vn = 'NEUTRALRESPONSE'
+       if vn not in vars:
+           vars[vn] = ["Hmm.. That\'s really interesting bro. Can you tell me some more about that?"
+               , "Okay, okay bro. I\'m following you... but could you elaborate on that?", "That\'s deep bro, so deep I\'m not sure I\'m followjng.. can you explain haha?"
+               , "Hey bro, you\'re really working my brain out. I never thought Babel that way...\n maybe you could keep dropping those knowledge bombs on me?"
+               , "Valid, bro, keep those thoughts flowing.", "Bro you mind has to be your strongest muscle, keep it coming.",
+                       "Bro...","Ur brain bro, ur brain."]
+           return vars[vn].pop()
+       elif len(vars[vn]) == 0:
+           return "Any other thoughts?"
+       else:
+           return vars[vn].pop()
 
 
 
@@ -1594,6 +1608,7 @@ macros = {
          'they are positive. If you cannot make a judgement just put positive. Do not explain yourself.',
          {"VIBE": "negative"}, {"VIBE": "positive"}),
     'GREETING': MacroGreeting(),
+    'NEUTRAL': MacroNeutral(),
     'RANDOM_MUSCLE': MacroRandomMuscle(),
     'RANDOM_NAME' : MacroRandomNickname(),
     'WEATHER': MacroWeather(),
@@ -1606,6 +1621,10 @@ macros = {
         'hour times. If they don\'t return days and times, the defaults will be given. If they say mornings do 7 for the time, if they say afternoons do 18.'
         'If the user says the same time for multiple days please repeat the times in order.',
         {"DAYS": ["0", "1"], "TIMES": ["10", "22"]}, {"DAYS":["0"], "TIMES":["17"]}),
+    'BABELTOPIC':  MacroGPTJSON(
+         'What topic about the movie is the user interested in?'
+         'The options are characters, scences, actors,setting',
+         {"VIBE": "characters"}, {"VIBE": "scences"})
 }
 
 df.load_transitions(intro_transitions)
@@ -1634,8 +1653,8 @@ df.add_macros(macros)
 
 
 if __name__ == '__main__':
-    #PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
-    PATH_API_KEY = 'resources/openai_key.txt'
+    PATH_API_KEY = 'C:\\Users\\devin\\PycharmProjects\\conversational-ai\\resources\\openai_api.txt'
+    #PATH_API_KEY = 'resources/openai_key.txt'
     openai.api_key_path = PATH_API_KEY
     df.run()
    #PATH_API_KEY = '/Users/kristen/PycharmProjects/GymBrOT/resources/api.txt'
