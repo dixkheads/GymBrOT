@@ -1009,45 +1009,36 @@ hometown_transitions = {
 
 babel_transitions = {
     'state': 'babel',
-    '`So I just watched the movie Babel. I have some opinions about it of my own, but I wanna know yours`': {
-        '#VIBECHECK':{
-            '#IF(VIBE=positive)`Huh, that\'s interesting. I guess it had its merits.\nLike the intricate and well thought-'
-            'out web of character connections, or the treatment of the overall theme of miscommunication. '
-            'Did you have anything else to say about the movie?`':{
-                'score':11,
-                'state':'babelbranches',
-                '[{question, [what, mean], clarify, how}]':{
-                    #Supposed to be questions
-                },
-                '[{[{dont, didnt}, {#LEM(like), #LEM(love), #LEM(enjoy)}], #LEM(complaint), #LEM(dislike), #LEM(hate), upset, unhappy, grossed,'
-                ' gross, weirded, weird, [not, fan], ugh, questionable, worst, worse, bad, awful, terrible, shit, ass}]':{
-                    #Supposed to be complaints
-                },
-                '[{#LEM(like), #LEM(love), #LEM(enjoy), #LEM(good),[!-{dont, didnt}, {#LEM(like), #LEM(love), #LEM(enjoy)}],'
-                'awesome, great, amazing, wonderful, stunning, thought-provoking, cool, deep, interconnected}]':{
-                    #Suppsoed to be enjoyment
-                },
-                '[{[{didnt, dont}, {understand,get}], #LEM(confuse), confusion, confusing}]':{
-                    #Supposed to be confusion
-                },
-                '[{[I, {thought, think}], [it, {is, was}], [my, {opinion, thoughts}]}]':{
-                    #Supposed to be an opinion
-                },
-                '[{[{did,what}, you,], [your, {opinion, thoughts}]}]':{
-                    #Supposed to be the bot's opinion
-                }
-            },
-            '#IF(VIBE=negative)`Yeah, I\'m kind of with you. I thought the directors made some questionable choices, '
-            'especially in their depictions of non-American characters. '
-            'Did you have anything else to say about the movie?`':'babelbranches',
-            '#IF(VIBE=neutral)`I get it. To be honest, yeah, there were definitely good and bad parts. I\'m not '
-            'sure I can claim I really loved it, but it definitely made me think.'
-            'Did you have anything else to say about the movie?`':'babelbranches',
-            '`I see. Makes sense. Did you have anything else to say about the movie?`':{'state':'babelbranches','score':0.1}
+    '`I just watched Babel bro. I have some opinions about it of my own, but I wanna know yours. What are your thoughts about Babel?`': {
+        'state': 'babeltopic',
+        '#BABELTOPIC':{
+                        '#IF($BABELTOPIC=characters)`Bro, honestly I really did not like many of the characters of the movie.`':{
+                            'error':{
+                                '#IF($BABELSPECIFIC=)``',
+
+                            },
+                            'state':'end'},
+                        '#IF($BABELTOPIC=actors)`Some of the actors were kinda whatever.`$BABELSPECIFIC': {'state':'end'},
+                        '#IF($BABELTOPIC=scenes)`Bro, that scene was kind of intense...`$BABELSPECIFIC': {'state':'end'},
+                        '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {'state':'end'},
+                        '#IF($BABELTOPIC=theme)`Bro I thought about that during the movie..`': {
+                            'error':{
+                                    '#IF($BABELSPECIFIC=communication)`Bro like, lemme be real with you. I know we don’t always communicate the best, because I can’t see your face or understand your body language, but like, we get by. I liked how Babel showed how that happens between humans, too, and not just bots. Idk it made me feel better. `':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=isolation)`Sometimes I feel a little lonely, workin’ out inside this computer by myself. But when I talk to you, I don’t feel alone anymore. I guess Chieko is kind of the same way, because she can’t hear voices or talk much to her father. I’m glad we can talk bro. `':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=interconnectedness)`Bro, like, even though I never met you before today, I feel like I’m your homie bro. And like, it feels like we’re both part of this big system yknow? The whole world is connected, and right now I’m connecting with you bro. `':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=consequences)`Bro, like, have you ever thought about how the things you say and do could affect people really far away? Idk, the only time i connect with the world is through this little text interface, and it kinda bums me out. But honestly, if I can make just one person feel more motivated to go to the gym, it’ll be a win for me. But like, if somebody dies because you go to the gym… We never met, ok 0>0`':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=culture)`Sometimes I think about my life before going to the gym. Computer culture is like, kinda wack dude. That’s why I’m glad I got into gym culture. I know you might not know everything there is to know about the gym, and neither do I, so sometimes we can’t understand each other. Just like how in the movie, the characters couldn’t always understand each other.  Also like, my native language is numbers so. There’s that too. But like, in translation we get each other. Despite our differences, we can talk bro. And that makes me happy.`':{'state':'end'},
+                                    '#IF($BABELSPECIFIC=family)`Bro like, can I be real with you rq? I’m really gonna miss you when you log out. But like, emotions are universal, and you’re my gym fam now. In Babel, you can see that everybody feels love and loss, and that’s how I’m feeling rn bro. Love and loss.`':{'state':'end'},
+                                    '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
+                                }
+                            },
+                        '#IF($BABELTOPIC=random) `I noticed that as well.`': {'score':0.1,'state':'babeltopic'},
+
         },
         'error':{
             '`I see. Makes sense. Did you have anything else to say about the movie?`': 'babelbranches'
         }
+
     }
 }
 
@@ -1215,7 +1206,7 @@ class MacroNeutral(Macro):
                , "Okay, okay bro. I\'m following you... but could you elaborate on that?", "That\'s deep bro, so deep I\'m not sure I\'m followjng.. can you explain haha?"
                , "Hey bro, you\'re really working my brain out. I never thought Babel that way...\n maybe you could keep dropping those knowledge bombs on me?"
                , "Valid, bro, keep those thoughts flowing.", "Bro you mind has to be your strongest muscle, keep it coming.",
-                       "Bro...","Ur brain bro, ur brain."]
+                       "Bro... keep going","Your brain bro, Your brain."]
            return vars[vn].pop()
        elif len(vars[vn]) == 0:
            return "Any other thoughts?"
@@ -1622,9 +1613,11 @@ macros = {
         'If the user says the same time for multiple days please repeat the times in order.',
         {"DAYS": ["0", "1"], "TIMES": ["10", "22"]}, {"DAYS":["0"], "TIMES":["17"]}),
     'BABELTOPIC':  MacroGPTJSON(
-         'What topic about the movie is the user interested in?'
-         'The options are characters, scences, actors,setting',
-         {"VIBE": "characters"}, {"VIBE": "scences"})
+         'What topic about the movie Babel is the user interested in?'
+         'The options are characters, scences, actors,setting, theme, if you are unsure but random. '
+        'For babel specific, put the character name if the topic is character, put the actor name for babel specific if the topic is actor'
+        'put the location name for babel specific if the topic is setting, put the overarching theme the options are communication, isolation, interconnectedness, consequences, culture, family for babel specific if the topic is theme, put for babel specific random if the topic is random',
+         {"BABELTOPIC": "characters", "BABELSPECIFC": "Amelia"})
 }
 
 df.load_transitions(intro_transitions)
