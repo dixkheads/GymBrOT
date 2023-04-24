@@ -1146,7 +1146,7 @@ global_transitions = {
     },
    '[{babel}]':{'state':'babel','score':10},
     '[[help, make, workout, plan], [help, workout, {plan, planning}]]': 'end',
-    '[{[something, else], [new, topic], [speaking, of], [by, way], [moving, on], [have, heard, about], [heard, about], [{do, did, have} you]}]': {
+    '[{[something, else]}]': {
         'score':10,
         'state':'topicshift_no_q',
         '`what did you wanna talk about?`':{
