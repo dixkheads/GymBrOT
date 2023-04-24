@@ -1451,13 +1451,18 @@ class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Wo
    def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
        workout_list = []
        workout_level = ""
-       if int(vars['FITNESSLEVEL']) < 3:
-           workout_level = "Beginner"
-       elif int(vars['FITNESSLEVEL']) > 3 or int(vars['FITNESSLEVEL']) < 7:
-           workout_level = "Intermediate"
-       else:
-           workout_level = "Advanced"
        df = pd.read_csv(WORKOUT_ADDR)
+       if 'ACTIVITYFREQ' in vars:
+           if vars['ACTIVITYFREQ'] == "never":
+               workout_level = "Beginner"
+           elif vars['ACTIVITYFREQ'] == "low" or vars['ACTIVITYFREQ'] == "mid":
+               workout_level = "Intermediate"
+           else:
+               workout_level = "Advanced"
+           df = df[df['Difficulty'] == workout_level]
+       if 'MUSCLE' in vars:
+           muscle = vars['MUSCLE']
+           df = df.loc[df['target'].str.contains(muscle)]
        for i in range(1, 10):
            workout_dict = {}
            for j in range(1, 3):
@@ -1465,7 +1470,7 @@ class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Wo
                # These levels are also the possible values for df['Difficulty']
                # For each iteration of j, based on the value of workout_level, add to the workout_dict an exercise in df with df['exercise_name'] as key and df['steps'] as value
                # Select a random exercise from the workout data based on the workout level
-               exercise = df[df['Difficulty'] == workout_level].sample(n=1)
+               exercise = df.sample(n=1)
 
 
                # Add the exercise name and steps to the workout dictionary
@@ -1480,6 +1485,7 @@ class MacroGIVEREC(Macro): # A Sample return would be vars['WORKOUTLIST'] = [{Wo
        #print("This is three random values of three random values", random.sample(random.sample(random.sample(workout_list,3),3), 3))
        vars['WORKOUTLIST'] = workout_list
        return True
+
 
 
 class MacroCreateCalendar(Macro):
