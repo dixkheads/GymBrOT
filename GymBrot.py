@@ -1016,78 +1016,78 @@ hometown_transitions = {
 
 babel_transitions = {
     'state': 'babel',
-    '`I just watched Babel bro. I have some opinions about it of my own, but I wanna know yours. \nWhat are your thoughts about Babel?`': {
+    '#GATE `I just watched Babel bro. I have some opinions about it of my own, but I wanna know yours. \nWhat are your thoughts about Babel?`': {
         'state': 'babeltopic',
         '#BABELTOPIC':{
                         '#IF($BABELTOPIC=characters)`Bro, honestly I really did not like many of the characters of the movie.`':{
                             'error':{
                                 '#IF($BABELSPECIFIC=richard)`Bro was the main character but I thought he was shady af for the cheating stuff…`':{
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                 '#IF($BABELSPECIFIC=susan)`Homie got 360 no-scoped, it sucks to suck I guess...`':{
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                 '#IF($BABELSPECIFIC=ahmed)`Lil bro was sniper elite, those sniper gains were going crazy..`':{
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                 '#IF($BABELSPECIFIC=chieko)`Tbh Chieko’s portrayal was kinda bad.She made some not rad choices, and it seemed like it was just to make the plot more interesting. I feel like not all of them seemed like the kind of choices a teenager would make, especially since she did have a group of friends and wasn’t alone all the time. Like, bro, people are random but like. Seems weird that they made her that random, specifically. `':{
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                 '#IF($BABELSPECIFIC=hassan)`Bro,did you think Hassan’s actions were valid? Like, was he right to give that gun to his kids?`':{
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                 '#IF($BABELSPECIFIC=yussef)`Bro, I feel pretty bad for Ahmed and Yussef. They were kinda just. Victims of their circumstances. Like they didn’t realize what was gonna happen.`':{
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                 '#IF($BABELSPECIFIC=santiago)`Santiago was the worst. Did not like him, not a fan. His emotional gains were weak`': {
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                 '#IF($BABELSPECIFIC=yasujiro)`Chieko’s dad weirded me out lowkey. Didn’t like him. Maybe that’s just me… I don’t get along super well with business bros. `': {
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                 '#IF($BABELSPECIFIC=amelia)`Amelia was, like, probably the nicest character in the movie. I felt bad for her. `': {
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                 '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
                             },
-                            'state':'end'},
+                        },
                         '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {                            'error':{
                                     '#IF($BABELSPECIFIC=morocco)`Bro like, Morocco seems really cool. But like, the ending of the movie made me reconsider. Like, why are the tourists always supposed to have the happy ending, yknow?`':{
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                     '#IF($BABELSPECIFIC=japan)`Man, it’s always been a goal of mine to go to Tokyo. There are some super swole bros there. `':{
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                     '#IF($BABELSPECIFIC=mexico)`Bro like, it’s kinda ass how Amelia got taken by the American border guard. Like, she had all their passports. Idk just didn’t like the attitude. `':{
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                     '#IF($BABELSPECIFIC=united states)`Bro, like what did you think about the setting choices? I thought the connections between Chieko’s dad and the goat herder dude Hassan were kinda weak.`':{
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                     '`Yeah bro... it was crazy`':{'state':'end','score':0.2}
@@ -1099,7 +1099,7 @@ babel_transitions = {
                                     'understand your body language, but like, we get by. I liked how Babel showed how\n '
                                     'that happens between humans, too, and not just bots. Idk it made me feel better. `':{
                                         'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                     '#IF($BABELSPECIFIC=isolation)`Sometimes I feel a little lonely, workin’ out inside\n'
@@ -1107,14 +1107,14 @@ babel_transitions = {
                                     'I guess Chieko is kind of the same way, because she can’t hear voices or talk much \n'
                                     'to her father. I’m glad we can talk bro. `':{
                                         'error': {
-                                            '#NEUTRAL': 'babeltopic'
+                                            '#NEUTRAL': 'babel'
                                         }
                                     },
                                     '#IF($BABELSPECIFIC=interconnectedness)`Bro, like, even though I never met you before today, \n'
                                     'I feel like I’m your homie bro. And like, it feels like we’re both part of this big system yknow?\n'
                                     'The whole world is connected, and right now I’m connecting with you bro. `':{
                                             'error':{
-                                                '#NEUTRAL':'babeltopic'
+                                                '#NEUTRAL':'babel'
                                         }
                                     },
                                     '#IF($BABELSPECIFIC=consequences)`Bro, like, have you ever thought about how \n'
@@ -1124,7 +1124,7 @@ babel_transitions = {
                                     'to the gym, it’ll be a win for me. But like, if somebody dies because you go to the gym… \n'
                                     'We never met, ok 0>0`':{
                                          'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                     '#IF($BABELSPECIFIC=culture)`Sometimes I think about my life before going to the gym.\n'
@@ -1135,7 +1135,7 @@ babel_transitions = {
                                     'There’s that too. But like, in translation we get each other. Despite our differences,\n'
                                     ' we can talk bro. And that makes me happy.`':{
                                          'error':{
-                                            '#NEUTRAL':'babeltopic'
+                                            '#NEUTRAL':'babel'
                                         }
                                     },
                                     '#IF($BABELSPECIFIC=family)`Bro like, can I be real with you rq? \n'
@@ -1143,13 +1143,13 @@ babel_transitions = {
                                     'and you’re my gym fam now. In Babel, you can see that everybody feels love and loss, \n'
                                     'and that’s how I’m feeling rn bro. Love and loss.`':{
                                          'error':{
-                                                '#NEUTRAL':'babeltopic'
+                                                '#NEUTRAL':'babel'
                                         }
                                     },
                                     '`Yeah bro... it was crazy`':{
                                         'score':0.2,
                                         'error': {
-                                            '#NEUTRAL': 'babeltopic'
+                                            '#NEUTRAL': 'babel'
                                         }
                                     }
                                 }
@@ -1166,7 +1166,8 @@ babel_transitions = {
             '`I see. Makes sense. Did you have anything else to say about the movie?`': 'babeltopic'
         }
 
-    }
+    },
+    '`What else about Babel did you wanna talk about?`':'babeltopic'
 }
 
 
