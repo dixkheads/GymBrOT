@@ -1036,7 +1036,7 @@ babel_transitions = {
                                             '#NEUTRAL':'babel'
                                         }
                                     },
-                                '#IF($BABELSPECIFIC=chieko)`Tbh Chieko’s portrayal was kinda bad.She made some not rad choices, and it seemed like it was just to make the plot more interesting. I feel like not all of them seemed like the kind of choices a teenager would make, especially since she did have a group of friends and wasn’t alone all the time. Like, bro, people are random but like. Seems weird that they made her that random, specifically. `':{
+                                '#IF($BABELSPECIFIC=chieko)`Tbh Chieko’s portrayal was kinda bad.She made some not rad choices, and it seemed like it was just to make the plot more interesting. \nI feel like not all of them seemed like the kind of choices a teenager would make, especially since she did have a group of friends and wasn’t alone all the time. \nLike, bro, people are random but like. Seems weird that they made her that random, specifically. `':{
                                         'error':{
                                             '#NEUTRAL':'babel'
                                         }
@@ -1046,17 +1046,17 @@ babel_transitions = {
                                             '#NEUTRAL':'babel'
                                         }
                                     },
-                                '#IF($BABELSPECIFIC=yussef)`Bro, I feel pretty bad for Ahmed and Yussef. They were kinda just. Victims of their circumstances. Like they didn’t realize what was gonna happen.`':{
+                                '#IF($BABELSPECIFIC=yussef)`Bro, I feel pretty bad for Ahmed and Yussef. They were kinda just.\n Victims of their circumstances. Like they didn’t realize what was gonna happen.`':{
                                         'error':{
                                             '#NEUTRAL':'babel'
                                         }
                                     },
-                                '#IF($BABELSPECIFIC=santiago)`Santiago was the worst. Did not like him, not a fan. His emotional gains were weak`': {
+                                '#IF($BABELSPECIFIC=santiago)`Santiago was the worst.\n Did not like him, not a fan. His emotional gains were weak`': {
                                         'error':{
                                             '#NEUTRAL':'babel'
                                         }
                                     },
-                                '#IF($BABELSPECIFIC=yasujiro)`Chieko’s dad weirded me out lowkey. Didn’t like him. Maybe that’s just me… I don’t get along super well with business bros. `': {
+                                '#IF($BABELSPECIFIC=yasujiro)`Chieko’s dad weirded me out lowkey.\n Didn’t like him. Maybe that’s just me… I don’t get along super well with business bros. `': {
                                         'error':{
                                             '#NEUTRAL':'babel'
                                         }
@@ -1070,22 +1070,22 @@ babel_transitions = {
                             },
                         },
                         '#IF($BABELTOPIC=setting)`Brooooo I have always wanted to go to`$BABELSPECIFC`!`': {                            'error':{
-                                    '#IF($BABELSPECIFIC=morocco)`Bro like, Morocco seems really cool. But like, the ending of the movie made me reconsider. Like, why are the tourists always supposed to have the happy ending, yknow?`':{
+                                    '#IF($BABELSPECIFIC=morocco)`Bro like, Morocco seems really cool. But like, the ending of the movie made me reconsider.\n Like, why are the tourists always supposed to have the happy ending, yknow?`':{
                                         'error':{
                                             '#NEUTRAL':'babel'
                                         }
                                     },
-                                    '#IF($BABELSPECIFIC=japan)`Man, it’s always been a goal of mine to go to Tokyo. There are some super swole bros there. `':{
+                                    '#IF($BABELSPECIFIC=japan)`Man, it’s always been a goal of mine to go to Tokyo.\n There are some super swole bros there. `':{
                                         'error':{
                                             '#NEUTRAL':'babel'
                                         }
                                     },
-                                    '#IF($BABELSPECIFIC=mexico)`Bro like, it’s kinda ass how Amelia got taken by the American border guard. Like, she had all their passports. Idk just didn’t like the attitude. `':{
+                                    '#IF($BABELSPECIFIC=mexico)`Bro like, it’s kinda ass how Amelia got taken by the American border guard. Like, she had all their passports.\n Idk just didn’t like the attitude. `':{
                                         'error':{
                                             '#NEUTRAL':'babel'
                                         }
                                     },
-                                    '#IF($BABELSPECIFIC=united states)`Bro, like what did you think about the setting choices? I thought the connections between Chieko’s dad and the goat herder dude Hassan were kinda weak.`':{
+                                    '#IF($BABELSPECIFIC=united states)`Bro, like what did you think about the setting choices?\n I thought the connections between Chieko’s dad and the goat herder dude Hassan were kinda weak.`':{
                                         'error':{
                                             '#NEUTRAL':'babel'
                                         }
